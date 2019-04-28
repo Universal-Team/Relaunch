@@ -10,7 +10,7 @@ endif
 include $(DEVKITARM)/ds_rules
 
 export VERSION_MAJOR	:= 1
-export VERSION_MINOR	:= 0
+export VERSION_MINOR	:= 1
 export VERSION_PATCH	:= 0
 
 
@@ -23,11 +23,12 @@ VERSION	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 # DATA is a list of directories containing binary files embedded using bin2o
 # GRAPHICS is a list of directories containing image files to be converted with grit
 #---------------------------------------------------------------------------------
-TARGET		:=	Relaunch
+TARGET		:=	menu
 BUILD		:=	build
 SOURCES		:=	source
-INCLUDES	:=	include
+INCLUDES	:=	include source
 DATA		:=	data
+GRAPHICS	:=  gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -45,6 +46,11 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm9.specs -g -Wl,--gc-sections $(ARCH) -Wl,-Map,$(notdir $*.map)
+
+#---------------------------------------------------------------------------------
+# any extra libraries we wish to link with the project (order is important)
+#---------------------------------------------------------------------------------
+LIBS	:= 	-lfat -lnds9
  
  
 #---------------------------------------------------------------------------------
@@ -63,12 +69,16 @@ export TOPDIR	:=	$(CURDIR)
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(GRAPHICS),$(CURDIR)/$(dir))
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+BMPFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.bmp)))
+PNGFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.png)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	load.bin bootstub.bin
  
@@ -120,7 +130,7 @@ dist:	all
 	
 $(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
   # simple nds srl without dsi extended header thx Robz!
-	ndstool	-h 0x200 -c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf -b icon.bmp "Relaunch Menu;FlameKat53"
+	ndstool	-h 0x200 -c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf -b icon.bmp "Relaunch Menu;RocketRobz, FlameKat53"
 
 $(TARGET).arm7: arm7/$(TARGET).elf
 	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
@@ -156,8 +166,8 @@ data:
 	@mkdir -p data
 
 bootloader: data
-	@$(MAKE) -C bootloader
-
+	@$(MAKE) -C bootloader LOADBIN=$(CURDIR)/data/load.bin
+	
 bootstub: data
 	@$(MAKE) -C bootstub
 
@@ -175,22 +185,6 @@ else
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	$(bin2o)
-
-#---------------------------------------------------------------------------------
-# This rule creates assembly source files using grit
-# grit takes an image file and a .grit describing how the file is to be processed
-# add additional rules like this for each image extension
-# you use in the graphics folders 
-#---------------------------------------------------------------------------------
-%.s %.h	: %.bmp %.grit
-#---------------------------------------------------------------------------------
-	grit $< -fts -o$*
-
-
-#---------------------------------------------------------------------------------
-%.s %.h   : %.png %.grit
-#---------------------------------------------------------------------------------
-	grit $< -fts -o$*
 
 -include $(DEPSDIR)/*.d
  

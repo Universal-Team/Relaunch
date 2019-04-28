@@ -3,26 +3,53 @@
 	Michael "Chishm" Chisholm
 	Dave "WinterMute" Murphy
 	Claudio "sverx"
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 ------------------------------------------------------------------*/
 #include <nds.h>
 #include <stdio.h>
+#include <fat.h>
 #include <sys/stat.h>
 #include <limits.h>
+
 #include <string.h>
 #include <unistd.h>
-#include <fat.h>
-#include "common/inifile.h"
+
+#include "nds_loader_arm9.h"
+#include "driveMenu.h"
+#include "driveOperations.h"
+#include "file_browse.h"
+#include "fileOperations.h"
+
+char titleName[32] = {" "};
+
+int screenMode = 0;
+
+bool appInited = false;
+
+bool arm7SCFGLocked = false;
+bool isRegularDS = true;
+bool is3DS = true;
+
+bool applaunch = false;
+
+static int bg3;
+
+using namespace std;
+
 //---------------------------------------------------------------------------------
 void stop (void) {
 //---------------------------------------------------------------------------------
@@ -31,65 +58,157 @@ void stop (void) {
 	}
 }
 
+char filePath[PATH_MAX];
+
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
-	/*std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
-	std::string bootB = "/_nds/Relaunch/extras/bootB.nds";
-	std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
-	std::string bootY = "/_nds/Relaunch/extras/bootY.nds";
-	std::string bootR = "/_nds/Relaunch/extras/bootR.nds";
-	std::string bootDown = "/_nds/Relaunch/extras/bootDown.nds";
-	std::string bootUp = "/_nds/Relaunch/extras/bootUp.nds";
-	std::string bootLeft = "/_nds/Relaunch/extras/bootLeft.nds";
-	std::string bootRight = "/_nds/Relaunch/extras/bootRight.nds";
-	std::string bootStart = "/_nds/Relaunch/extras/bootStart.nds";
-	std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
-	std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
-	std::string bootDefault = "/boot.nds";*/
 
-	videoSetMode(MODE_0_2D);
+	// overwrite reboot stub identifier
+	extern u64 *fake_heap_end;
+	*fake_heap_end = 0;
+
+	defaultExceptionHandler();
+
+	int pathLen;
+	std::string filename;
+	
+	bool yHeld = false;
+
+	// initialize video mode
+	videoSetMode(MODE_4_2D);
+
+	// initialize VRAM banks
+	vramSetPrimaryBanks(VRAM_A_MAIN_BG,
+	                    VRAM_B_MAIN_SPRITE,
+	                    VRAM_C_LCD,
+	                    VRAM_D_LCD);
+
+	// Subscreen as a console
 	videoSetModeSub(MODE_0_2D);
 	vramSetBankH(VRAM_H_SUB_BG);
-	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+	consoleInit(NULL, 0, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
 
-	if (!fatInitDefault()) {
-		iprintf ("fatInitDefault failed!\n");
-		stop();
+	fifoWaitValue32(FIFO_USER_06);
+	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
+	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
+	if (arm7_SNDEXCNT != 0) isRegularDS = false;	// If sound frequency setting is found, then the console is not a DS Phat/Lite
+	fifoSendValue32(FIFO_USER_07, 0);
+
+	printf ("\x1b[22;11H");
+	printf ("mounting drive(s)...");
+
+	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
+
+	if (isDSiMode()) {
+		scanKeys();
+		if (keysHeld() & KEY_Y) {
+			yHeld = true;
+		}
+		sdMounted = sdMount();
+	}
+	if (!isDSiMode() || !sdMounted || (access("sd:/Nintendo 3DS", F_OK) != 0)) {
+		is3DS = false;
+	}
+	if (!isDSiMode() || !yHeld) {
+		flashcardMounted = flashcardMount();
+		flashcardMountSkipped = false;
 	}
 
-	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-	
-	/*bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
-	bootB = ini.GetString("RELAUNCH", "BOOT_B_PATH", bootB);
-	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
-	bootY = ini.GetString("RELAUNCH", "BOOT_Y_PATH", bootY);
-	bootR = ini.GetString("RELAUNCH", "BOOT_R_PATH", bootR);
-	bootDown = ini.GetString("RELAUNCH", "BOOT_DOWN_PATH", bootDown);
-	bootUp = ini.GetString("RELAUNCH", "BOOT_UP_PATH", bootUp);
-	bootLeft = ini.GetString("RELAUNCH", "BOOT_LEFT_PATH", bootLeft);
-	bootRight = ini.GetString("RELAUNCH", "BOOT_RIGHT_PATH", bootRight);
-	bootStart = ini.GetString("RELAUNCH", "BOOT_START_PATH", bootStart);
-	bootSelect = ini.GetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
-	bootTouch = ini.GetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
-	bootDefault = ini.GetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
+	// Top screen as a console
+	videoSetMode(MODE_0_2D);
+	vramSetBankG(VRAM_G_MAIN_BG);
 
-	ini.SetString("RELAUNCH", "BOOT_A_PATH", bootA);
-	ini.SetString("RELAUNCH", "BOOT_B_PATH", bootB);
-	ini.SetString("RELAUNCH", "BOOT_X_PATH", bootX);
-	ini.SetString("RELAUNCH", "BOOT_Y_PATH", bootY);
-	ini.SetString("RELAUNCH", "BOOT_R_PATH", bootR);
-	ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", bootDown);
-	ini.SetString("RELAUNCH", "BOOT_UP_PATH", bootUp);
-	ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", bootLeft);
-	ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", bootRight);
-	ini.SetString("RELAUNCH", "BOOT_START_PATH", bootStart);
-	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
-	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
+	keysSetRepeat(25,5);
 
-	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");*/
+	appInited = true;
 
+	while(1) {
 
-	printf("Menu Not Implemented Yet\n");
-	stop();
+		if (screenMode == 0) {
+			driveMenu();
+		} else {
+			filename = browseForFile();
+		}
+
+		if (applaunch) {
+			// Construct a command line
+			getcwd (filePath, PATH_MAX);
+			pathLen = strlen (filePath);
+			vector<char*> argarray;
+
+			if ((strcasecmp (filename.c_str() + filename.size() - 5, ".argv") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 5, ".ARGV") == 0)) {
+
+				FILE *argfile = fopen(filename.c_str(),"rb");
+				char str[PATH_MAX], *pstr;
+				const char seps[]= "\n\r\t ";
+
+				while( fgets(str, PATH_MAX, argfile) ) {
+					// Find comment and end string there
+					if( (pstr = strchr(str, '#')) )
+						*pstr= '\0';
+
+					// Tokenize arguments
+					pstr= strtok(str, seps);
+
+					while( pstr != NULL ) {
+						argarray.push_back(strdup(pstr));
+						pstr= strtok(NULL, seps);
+					}
+				}
+				fclose(argfile);
+				filename = argarray.at(0);
+			} else {
+				argarray.push_back(strdup(filename.c_str()));
+			}
+			if ((strcasecmp (filename.c_str() + filename.size() - 4, ".dsi") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".DSI") == 0)) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				consoleClear();
+				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
+				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
+				iprintf ("\x1b[31mStart failed. Error %i\n", err);
+			}
+			if ((strcasecmp (filename.c_str() + filename.size() - 4, ".nds") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".NDS") == 0)) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				consoleClear();
+				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
+				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
+				iprintf ("Start failed. Error %i\n", err);
+			}
+
+			if ((strcasecmp (filename.c_str() + filename.size() - 5, ".firm") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 5, ".FIRM") == 0)) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				fcopy(argarray[0], "sd:/bootonce.firm");
+				fifoSendValue32(FIFO_USER_02, 1);	// Reboot into selected .firm payload
+				swiWaitForVBlank();
+			}
+
+			while(argarray.size() !=0 ) {
+				free(argarray.at(0));
+				argarray.erase(argarray.begin());
+			}
+
+			while (1) {
+				swiWaitForVBlank();
+				scanKeys();
+				if (!(keysHeld() & KEY_A)) break;
+			}
+		}
+
 	}
+
+	return 0;
+}
