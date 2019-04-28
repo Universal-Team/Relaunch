@@ -1,0 +1,66 @@
+language: cpp
+
+os: linux
+sudo: false
+dist: trusty
+
+env:
+  global:
+    - DEVKITPRO=/opt/devkitpro    
+    - DEVKITARM=/opt/devkitpro/devkitARM
+    
+cache:
+  directories:
+    - "$HOME/.local"
+    - "$DEVKITPRO"
+
+before_install:
+  - curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
+  - sudo apt-get install -y p7zip-full
+
+install:
+  - sudo dpkg -i pacman.deb
+  - sudo dkp-pacman -Sy
+  - sudo dkp-pacman -S devkitARM general-tools dstools ndstool libnds libfat-nds grit mmutil --noconfirm
+  - export DEVKITPRO=/opt/devkitpro
+  - export DEVKITARM=${DEVKITPRO}/devkitARM
+
+script:
+  - export COMMIT_TAG="$(git log --format=%h -1)"
+  - export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
+  - cd hotkey/
+  - make
+  - mv "Relaunch.nds" "hotkey.bin"
+  - cd ../menu/
+  - make
+  - mv "Relaunch.nds" "menu.bin"
+  - cd ../main/
+  - make
+  - mkdir Relaunch/
+  - cp "Relaunch.nds" "../hotkey/hotkey.bin" "../menu/menu.bin" Relaunch/
+  - 7z a Relaunch.7z Relaunch/
+  
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.9
+    - g++-4.9
+    - libstdc++6
+    - lftp
+
+after_success:
+  - echo 'yummy breakfast :3 (Build Successful)'
+  - git config --local user.name "TWLBot"
+  - git clone --depth 1 https://$GITHUB_TOKEN@github.com/TWLBot/Builds.git
+  - cd Builds/extras
+  - cp ../../Relaunch.7z Relaunch.7z
+  - git stage .
+  - git commit -m "Relaunch | $COMMIT_TAG"
+  - git push origin master
+  - export CURRENT_DATE=$(date +'%Y%m%d-%H%M%S')
+  - git tag v$CURRENT_DATE
+
+after_failure:
+  - echo 'gross breakfast (Build Failed)'
