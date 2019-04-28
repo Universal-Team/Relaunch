@@ -58,10 +58,9 @@ int main(int argc, char **argv) {
 		iprintf ("fatInitDefault failed!\n");
 		stop();
 	}
-
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 	
-	bootA = ini.GetString("RELAUNCH" "BOOT_A_PATH", bootA);
+	bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	bootB = ini.GetString("RELAUNCH", "BOOT_B_PATH", bootB);
 	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
 	bootY = ini.GetString("RELAUNCH", "BOOT_Y_PATH", bootY);
