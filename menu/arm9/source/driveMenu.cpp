@@ -274,11 +274,11 @@ void driveMenu (void) {
 		// Make a screenshot
 		if ((held & KEY_R) && (pressed & KEY_L)) {
 			if (sdMounted || flashcardMounted) {
-				if (access((sdMounted ? "sd:/gm9i" : "fat:/gm9i"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/gm9i" : "fat:/gm9i"), 0777);
+				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
+					mkdir((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), 0777);
 				}
-				if (access((sdMounted ? "sd:/gm9i/out" : "fat:/gm9i/out"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/gm9i/out" : "fat:/gm9i/out"), 0777);
+				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
+					mkdir((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), 0777);
 				}
 				char timeText[8];
 				snprintf(timeText, sizeof(timeText), "%s", RetTime().c_str());
@@ -286,7 +286,7 @@ void driveMenu (void) {
 				snprintf(fileTimeText, sizeof(fileTimeText), "%s", RetTimeForFilename().c_str());
 				char snapPath[40];
 				// Take top screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/gm9i/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
+				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
 				screenshotbmp(snapPath);
 				// Seamlessly swap top and bottom screens
 				lcdMainOnBottom();
@@ -298,7 +298,7 @@ void driveMenu (void) {
 				printf("\x1b[0;27H");
 				printf(timeText);
 				// Take bottom screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/gm9i/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
+				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
 				screenshotbmp(snapPath);
 				dmTextPrinted = false;
 				lcdMainOnTop();

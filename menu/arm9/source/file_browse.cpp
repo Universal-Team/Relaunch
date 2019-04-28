@@ -215,15 +215,15 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 3;
 		printf("   Mount NitroFS\n");
 	}
-	if (sdMounted && (strcmp (path, "sd:/gm9i/out/") != 0)) {
+	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 1;
-		printf("   Copy to sd:/gm9i/out\n");
+		printf("   Copy to sd:/_nds/Relaunch/out\n");
 	}
-	if (flashcardMounted && (strcmp (path, "fat:/gm9i/out/") != 0)) {
+	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 2;
-		printf("   Copy to fat:/gm9i/out\n");
+		printf("   Copy to fat:/_nds/Relaunch/out\n");
 	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
@@ -255,35 +255,35 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
 			} else if (assignedOp[optionOffset] == 1) {
-				if (access("sd:/gm9i", F_OK) != 0) {
+				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
-					mkdir("sd:/gm9i", 0777);
+					mkdir("sd:/_nds/Relaunch", 0777);
 				}
-				if (access("sd:/gm9i/out", F_OK) != 0) {
+				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
-					mkdir("sd:/gm9i/out", 0777);
+					mkdir("sd:/_nds/Relaunch/out", 0777);
 				}
 				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "sd:/gm9i/out/%s", entry->name.c_str());
+				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
 			} else if (assignedOp[optionOffset] == 2) {
-				if (access("fat:/gm9i", F_OK) != 0) {
+				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
-					mkdir("fat:/gm9i", 0777);
+					mkdir("fat:/_nds/Relaunch", 0777);
 				}
-				if (access("fat:/gm9i/out", F_OK) != 0) {
+				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
-					mkdir("fat:/gm9i/out", 0777);
+					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
 				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "fat:/gm9i/out/%s", entry->name.c_str());
+				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Copying...           ");
 				remove(destPath);
@@ -498,7 +498,7 @@ string browseForFile (void) {
 				screenOffset = 0;
 				fileOffset = 0;
 			} else if (bothSDandFlashcard() || entry->isApp
-					|| strcmp (path, (secondaryDrive ? "fat:/gm9i/out/" : "sd:/gm9i/out/")) != 0)
+					|| strcmp (path, (secondaryDrive ? "fat:/_nds/Relaunch/out/" : "sd:/_nds/Relaunch/out/")) != 0)
 			{
 				int getOp = fileBrowse_A(entry, path);
 				if (getOp == 0) {
@@ -637,15 +637,15 @@ string browseForFile (void) {
 
 		// Take a screenshot
 		if ((held & KEY_R) && (pressed & KEY_L)) {
-			if (access((sdMounted ? "sd:/gm9i" : "fat:/gm9i"), F_OK) != 0) {
-				mkdir((sdMounted ? "sd:/gm9i" : "fat:/gm9i"), 0777);
+			if (access((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), F_OK) != 0) {
+				mkdir((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), 0777);
 				if (strcmp (path, (sdMounted ? "sd:/" : "fat:/")) == 0) {
 					getDirectoryContents (dirContents);
 				}
 			}
-			if (access((sdMounted ? "sd:/gm9i/out" : "fat:/gm9i/out"), F_OK) != 0) {
-				mkdir((sdMounted ? "sd:/gm9i/out" : "fat:/gm9i/out"), 0777);
-				if (strcmp (path, (sdMounted ? "sd:/gm9i/" : "fat:/gm9i/")) == 0) {
+			if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
+				mkdir((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), 0777);
+				if (strcmp (path, (sdMounted ? "sd:/_nds/Relaunch/" : "fat:/_nds/Relaunch/")) == 0) {
 					getDirectoryContents (dirContents);
 				}
 			}
@@ -655,7 +655,7 @@ string browseForFile (void) {
 			snprintf(fileTimeText, sizeof(fileTimeText), "%s", RetTimeForFilename().c_str());
 			char snapPath[40];
 			// Take top screenshot
-			snprintf(snapPath, sizeof(snapPath), "%s:/gm9i/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
+			snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
 			screenshotbmp(snapPath);
 			// Seamlessly swap top and bottom screens
 			lcdMainOnBottom();
@@ -667,9 +667,9 @@ string browseForFile (void) {
 			printf ("\x1b[0;26H");
 			printf (" %s" ,timeText);
 			// Take bottom screenshot
-			snprintf(snapPath, sizeof(snapPath), "%s:/gm9i/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
+			snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
 			screenshotbmp(snapPath);
-			if (strcmp (path, (sdMounted ? "sd:/gm9i/out/" : "fat:/gm9i/out/")) == 0) {
+			if (strcmp (path, (sdMounted ? "sd:/_nds/Relaunch/out/" : "fat:/_nds/Relaunch/out/")) == 0) {
 				getDirectoryContents (dirContents);
 			}
 			lcdMainOnTop();
