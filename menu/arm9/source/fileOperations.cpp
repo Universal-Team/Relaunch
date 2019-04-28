@@ -102,11 +102,6 @@ int fcopy(const char *sourcePath, const char *destinationPath)
 	    FILE* destinationFile = fopen(destinationPath, "wb");
 		//if (destinationFile) {
 			fseek(destinationFile, 0, SEEK_SET);
-		/*} else {
-			fclose(sourceFile);
-			fclose(destinationFile);
-			return -1;
-		}*/
 
 		off_t offset = 0;
 		int numr;
