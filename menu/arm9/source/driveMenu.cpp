@@ -63,7 +63,6 @@ void loadGbaCart(void) {
 // Switch to GBA mode
 	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
 	}
-//}
 
 void dm_drawTopScreen(void) {
 	printf ("\x1B[42m");		// Print green color
