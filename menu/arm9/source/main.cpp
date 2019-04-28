@@ -22,7 +22,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <fat.h>
-#include "common/nds_loader_arm9.h"
 #include "common/inifile.h"
 //---------------------------------------------------------------------------------
 void stop (void) {
@@ -35,7 +34,7 @@ void stop (void) {
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
-	std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
+	/*std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
 	std::string bootB = "/_nds/Relaunch/extras/bootB.nds";
 	std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
 	std::string bootY = "/_nds/Relaunch/extras/bootY.nds";
@@ -47,7 +46,7 @@ int main(int argc, char **argv) {
 	std::string bootStart = "/_nds/Relaunch/extras/bootStart.nds";
 	std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
 	std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
-	std::string bootDefault = "/boot.nds";
+	std::string bootDefault = "/boot.nds";*/
 
 	videoSetMode(MODE_0_2D);
 	videoSetModeSub(MODE_0_2D);
@@ -61,7 +60,7 @@ int main(int argc, char **argv) {
 
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 	
-	bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
+	/*bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	bootB = ini.GetString("RELAUNCH", "BOOT_B_PATH", bootB);
 	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
 	bootY = ini.GetString("RELAUNCH", "BOOT_Y_PATH", bootY);
@@ -88,8 +87,9 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 
-	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");*/
 
 
-printf("Menu Not Implemented Yet");
+	printf("Menu Not Implemented Yet\n");
+	stop();
 	}
