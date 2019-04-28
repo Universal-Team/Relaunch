@@ -18,7 +18,7 @@
 
 - 1.) Get some .nds homebrew. (You can get some [here](https://www.gamebrew.org/wiki/List_of_DS_homebrew_applications))
 
-- 2.) Name your .nds files boot#.nds with # being one of these buttons; `A`, `B`, `X`, `Y`, `Start`, `Select`, `R`, `Left`, `Right`, `Down`, `Up`, or `Touch`. Alternatively, you can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files.
+- 2.) Name your .nds files boot#.nds with # being one of these buttons; `A`, `B`, `X`, `Y`, `Start`, `Select`, `R`, `L` `Left`, `Right`, `Down`, `Up`, or `Touch`. Alternatively, you can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files.
 
 - 3.) Put all of your files into `_nds/Relaunch/extras/`, if you set custom paths in the .ini file you don't need to do this
 
@@ -27,4 +27,4 @@
 <h3 align= "center">Things to Remember</h3>
 </p>
 
-Hold L on boot to open the menu, this means L cannot be a hotkey
+Hold A and B on boot to open the menu.
