@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------------------------------
+/*
  io_dldi.h 
 
  Reserved space for post-compilation adding of an extra driver
@@ -28,7 +28,7 @@
 
 	2006-12-22 - Chishm
 		* Original release
---------------------------------------------------------------------------------------------*/
+*/
 
 #ifndef IO_DLDI_H
 #define IO_DLDI_H

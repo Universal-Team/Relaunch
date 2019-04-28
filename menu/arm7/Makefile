@@ -1,4 +1,3 @@
-
 export ARM7_MAJOR	:= 0
 export ARM7_MINOR	:= 6
 export ARM7_PATCH	:= 0
@@ -18,7 +17,7 @@ include $(DEVKITARM)/ds_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:=	Relaunch
+TARGET		:=	menu
 BUILD		:=	build
 SOURCES		:=	source
 INCLUDES	:=	include build
