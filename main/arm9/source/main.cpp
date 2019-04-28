@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
 	std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
 	std::string bootY = "/_nds/Relaunch/extras/bootY.nds";
 	std::string bootR = "/_nds/Relaunch/extras/bootR.nds";
+	std::string bootL = "/_nds/Relaunch/extras/bootL.nds";
 	std::string bootDown = "/_nds/Relaunch/extras/bootDown.nds";
 	std::string bootUp = "/_nds/Relaunch/extras/bootUp.nds";
 	std::string bootLeft = "/_nds/Relaunch/extras/bootLeft.nds";
@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
 	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
 	bootY = ini.GetString("RELAUNCH", "BOOT_Y_PATH", bootY);
 	bootR = ini.GetString("RELAUNCH", "BOOT_R_PATH", bootR);
+	bootL = ini.GetString("RELAUNCH", "BOOT_L_PATH", bootL);
 	bootDown = ini.GetString("RELAUNCH", "BOOT_DOWN_PATH", bootDown);
 	bootUp = ini.GetString("RELAUNCH", "BOOT_UP_PATH", bootUp);
 	bootLeft = ini.GetString("RELAUNCH", "BOOT_LEFT_PATH", bootLeft);
@@ -79,6 +81,7 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_X_PATH", bootX);
 	ini.SetString("RELAUNCH", "BOOT_Y_PATH", bootY);
 	ini.SetString("RELAUNCH", "BOOT_R_PATH", bootR);
+	ini.SetString("RELAUNCH", "BOOT_L_PATH", bootL);
 	ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", bootDown);
 	ini.SetString("RELAUNCH", "BOOT_UP_PATH", bootUp);
 	ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", bootLeft);
@@ -95,7 +98,14 @@ int main(int argc, char **argv) {
   scanKeys();
 	int pressed = keysHeld();
 
-	if (pressed & KEY_A) {
+	if ((pressed & (KEY_A | KEY_B)) == (KEY_A | KEY_B)) { // menu
+		if((access("_nds/Relaunch/menu.bin", F_OK) == 0)) {
+			runNdsFile("_nds/Relaunch/menu.bin", 0, NULL, false);
+		} else {
+			printf("Error:\nmenu.bin wasn't found!");
+			stop();
+		}
+	} else if (pressed & KEY_A) {
 		if((access(bootA.c_str(), F_OK) == 0)) {
 			runNdsFile(bootA.c_str(), 0, NULL, false);
 		} else {
@@ -131,10 +141,10 @@ int main(int argc, char **argv) {
 			stop();
 		}
 	} else if (pressed & KEY_L) {
-		if((access("/_nds/Relaunch/menu.bin", F_OK) == 0)) {
-			runNdsFile("/_nds/Relaunch/menu.bin", 0, NULL, false);
+		if((access(bootL.c_str(), F_OK) == 0)) {
+			runNdsFile(bootL.c_str(), 0, NULL, false);
 		} else {
-			printf("Error:\nmenu.bin wasn't found!");
+			printf("Error:\n%s \nwasn't found!", bootL.c_str());
 			stop();
 		}
 	} else if (pressed & KEY_RIGHT) {
