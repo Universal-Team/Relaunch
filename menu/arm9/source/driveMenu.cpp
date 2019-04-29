@@ -181,7 +181,7 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
 		}
-		if (isRegularDS) {
+		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 4;
 		}
