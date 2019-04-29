@@ -65,9 +65,9 @@ void loadGbaCart(void) {
 	}
 
 void dm_drawTopScreen(void) {
-	printf ("\x1B[42m");		// Print green color
+	printf ("\x1B[33m");		// Print yellow color
 	printf ("\x1b[0;0H");
-	printf ("[root]");
+	printf ("Relaunch.nds v0.0");
 	printf ("\x1B[47m");		// Print foreground white color
 
 	// Move to 2nd row
@@ -79,9 +79,9 @@ void dm_drawTopScreen(void) {
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
-			printf ("\x1B[47m");		// Print foreground white color
+			printf ("\x1b[47m");		// Print foreground green color
 		} else {
-			printf ("\x1B[40m");		// Print foreground black color
+			printf ("\x1B[42m");		// Print foreground white color
 		}
 		if (dmAssignedOp[i] == 0) {
 			printf ("[sd:] SDCARD");
