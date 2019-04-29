@@ -62,7 +62,12 @@ void loadGbaCart(void) {
 	}
 // Switch to GBA mode
 	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
-	}
+}
+
+void loadFirmware(void) {
+
+	runNdsFile("_nds/Relaunch/firmware.bin", 0, NULL, false);
+}
 
 void dm_drawTopScreen(void) {
 	printf ("\x1B[42m");		// Print green color
@@ -106,6 +111,11 @@ void dm_drawTopScreen(void) {
 			{
 				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW);
 				printf ("[x]");
+		} else if (dmAssignedOp[i] == 4) {
+			printf ("Return to Main Menu");
+			if (gbaFixedValue != 0x96) {
+				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW);
+				}
 			}
 		}
 	}
@@ -136,6 +146,9 @@ void dm_drawBottomScreen(void) {
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
 		printf ("[nitro:] NDS GAME IMAGE\n");
 		printf ("(Game Virtual)");
+	} else if (dmAssignedOp[dmCursorPosition] == 4) {
+		printf ("Return to Main Menu\n");
+		printf ("(firmware.bin)");
 	}
 }
 
@@ -167,6 +180,10 @@ void driveMenu (void) {
 		if (nitroMounted) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
+		}
+		if (isRegularDS) {
+			dmMaxCursors++;
+			dmAssignedOp[dmMaxCursors] = 4;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -249,6 +266,9 @@ void driveMenu (void) {
 					chdir("nitro:/");
 					screenMode = 1;
 					break;
+			} else if (dmAssignedOp[dmCursorPosition] == 4 && isRegularDS && flashcardMounted) {
+				dmTextPrinted = false;
+				loadFirmware();
 				}
 			}
 		}
