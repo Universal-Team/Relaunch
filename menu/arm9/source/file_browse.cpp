@@ -3,21 +3,17 @@
 	Michael "Chishm" Chisholm
 	Dave "WinterMute" Murphy
 	Claudio "sverx"
-
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
-
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
-
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 ------------------------------------------------------------------*/
 #include <vector>
 #include <algorithm>
@@ -250,8 +246,12 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				applaunch = true;
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
-
 			} else if (assignedOp[optionOffset] == 1) {
+				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("sd:/_nds/Relaunch", 0777);
+				}
 				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -263,8 +263,12 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
-
 			} else if (assignedOp[optionOffset] == 2) {
+				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("fat:/_nds/Relaunch", 0777);
+				}
 				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -276,7 +280,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
-
 			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the button to set\nas the hotkey");
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
@@ -350,6 +353,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			return (false);
 	}
 }*/
+			}
 			return assignedOp[optionOffset];
 		}
 		if (pressed & KEY_B) {
