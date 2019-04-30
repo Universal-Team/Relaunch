@@ -282,6 +282,9 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				fcopy(entry->name.c_str(), destPath);
 			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the button to set\nas the hotkey");
+				for(int i=0;i<30;i++) {
+					swiWaitForVBlank();
+				}
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 while (true) {
 	if (pressed & KEY_A) {
