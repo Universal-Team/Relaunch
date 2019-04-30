@@ -1,10 +1,10 @@
+#include "fileOperations.h"
 #include <nds.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <vector>
 
 #include "file_browse.h"
-#include "fileOperations.h"
 
 using namespace std;
 
