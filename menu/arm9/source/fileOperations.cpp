@@ -1,10 +1,10 @@
-#include "fileOperations.h"
 #include <nds.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <vector>
 
 #include "file_browse.h"
+#include "fileOperations.h"
 
 using namespace std;
 
@@ -18,7 +18,6 @@ bool clipboardFolder = false;
 bool clipboardOn = false;
 bool clipboardUsed = false;
 bool clipboardDrive = false;	// false == SD card, true == Flashcard
-bool clipboardInNitro = false;
 
 void printBytes(int bytes)
 {
