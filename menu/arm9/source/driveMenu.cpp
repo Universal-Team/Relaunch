@@ -79,7 +79,7 @@ void dm_drawTopScreen(void) {
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
-			printf ("\x1b[33m");		// Print foreground green color
+			printf ("\x1b[36m");		// Print foreground cyan color
 		} else {
 			printf ("\x1b[33m");		// Print foreground green color
 		}
@@ -91,7 +91,7 @@ void dm_drawTopScreen(void) {
 		} else if (dmAssignedOp[i] == 1) {
 			printf ("[fat:]");
 			if (fatLabel[0] != '\0') {
-				iprintf ("%s", fatLabel);
+				iprintf (" %s", fatLabel);
 			}
 		} else if (dmAssignedOp[i] == 2) {
 			printf ("Launch Slot-2 Cart");
