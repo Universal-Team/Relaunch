@@ -33,7 +33,6 @@
 #include "fileOperations.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
-#include "nitrofs.h"
 
 #define SCREEN_COLS 22
 #define ENTRIES_PER_SCREEN 23
@@ -205,11 +204,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	}
 	if((entry->name.substr(entry->name.find_last_of(".") + 1) == "nds")
 	|| (entry->name.substr(entry->name.find_last_of(".") + 1) == "NDS"))
-	{
-		maxCursors++;
-		assignedOp[maxCursors] = 3;
-		printf("   Mount NitroFS\n");
-	}
+
 	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 1;
@@ -283,11 +278,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 3) {
-				nitroMounted = nitroFSInit(entry->name.c_str());
-				if (nitroMounted) {
-					chdir("nitro:/");
-					nitroSecondaryDrive = secondaryDrive;
 				}
 			}
 			return assignedOp[optionOffset];
@@ -480,8 +470,7 @@ string browseForFile (void) {
 
 		if (pressed & KEY_A) {
 			DirEntry* entry = &dirContents.at(fileOffset);
-			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0))
-			|| ((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, "nitro:/") == 0)))
+			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0)))
 			{
 				screenMode = 0;
 				return "null";
@@ -499,18 +488,14 @@ string browseForFile (void) {
 				if (getOp == 0) {
 					// Return the chosen file
 					return entry->name;
-				} else if (getOp == 1 || getOp == 2 || (getOp == 3 && nitroMounted)) {
+				} else if (getOp == 1 || getOp == 2) {
 					getDirectoryContents (dirContents);		// Refresh directory listing
-					if (getOp == 3 && nitroMounted) {
-						screenOffset = 0;
-						fileOffset = 0;
-					}
 				}
 			}
 		}
 
 		if (pressed & KEY_B) {
-			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0) || (strcmp (path, "nitro:/") == 0)) {
+			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
 				screenMode = 0;
 				return "null";
 			}
@@ -522,7 +507,7 @@ string browseForFile (void) {
 		}
 
 		// Rename file/folder
-		if ((held & KEY_R) && (pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((held & KEY_R) && (pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
 			pressed = 0;
 			consoleDemoInit();
 			Keyboard *kbd = keyboardDemoInit(); 
@@ -544,7 +529,7 @@ string browseForFile (void) {
 		}
 
 		// Delete file/folder
-		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
 			printf ("\x1b[0;27H");
 			printf ("\x1B[42m");		// Print green color
 			printf ("      ");	// Clear time
@@ -584,7 +569,7 @@ string browseForFile (void) {
 		}
 
 		// Create new folder
-		if ((held & KEY_R) && (pressed & KEY_Y) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((held & KEY_R) && (pressed & KEY_Y)) {
 			pressed = 0;
 			consoleDemoInit();
 			Keyboard *kbd = keyboardDemoInit(); 
@@ -610,7 +595,7 @@ string browseForFile (void) {
 			if (clipboardOn) {
 				char destPath[256];
 				snprintf(destPath, sizeof(destPath), "%s%s", path, clipboardFilename);
-				if (strncmp (path, "nitro:/", 7) != 0 && string(clipboard) != string(destPath)) {
+				if (string(clipboard) != string(destPath)) {
 					if (fileBrowse_paste(destPath)) {
 						getDirectoryContents (dirContents);
 					}
