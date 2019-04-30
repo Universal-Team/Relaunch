@@ -286,7 +286,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			return -1;
 		}
 	}
-}
 
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
