@@ -18,6 +18,7 @@ bool clipboardFolder = false;
 bool clipboardOn = false;
 bool clipboardUsed = false;
 bool clipboardDrive = false;	// false == SD card, true == Flashcard
+bool clipboardInNitro = false;
 
 void printBytes(int bytes)
 {
