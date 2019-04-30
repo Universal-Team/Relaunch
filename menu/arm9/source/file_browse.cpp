@@ -479,7 +479,7 @@ string browseForFile (void) {
 
 		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 		fileBrowse_drawBottomScreen(entry, fileOffset);
-		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
+		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 		showDirectoryContents (dirContents, fileOffset, screenOffset);
 
 		stored_SCFG_MC = REG_SCFG_MC;

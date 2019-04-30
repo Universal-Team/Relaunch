@@ -182,7 +182,7 @@ void driveMenu (void) {
 		if (!dmTextPrinted) {
 			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 			dm_drawBottomScreen();
-			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, true, true);
+			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 			dm_drawTopScreen();
 
 			dmTextPrinted = true;
