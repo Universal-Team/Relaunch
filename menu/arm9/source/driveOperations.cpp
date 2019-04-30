@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "dldi-include.h"
 
 static sNDSHeader nds;
 
@@ -80,10 +79,6 @@ TWL_CODE bool sdMount(void) {
 		sdMountedDone = true;
 		fatGetVolumeLabel("sd", sdLabel);
 		fixLabel(false);
-		/*struct statvfs st;
-		if (statvfs("sd:/", &st) == 0) {
-			sdSize = st.f_bsize * st.f_blocks;
-		}*/
 		return true;
 	}
 	return false;
@@ -171,20 +166,7 @@ TWL_CODE bool twl_flashcardMount(void) {
 		char gamename[13];
 		char gameid[5];
 
-		/*fifoSendValue32(FIFO_USER_04, 1);
-		for (int i = 0; i < 10; i++) {
-			swiWaitForVBlank();
-		}
-		memcpy(&nds, (void*)0x02000000, sizeof(nds));*/
 		UpdateCardInfo(&gameid[0], &gamename[0]);
-
-		/*consoleClear();
-		iprintf("REG_SCFG_MC: %x\n", REG_SCFG_MC);
-		ShowGameInfo(gameid, gamename);
-
-		for (int i = 0; i < 60*5; i++) {
-			swiWaitForVBlank();
-		}*/
 
 		sysSetCardOwner (BUS_OWNER_ARM7);	// 3DS fix
 
@@ -192,31 +174,9 @@ TWL_CODE bool twl_flashcardMount(void) {
 			return false;
 		}
 
-		// Read a DLDI driver specific to the cart
-		if (!memcmp(gameid, "ASMA", 4)) {
-			io_dldi_data = dldiLoadFromBin(r4tf_dldi);
-			fatMountSimple("fat", &io_dldi_data->ioInterface);      
-		} else if (!memcmp(gamename, "TOP TF/SD DS", 12) || !memcmp(gameid, "A76E", 4)) {
-			io_dldi_data = dldiLoadFromBin(tt_sd_dldi);
-			fatMountSimple("fat", &io_dldi_data->ioInterface);
- 		} else if (!memcmp(gamename, "D!S!XTREME", 12) && !memcmp(gameid, "AYIE", 4)) {
-			io_dldi_data = dldiLoadFromBin(dsx_dldi);
-			fatMountSimple("fat", &io_dldi_data->ioInterface); 
-        } else if (!memcmp(gamename, "QMATETRIAL", 9) || !memcmp(gamename, "R4DSULTRA", 9)) {
-			io_dldi_data = dldiLoadFromBin(r4idsn_sd_dldi);
-			fatMountSimple("fat", &io_dldi_data->ioInterface);
-		} else if (!memcmp(gameid, "ACEK", 4) || !memcmp(gameid, "YCEP", 4) || !memcmp(gameid, "AHZH", 4)) {
-			io_dldi_data = dldiLoadFromBin(ak2_sd_dldi);
-			fatMountSimple("fat", &io_dldi_data->ioInterface);
-		}
-
 		if (flashcardFound()) {
 			fatGetVolumeLabel("fat", fatLabel);
 			fixLabel(true);
-			/*struct statvfs st;
-			if (statvfs("fat:/", &st) == 0) {
-				fatSize = st.f_bsize * st.f_blocks;
-			}*/
 			return true;
 		}
 	}
@@ -229,10 +189,6 @@ bool flashcardMount(void) {
 		if (flashcardFound()) {
 			fatGetVolumeLabel("fat", fatLabel);
 			fixLabel(true);
-			/*struct statvfs st;
-			if (statvfs("fat:/", &st) == 0) {
-				fatSize = st.f_bsize * st.f_blocks;
-			}*/
 			return true;
 		}
 		return false;
