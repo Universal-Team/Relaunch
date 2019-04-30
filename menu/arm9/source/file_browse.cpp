@@ -216,11 +216,11 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 2;
 		printf("   Copy to fat:/_nds/Relaunch/out\n");
 	}
-	/*if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK) {
+	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK) {
 		maxCursors++;
 		assignedOp[maxCursors] = 3;
 		printf("   Set as hotkey app\n");
-	}*/
+	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
 	while (true) {
@@ -278,14 +278,86 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 					printf("Creating directory...");
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
-			/*} else if (assignedOp[optionOffset] == 3) {
-				if (access("fat:/_nds/Relaunch", F_OK)) {
-					CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Please Wait...");
-					ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
-					ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
-				}*/
+			} else if (assignedOp[optionOffset] == 3) {
+
+				std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
+				std::string bootB = "/_nds/Relaunch/extras/bootB.nds";
+				std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
+				std::string bootY = "/_nds/Relaunch/extras/bootY.nds";
+				std::string bootR = "/_nds/Relaunch/extras/bootR.nds";
+				std::string bootL = "/_nds/Relaunch/extras/bootL.nds";
+				std::string bootDown = "/_nds/Relaunch/extras/bootDown.nds";
+				std::string bootUp = "/_nds/Relaunch/extras/bootUp.nds";
+				std::string bootLeft = "/_nds/Relaunch/extras/bootLeft.nds";
+				std::string bootRight = "/_nds/Relaunch/extras/bootRight.nds";
+				std::string bootStart = "/_nds/Relaunch/extras/bootStart.nds";
+				std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
+				std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
+				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+				printf("Press the hotkey to set");
+scanKeys();
+	int pressed = keysHeld();
+
+	while (1) {
+		if (pressed & KEY_A) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_B) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_X) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_Y) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_L) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_R) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_START) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_SELECT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_TOUCH) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_UP) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_DOWN) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_LEFT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath);
+			break;
+		} else if (pressed & KEY_RIGHT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
+			break;
+		} else { 
+			return (0);
+		}
+	}
+				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+}
+				}
 				char destPath[256];
 				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
