@@ -298,7 +298,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 scanKeys();
 	int pressed = keysHeld();
 
-	while (true) {
+	while (1) {
 		if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
@@ -352,7 +352,7 @@ scanKeys();
 		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
 			break;
 		} else { 
-			return (false);
+			return (0);
 		}
 				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			}
