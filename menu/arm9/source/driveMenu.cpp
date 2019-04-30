@@ -28,7 +28,6 @@
 
 #include "main.h"
 #include "date.h"
-#include "screenshot.h"
 #include "driveOperations.h"
 #include "fileOperations.h"
 #include "nds_loader_arm9.h"
@@ -271,40 +270,6 @@ void driveMenu (void) {
 				} else {
 					flashcardMounted = flashcardMount();
 				}
-			}
-		}
-
-		// Make a screenshot
-		if ((held & KEY_R) && (pressed & KEY_L)) {
-			if (sdMounted || flashcardMounted) {
-				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), 0777);
-				}
-				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), 0777);
-				}
-				char timeText[8];
-				snprintf(timeText, sizeof(timeText), "%s", RetTime().c_str());
-				char fileTimeText[8];
-				snprintf(fileTimeText, sizeof(fileTimeText), "%s", RetTimeForFilename().c_str());
-				char snapPath[40];
-				// Take top screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-				screenshotbmp(snapPath);
-				// Seamlessly swap top and bottom screens
-				lcdMainOnBottom();
-				consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
-				dm_drawBottomScreen();
-				consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
-				dm_drawTopScreen();
-				printf("\x1B[42m");		// Print green color for time text
-				printf("\x1b[0;27H");
-				printf(timeText);
-				// Take bottom screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-				screenshotbmp(snapPath);
-				dmTextPrinted = false;
-				lcdMainOnTop();
 			}
 		}
 
