@@ -19,17 +19,15 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ------------------------------------------------------------------*/
-
-#include "file_browse.h"
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
-
 #include <nds.h>
 
+#include "file_browse.h"
 #include "main.h"
 #include "date.h"
 #include "fileOperations.h"
@@ -100,9 +98,7 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "argv")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "ARGV")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
-				|| (isDSiMode() && is3DS && sdMounted && dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "firm")
-				|| (isDSiMode() && is3DS && sdMounted && dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "FIRM"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI"))
 				{
 					dirEntry.isApp = true;
 				} else {
