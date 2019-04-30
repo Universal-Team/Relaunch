@@ -16,10 +16,8 @@ static bool slot1Enabled = true;
 bool sdMounted = false;
 bool sdMountedDone = false;				// true if SD mount is successful once
 bool flashcardMounted = false;
-bool nitroMounted = false;
 
 bool secondaryDrive = false;				// false == SD card, true == Flashcard
-bool nitroSecondaryDrive = false;			// false == SD card, true == Flashcard
 
 char sdLabel[12];
 char fatLabel[12];
