@@ -250,12 +250,8 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				applaunch = true;
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
+
 			} else if (assignedOp[optionOffset] == 1) {
-				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch", 0777);
-				}
 				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -267,21 +263,24 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
+
 			} else if (assignedOp[optionOffset] == 2) {
-				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch", 0777);
-				}
 				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
+
 			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the button to set\nas the hotkey");
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-/*while (true) {
+while (true) {
 	if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
@@ -350,8 +349,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	} else {
 			return (false);
 	}
-}*/
-			}
+}
 			return assignedOp[optionOffset];
 		}
 		if (pressed & KEY_B) {
