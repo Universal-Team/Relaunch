@@ -29,7 +29,7 @@
 
 Hold A and B on boot to open the menu.
 
-<h4 align= "center">Credits</h3>
+<h3 align= "center">Credits</h3>
 </p>
 
 [RocketRobz](https://github.com/RocketRobz): [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu
