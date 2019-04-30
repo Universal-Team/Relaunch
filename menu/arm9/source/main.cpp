@@ -41,7 +41,6 @@ bool appInited = false;
 
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
-bool is3DS = true;
 
 bool applaunch = false;
 
