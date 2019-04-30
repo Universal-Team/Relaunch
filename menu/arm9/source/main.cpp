@@ -84,19 +84,10 @@ int main(int argc, char **argv) {
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 
 	// initialize VRAM banks
-	vramSetBankA(VRAM_A_TEXTURE);
-	vramSetBankB(VRAM_B_TEXTURE);
+	// I'm not sure if uncommenting these would be good, or unnessesary
+	// vramSetBankA(VRAM_A_TEXTURE);
+	// vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
-	// REG_BG0CNT_SUB = BG_MAP_BASE(0) | BG_COLOR_256 | BG_TILE_BASE(2) | BG_PRIORITY(2);
-	// REG_BG1CNT_SUB = BG_MAP_BASE(2) | BG_COLOR_256 | BG_TILE_BASE(4) | BG_PRIORITY(1);
-	// u16* bgMapSub = (u16*)SCREEN_BASE_BLOCK_SUB(0);
-	// for (int i = 0; i < CONSOLE_SCREEN_WIDTH*CONSOLE_SCREEN_HEIGHT; i++) {
-	// 	bgMapSub[i] = (u16)i;
-	// }
-	// bgMapSub = (u16*)SCREEN_BASE_BLOCK_SUB(2);
-	// for (int i = 0; i < CONSOLE_SCREEN_WIDTH*CONSOLE_SCREEN_HEIGHT; i++) {
-	// 	bgMapSub[i] = (u16)i;
-	// }
 	vramSetBankD(VRAM_D_MAIN_BG_0x06000000);
 	// vramSetBankE(VRAM_E_TEX_PALETTE);
 	// vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
@@ -147,9 +138,9 @@ int main(int argc, char **argv) {
 
 	appInited = true;
 	
-	// nitroFSInit("sd:/menu.nds");
+	nitroFSInit("sd:/menu.nds"); // Currently it only works if the file is `sd:/menu.nds`
 
-	FILE* fileBottom = fopen("sd:/bg.bmp", "rb");
+	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
 
 	if (fileBottom) {
 		// Start loading
