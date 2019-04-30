@@ -173,9 +173,9 @@ void driveMenu (void) {
 		if (dmCursorPosition > dmMaxCursors)	dmCursorPosition = 0;		// Wrap around to top of list
 
 		if (!dmTextPrinted) {
-			consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 			dm_drawBottomScreen();
-			consoleInit(NULL, 0, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
+			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, true, true);
 			dm_drawTopScreen();
 
 			dmTextPrinted = true;
@@ -290,9 +290,9 @@ void driveMenu (void) {
 				screenshotbmp(snapPath);
 				// Seamlessly swap top and bottom screens
 				lcdMainOnBottom();
-				consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
+				consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, true, true);
 				dm_drawBottomScreen();
-				consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+				consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 				dm_drawTopScreen();
 				printf("\x1B[42m");		// Print green color for time text
 				printf("\x1b[0;27H");
