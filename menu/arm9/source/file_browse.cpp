@@ -283,7 +283,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the button to set\nas the hotkey");
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-while (true) {
+/*while (true) {
 	if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
@@ -352,7 +352,7 @@ while (true) {
 	} else {
 			return (false);
 	}
-}
+}*/
 			}
 			return assignedOp[optionOffset];
 		}
