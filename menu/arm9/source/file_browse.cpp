@@ -470,7 +470,6 @@ string browseForFile (void) {
 				screenMode = 0;
 				return "null";
 			} else if (entry->isDirectory) {
-				printf("\x1b[36m"); // print cyan color for the entering directory text?
 				iprintf("Entering directory\n");
 				// Enter selected directory
 				chdir (entry->name.c_str());
