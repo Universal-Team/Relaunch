@@ -245,12 +245,12 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		if (optionOffset < 0) 				optionOffset = maxCursors;		// Wrap around to bottom of list
 		if (optionOffset > maxCursors)		optionOffset = 0;		// Wrap around to top of list
 
-		if (pressed & KEY_A) {//c
-			if (assignedOp[optionOffset] == 0) {//q
+		if (pressed & KEY_A) {
+			if (assignedOp[optionOffset] == 0) {
 				applaunch = true;
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
-			/*q*/} else if (assignedOp[optionOffset] == 1) {
+			} else if (assignedOp[optionOffset] == 1) {
 				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -278,11 +278,10 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 					printf("Creating directory...");
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
-			} else if (assignedOp[optionOffset] == 3) {//b
-				printf("Press the hotkey to set");
+			} else if (assignedOp[optionOffset] == 3) {
+				printf("Press the button to set\nas the hotkey");
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-
-while (true) {//a
+/*while (true) {
 	if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
@@ -348,18 +347,18 @@ while (true) {//a
 		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-	} else {//e
+	} else {
 			return (false);
-	}//e
-
-			return assignedOp[optionOffset];
+	}
+}*/
 			}
-			if (pressed & KEY_B) {//h
+			return assignedOp[optionOffset];
+		}
+		if (pressed & KEY_B) {
 			return -1;
-			} //h
-		}//a
-	}//b
-}//c
+		}
+	}
+}
 
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
