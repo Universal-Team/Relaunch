@@ -216,7 +216,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 2;
 		printf("   Copy to fat:/_nds/Relaunch/out\n");
 	}
-	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK) {
+	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 3;
 		printf("   Set as hotkey app\n");
