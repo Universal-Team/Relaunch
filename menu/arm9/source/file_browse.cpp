@@ -33,7 +33,6 @@
 #include "fileOperations.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
-#include "inifile.h"
 
 #define SCREEN_COLS 22
 #define ENTRIES_PER_SCREEN 23
@@ -216,11 +215,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 2;
 		printf("   Copy to fat:/_nds/Relaunch/out\n");
 	}
-	/*if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK) {
-		maxCursors++;
-		assignedOp[maxCursors] = 3;
-		printf("   Set as hotkey app\n");
-	}*/
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
 	while (true) {
@@ -278,14 +272,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 					printf("Creating directory...");
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
-			/*} else if (assignedOp[optionOffset] == 3) {
-				if (access("fat:/_nds/Relaunch", F_OK)) {
-					CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Please Wait...");
-					ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
-					ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
-				}*/
 				char destPath[256];
 				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
