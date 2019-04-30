@@ -63,19 +63,6 @@ void loadGbaCart(void) {
 	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
 	}
 
-void loadBootNds(void) {
-	irqDisable(IRQ_VBLANK);
-	vramSetBankA(VRAM_A_MAIN_BG);
-	vramSetBankB(VRAM_B_MAIN_BG);
-	// Clear VRAM A and B to show black border for GBA mode
-	for (u32 i = 0; i < 0x80000; i++) {
-		*(u32*)(0x06000000+i) = 0;
-		*(u32*)(0x06200000+i) = 0;
-	}
-// Launch boot.nds
-	runNdsFile("/boot.nds", 0, NULL, false);
-	}
-
 void dm_drawTopScreen(void) {
 	printf ("\x1B[42m");
 	printf ("\x1b[0;0H");
@@ -96,9 +83,9 @@ void dm_drawTopScreen(void) {
 			printf ("\x1b[33m");		// Print foreground green color
 		}
 		if (dmAssignedOp[i] == 0) {
-			printf ("[sd:]");
+			printf ("[sd:] SDCARD");
 			if (sdLabel[0] != '\0') {
-				iprintf (" %s", sdLabel);
+				iprintf (" (%s)", sdLabel);
 			}
 		} else if (dmAssignedOp[i] == 1) {
 			printf ("[fat:]");
@@ -112,21 +99,23 @@ void dm_drawTopScreen(void) {
 				printf ("[x]");
 			}
 		} else if (dmAssignedOp[i] == 3) {
-			printf ("Launch boot.nds");
-		if((access("/boot.nds", F_OK) == 0)) {
-				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW); // go to the right of the screen
-				printf ("[x]"); // print the "cannot do this" [x] icon
+			printf ("[nitro:] NDS GAME IMAGE");
+			if ((!sdMounted && !nitroSecondaryDrive)
+			|| (!flashcardMounted && nitroSecondaryDrive))
+			{
+				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW);
+				printf ("[x]");
 			}
 		}
 	}
 }
-			    
+
 void dm_drawBottomScreen(void) {
 	printf ("\x1B[47m");		// Print foreground white color
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
-	printf ("\x1B[43m");		// Print foreground yellow color
+	printf ("\x1B[43m");		// Print foreground yelloh color
 	printf ("\x1b[0;0H");
 	printf("\n\nEveryone\nis\nLegal");
 	printf("\x1B[47m");
@@ -147,8 +136,8 @@ void dm_drawBottomScreen(void) {
 		printf ("\n\n\n\n\n\nLaunch Slot-2 Cart\n");
 		printf ("\n(GBA Game)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
-		printf ("\n\n\n\n\n\nLaunch boot.nds\n");
-		printf ("\n(boot.nds)");
+		printf ("\n\n\n\n\n\n[nitro:] NDS GAME IMAGE\n");
+		printf ("\n(Game Virtual)");
 	}
 }
 
@@ -176,6 +165,10 @@ void driveMenu (void) {
 		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
+		}
+		if (nitroMounted) {
+			dmMaxCursors++;
+			dmAssignedOp[dmMaxCursors] = 3;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -249,11 +242,15 @@ void driveMenu (void) {
 			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
 				dmTextPrinted = false;
 				loadGbaCart();
-				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 3) {
-				dmTextPrinted = false;
-				loadBootNds();
-				break;
+			} else if (dmAssignedOp[dmCursorPosition] == 3 && nitroMounted) {
+				if ((sdMounted && !nitroSecondaryDrive)
+				|| (flashcardMounted && nitroSecondaryDrive))
+				{
+					dmTextPrinted = false;
+					secondaryDrive = nitroSecondaryDrive;
+					chdir("nitro:/");
+					screenMode = 1;
+					break;
 				}
 			}
 		}
