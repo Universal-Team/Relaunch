@@ -279,25 +279,10 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
 			} else if (assignedOp[optionOffset] == 3) {
-
-				std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
-				std::string bootB = "/_nds/Relaunch/extras/bootB.nds";
-				std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
-				std::string bootY = "/_nds/Relaunch/extras/bootY.nds";
-				std::string bootR = "/_nds/Relaunch/extras/bootR.nds";
-				std::string bootL = "/_nds/Relaunch/extras/bootL.nds";
-				std::string bootDown = "/_nds/Relaunch/extras/bootDown.nds";
-				std::string bootUp = "/_nds/Relaunch/extras/bootUp.nds";
-				std::string bootLeft = "/_nds/Relaunch/extras/bootLeft.nds";
-				std::string bootRight = "/_nds/Relaunch/extras/bootRight.nds";
-				std::string bootStart = "/_nds/Relaunch/extras/bootStart.nds";
-				std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
-				std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
-				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 				printf("Press the hotkey to set");
-
-scanKeys();
-	int pressed = keysHeld();
+				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+		scanKeys();
+			int pressed = keysHeld();
 
 	while (true) {
 		if (pressed & KEY_A) {
@@ -376,6 +361,7 @@ scanKeys();
 		}
 	}
 }
+
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
 	int optionOffset = 0;
