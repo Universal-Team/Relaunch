@@ -280,7 +280,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				}
 			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the hotkey to set");
-				/*CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
 	while (true) {
 		if (pressed & KEY_A) {
@@ -350,10 +350,10 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			break;
 		} else { 
 			return (false);
-	}*/
+		}
 
 	return assignedOp[optionOffset];
-	}
+		}
 		if (pressed & KEY_B) {
 			return -1;
 		}
