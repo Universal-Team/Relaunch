@@ -24,7 +24,10 @@
 
 - 4.) Boot Relaunch and hold the button corresponding to the file you want to launch.
 
-- Also, Hold A and B on boot to open the menu.
+<h3 align= "center">Things to Remember</h3>
+</p>
+
+Hold A and B on boot to open the menu.
 
 <h3 align= "center">Credits</h3>
 </p>
