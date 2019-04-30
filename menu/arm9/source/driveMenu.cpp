@@ -28,7 +28,6 @@
 
 #include "main.h"
 #include "date.h"
-#include "screenshot.h"
 #include "driveOperations.h"
 #include "fileOperations.h"
 #include "nds_loader_arm9.h"
@@ -39,8 +38,6 @@
 #define ENTRY_PAGE_LENGTH 10
 
 using namespace std;
-
-//static bool ramDumped = false;
 
 bool flashcardMountSkipped = true;
 static bool flashcardMountRan = true;
@@ -64,6 +61,19 @@ void loadGbaCart(void) {
 	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
 	}
 
+void loadBootNds(void) {
+	irqDisable(IRQ_VBLANK);
+	vramSetBankA(VRAM_A_MAIN_BG);
+	vramSetBankB(VRAM_B_MAIN_BG);
+	// Clear VRAM A and B
+	for (u32 i = 0; i < 0x80000; i++) {
+		*(u32*)(0x06000000+i) = 0;
+		*(u32*)(0x06200000+i) = 0;
+	}
+// Launch boot.nds
+	runNdsFile("/boot.nds", 0, NULL, false);
+	}
+
 void dm_drawTopScreen(void) {
 	printf ("\x1B[42m");
 	printf ("\x1b[0;0H");
@@ -84,9 +94,9 @@ void dm_drawTopScreen(void) {
 			printf ("\x1b[33m");		// Print foreground green color
 		}
 		if (dmAssignedOp[i] == 0) {
-			printf ("[sd:] SDCARD");
+			printf ("[sd:]");
 			if (sdLabel[0] != '\0') {
-				iprintf (" (%s)", sdLabel);
+				iprintf (" %s", sdLabel);
 			}
 		} else if (dmAssignedOp[i] == 1) {
 			printf ("[fat:]");
@@ -100,25 +110,25 @@ void dm_drawTopScreen(void) {
 				printf ("[x]");
 			}
 		} else if (dmAssignedOp[i] == 3) {
-			printf ("[nitro:] NDS GAME IMAGE");
-			if ((!sdMounted && !nitroSecondaryDrive)
-			|| (!flashcardMounted && nitroSecondaryDrive))
-			{
-				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW);
-				printf ("[x]");
+			printf ("Launch boot.nds");
+		if((access("/boot.nds", F_OK) == 0)) {
+				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW); // go to the right of the screen
+				printf ("[x]"); // print the "cannot do this" [x] icon
 			}
 		}
 	}
 }
-
+			    
 void dm_drawBottomScreen(void) {
 	printf ("\x1B[47m");		// Print foreground white color
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
-	printf ("\x1B[43m");		// Print foreground yelloh color
+	printf ("\x1B[43m");		// Print foreground yellow color
 	printf ("\x1b[0;0H");
-	printf("\nEveryone\nis\nLegal");
+	printf("\n\nEveryone\nis\nLegal");
+	printf("\x1B[47m");
+	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("[sd:] SDCARD");
 		if (sdLabel[0] != '\0') {
@@ -126,17 +136,17 @@ void dm_drawBottomScreen(void) {
 		}
 		printf ("\n(SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 1) {
-		printf ("\n\n\n[fat:] FLASHCART");
+		printf ("\n\n\n\n\n\n[fat:] FLASHCART");
 		if (fatLabel[0] != '\0') {
 			iprintf (" \n(%s)", fatLabel);
 		}
 		printf ("\n(Slot-1 SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 2) {
-		printf ("\n\n\nLaunch Slot-2 Cart\n");
+		printf ("\n\n\n\n\n\nLaunch Slot-2 Cart\n");
 		printf ("\n(GBA Game)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
-		printf ("\n\n\n[nitro:] NDS GAME IMAGE\n");
-		printf ("\n(Game Virtual)");
+		printf ("\n\n\n\n\n\nLaunch boot.nds\n");
+		printf ("\n(boot.nds)");
 	}
 }
 
@@ -164,10 +174,6 @@ void driveMenu (void) {
 		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
-		}
-		if (nitroMounted) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 3;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -241,15 +247,11 @@ void driveMenu (void) {
 			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
 				dmTextPrinted = false;
 				loadGbaCart();
-			} else if (dmAssignedOp[dmCursorPosition] == 3 && nitroMounted) {
-				if ((sdMounted && !nitroSecondaryDrive)
-				|| (flashcardMounted && nitroSecondaryDrive))
-				{
-					dmTextPrinted = false;
-					secondaryDrive = nitroSecondaryDrive;
-					chdir("nitro:/");
-					screenMode = 1;
-					break;
+				break;
+			} else if (dmAssignedOp[dmCursorPosition] == 3) {
+				dmTextPrinted = false;
+				loadBootNds();
+				break;
 				}
 			}
 		}
@@ -272,40 +274,6 @@ void driveMenu (void) {
 			}
 		}
 
-		// Make a screenshot
-		if ((held & KEY_R) && (pressed & KEY_L)) {
-			if (sdMounted || flashcardMounted) {
-				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), 0777);
-				}
-				if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
-					mkdir((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), 0777);
-				}
-				char timeText[8];
-				snprintf(timeText, sizeof(timeText), "%s", RetTime().c_str());
-				char fileTimeText[8];
-				snprintf(fileTimeText, sizeof(fileTimeText), "%s", RetTimeForFilename().c_str());
-				char snapPath[40];
-				// Take top screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-				screenshotbmp(snapPath);
-				// Seamlessly swap top and bottom screens
-				lcdMainOnBottom();
-				consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, true, true);
-				dm_drawBottomScreen();
-				consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-				dm_drawTopScreen();
-				printf("\x1B[42m");		// Print green color for time text
-				printf("\x1b[0;27H");
-				printf(timeText);
-				// Take bottom screenshot
-				snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-				screenshotbmp(snapPath);
-				dmTextPrinted = false;
-				lcdMainOnTop();
-			}
-		}
-
 		if (isDSiMode() && !flashcardMountSkipped && !pressed && !held) {
 			if (REG_SCFG_MC == 0x11) {
 				if (flashcardMounted) {
@@ -317,4 +285,3 @@ void driveMenu (void) {
 			flashcardMountRan = false;
 		}
 	}
-}

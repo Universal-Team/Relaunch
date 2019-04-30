@@ -24,7 +24,6 @@
 #include <fat.h>
 #include <sys/stat.h>
 #include <limits.h>
-
 #include <string.h>
 #include <unistd.h>
 
@@ -46,7 +45,6 @@ bool appInited = false;
 
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
-bool is3DS = true;
 
 bool applaunch = false;
 
@@ -131,9 +129,6 @@ int main(int argc, char **argv) {
 	if (arm7_SNDEXCNT != 0) isRegularDS = false;	// If sound frequency setting is found, then the console is not a DS Phat/Lite
 	fifoSendValue32(FIFO_USER_07, 0);
 
-	printf ("\x1b[22;11H");
-	printf ("mounting drive(s)...");
-
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
 
 	if (isDSiMode()) {
@@ -142,9 +137,6 @@ int main(int argc, char **argv) {
 			yHeld = true;
 		}
 		sdMounted = sdMount();
-	}
-	if (!isDSiMode() || !sdMounted || (access("sd:/Nintendo 3DS", F_OK) != 0)) {
-		is3DS = false;
 	}
 	if (!isDSiMode() || !yHeld) {
 		flashcardMounted = flashcardMount();
@@ -244,17 +236,6 @@ int main(int argc, char **argv) {
 				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
 				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
 				iprintf ("Start failed. Error %i\n", err);
-			}
-
-			if ((strcasecmp (filename.c_str() + filename.size() - 5, ".firm") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 5, ".FIRM") == 0)) {
-				char *name = argarray.at(0);
-				strcpy (filePath + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = filePath;
-				fcopy(argarray[0], "sd:/bootonce.firm");
-				fifoSendValue32(FIFO_USER_02, 1);	// Reboot into selected .firm payload
-				swiWaitForVBlank();
 			}
 
 			while(argarray.size() !=0 ) {

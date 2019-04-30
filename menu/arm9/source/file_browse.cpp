@@ -3,40 +3,33 @@
 	Michael "Chishm" Chisholm
 	Dave "WinterMute" Murphy
 	Claudio "sverx"
-
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
-
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
-
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 ------------------------------------------------------------------*/
-
-#include "file_browse.h"
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
-
 #include <nds.h>
 
+#include "file_browse.h"
 #include "main.h"
 #include "date.h"
-#include "screenshot.h"
 #include "fileOperations.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
-#include "nitrofs.h"
+#include "inifile.h"
 
 #define SCREEN_COLS 22
 #define ENTRIES_PER_SCREEN 23
@@ -101,9 +94,7 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "argv")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "ARGV")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
-				|| (isDSiMode() && is3DS && sdMounted && dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "firm")
-				|| (isDSiMode() && is3DS && sdMounted && dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "FIRM"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI"))
 				{
 					dirEntry.isApp = true;
 				} else {
@@ -208,22 +199,23 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 0;
 		printf("   Boot file\n");
 	}
-	if((entry->name.substr(entry->name.find_last_of(".") + 1) == "nds")
-	|| (entry->name.substr(entry->name.find_last_of(".") + 1) == "NDS"))
-	{
-		maxCursors++;
-		assignedOp[maxCursors] = 3;
-		printf("   Mount NitroFS\n");
-	}
-	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
+	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 1;
-		printf("   Copy to sd:/_nds/Relaunch/out\n");
+		printf("   Set as hotkey app\n");
+	}
+	if((entry->name.substr(entry->name.find_last_of(".") + 1) == "nds")
+	|| (entry->name.substr(entry->name.find_last_of(".") + 1) == "NDS"))
+
+	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
+		maxCursors++;
+		assignedOp[maxCursors] = 2;
+		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
-		assignedOp[maxCursors] = 2;
-		printf("   Copy to fat:/_nds/Relaunch/out\n");
+		assignedOp[maxCursors] = 3;
+		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
@@ -255,6 +247,82 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
 			} else if (assignedOp[optionOffset] == 1) {
+				printf("Press the button to set\nas the hotkey");
+				for(int i=0;i<30;i++) {
+					swiWaitForVBlank();
+				}
+				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+while (true) {
+	if (pressed & KEY_A) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_B) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_X) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_Y) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_L) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_R) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_START) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_SELECT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_TOUCH) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_UP) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_DOWN) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_LEFT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else if (pressed & KEY_RIGHT) {
+		printf("Please Wait...");
+		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+			break;
+	} else {
+			return (false);
+	}
+}
+			} else if (assignedOp[optionOffset] == 2) {
 				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -271,7 +339,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 2) {
+			} else if (assignedOp[optionOffset] == 3) {
 				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -288,12 +356,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				printf("Copying...           ");
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 3) {
-				nitroMounted = nitroFSInit(entry->name.c_str());
-				if (nitroMounted) {
-					chdir("nitro:/");
-					nitroSecondaryDrive = secondaryDrive;
-				}
 			}
 			return assignedOp[optionOffset];
 		}
@@ -318,10 +380,6 @@ bool fileBrowse_paste(char destPath[256]) {
 	iprintf ("\x1b[%d;0H", OPTIONS_ENTRIES_START_ROW);
 	maxCursors++;
 	printf("   Copy path\n");
-	if (!clipboardInNitro) {
-		maxCursors++;
-		printf("   Move path\n");
-	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
 	while (true) {
@@ -485,12 +543,12 @@ string browseForFile (void) {
 
 		if (pressed & KEY_A) {
 			DirEntry* entry = &dirContents.at(fileOffset);
-			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0))
-			|| ((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, "nitro:/") == 0)))
+			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0)))
 			{
 				screenMode = 0;
 				return "null";
 			} else if (entry->isDirectory) {
+				printf("\x1b[36m"); // print cyan color for the entering directory text?
 				iprintf("Entering directory\n");
 				// Enter selected directory
 				chdir (entry->name.c_str());
@@ -504,18 +562,14 @@ string browseForFile (void) {
 				if (getOp == 0) {
 					// Return the chosen file
 					return entry->name;
-				} else if (getOp == 1 || getOp == 2 || (getOp == 3 && nitroMounted)) {
+				} else if (getOp == 1 || getOp == 2) {
 					getDirectoryContents (dirContents);		// Refresh directory listing
-					if (getOp == 3 && nitroMounted) {
-						screenOffset = 0;
-						fileOffset = 0;
-					}
 				}
 			}
 		}
 
 		if (pressed & KEY_B) {
-			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0) || (strcmp (path, "nitro:/") == 0)) {
+			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
 				screenMode = 0;
 				return "null";
 			}
@@ -527,7 +581,7 @@ string browseForFile (void) {
 		}
 
 		// Rename file/folder
-		if ((held & KEY_R) && (pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((held & KEY_R) && (pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
 			pressed = 0;
 			consoleDemoInit();
 			Keyboard *kbd = keyboardDemoInit(); 
@@ -549,7 +603,7 @@ string browseForFile (void) {
 		}
 
 		// Delete file/folder
-		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
 			printf ("\x1b[0;27H");
 			printf ("\x1B[42m");		// Print green color
 			printf ("      ");	// Clear time
@@ -589,7 +643,7 @@ string browseForFile (void) {
 		}
 
 		// Create new folder
-		if ((held & KEY_R) && (pressed & KEY_Y) && (strncmp (path, "nitro:/", 7) != 0)) {
+		if ((held & KEY_R) && (pressed & KEY_Y)) {
 			pressed = 0;
 			consoleDemoInit();
 			Keyboard *kbd = keyboardDemoInit(); 
@@ -615,7 +669,7 @@ string browseForFile (void) {
 			if (clipboardOn) {
 				char destPath[256];
 				snprintf(destPath, sizeof(destPath), "%s%s", path, clipboardFilename);
-				if (strncmp (path, "nitro:/", 7) != 0 && string(clipboard) != string(destPath)) {
+				if (string(clipboard) != string(destPath)) {
 					if (fileBrowse_paste(destPath)) {
 						getDirectoryContents (dirContents);
 					}
@@ -626,53 +680,12 @@ string browseForFile (void) {
 				clipboardFolder = entry->isDirectory;
 				clipboardOn = true;
 				clipboardDrive = secondaryDrive;
-				clipboardInNitro = (strncmp (path, "nitro:/", 7) == 0);
 				clipboardUsed = true;
 			}
 		}
 
 		if ((pressed & KEY_SELECT) && clipboardUsed) {
 			clipboardOn = !clipboardOn;
-		}
-
-		// Take a screenshot
-		if ((held & KEY_R) && (pressed & KEY_L)) {
-			if (access((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), F_OK) != 0) {
-				mkdir((sdMounted ? "sd:/_nds/Relaunch" : "fat:/_nds/Relaunch"), 0777);
-				if (strcmp (path, (sdMounted ? "sd:/" : "fat:/")) == 0) {
-					getDirectoryContents (dirContents);
-				}
-			}
-			if (access((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), F_OK) != 0) {
-				mkdir((sdMounted ? "sd:/_nds/Relaunch/out" : "fat:/_nds/Relaunch/out"), 0777);
-				if (strcmp (path, (sdMounted ? "sd:/_nds/Relaunch/" : "fat:/_nds/Relaunch/")) == 0) {
-					getDirectoryContents (dirContents);
-				}
-			}
-			char timeText[8];
-			snprintf(timeText, sizeof(timeText), "%s", RetTime().c_str());
-			char fileTimeText[8];
-			snprintf(fileTimeText, sizeof(fileTimeText), "%s", RetTimeForFilename().c_str());
-			char snapPath[40];
-			// Take top screenshot
-			snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_top.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-			screenshotbmp(snapPath);
-			// Seamlessly swap top and bottom screens
-			lcdMainOnBottom();
-			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, true, true);
-			fileBrowse_drawBottomScreen(entry, fileOffset);
-			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-			showDirectoryContents (dirContents, fileOffset, screenOffset);
-			printf("\x1B[42m");		// Print green color for time text
-			printf ("\x1b[0;26H");
-			printf (" %s" ,timeText);
-			// Take bottom screenshot
-			snprintf(snapPath, sizeof(snapPath), "%s:/_nds/Relaunch/out/snap_%s_bot.bmp", (sdMounted ? "sd" : "fat"), fileTimeText);
-			screenshotbmp(snapPath);
-			if (strcmp (path, (sdMounted ? "sd:/_nds/Relaunch/out/" : "fat:/_nds/Relaunch/out/")) == 0) {
-				getDirectoryContents (dirContents);
-			}
-			lcdMainOnTop();
 		}
 	}
 }
