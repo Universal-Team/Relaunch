@@ -287,4 +287,3 @@ void driveMenu (void) {
 			flashcardMountRan = false;
 		}
 	}
-}
