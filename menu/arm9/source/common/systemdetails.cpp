@@ -7,7 +7,7 @@ SystemDetails::SystemDetails()
 
 	fifoWaitValue32(FIFO_USER_06);
     if (fifoGetValue32(FIFO_USER_03) == 0)
-        _arm7SCFGLocked = true; // If ButtonBoot4R4 is being run from flashcard, then arm7 SCFG is locked.
+        _arm7SCFGLocked = true; // If Relaunch is being run from flashcard, then arm7 SCFG is locked.
     
     u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
     if (arm7_SNDEXCNT != 0)
