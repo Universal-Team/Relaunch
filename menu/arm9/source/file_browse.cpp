@@ -606,6 +606,7 @@ string browseForFile (void) {
 				clipboardFolder = entry->isDirectory;
 				clipboardOn = true;
 				clipboardDrive = secondaryDrive;
+				clipboardInNitro = (strncmp (path, "nitro:/", 7) == 0);
 				clipboardUsed = true;
 			}
 		}
