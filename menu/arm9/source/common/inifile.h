@@ -13,7 +13,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+*/
 
 #ifndef _INIFILE_H_
 #define _INIFILE_H_
@@ -60,4 +60,4 @@ class CIniFile
     int GetInt(const std::string& Section,const std::string& Item);
 };
 
-#endif // _INIFILE_H_*/
+#endif // _INIFILE_H_
