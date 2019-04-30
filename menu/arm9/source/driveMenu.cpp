@@ -116,8 +116,9 @@ void dm_drawBottomScreen(void) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
-	printf ("\x1B[40m");		// Print foreground black color
+	printf ("\x1B[43m");		// Print foreground yelloh color
 	printf ("\x1b[0;0H");
+	printf("\nEveryone\nis\nLegal");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("[sd:] SDCARD");
 		if (sdLabel[0] != '\0') {
@@ -125,17 +126,17 @@ void dm_drawBottomScreen(void) {
 		}
 		printf ("\n(SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 1) {
-		printf ("[fat:] FLASHCART");
+		printf ("\n\n\n[fat:] FLASHCART");
 		if (fatLabel[0] != '\0') {
-			iprintf (" (%s)", fatLabel);
+			iprintf (" \n(%s)", fatLabel);
 		}
 		printf ("\n(Slot-1 SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 2) {
-		printf ("Launch Slot-2 Cart\n");
-		printf ("(GBA Game)");
+		printf ("\n\n\nLaunch Slot-2 Cart\n");
+		printf ("\n(GBA Game)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
-		printf ("[nitro:] NDS GAME IMAGE\n");
-		printf ("(Game Virtual)");
+		printf ("\n\n\n[nitro:] NDS GAME IMAGE\n");
+		printf ("\n(Game Virtual)");
 	}
 }
 
