@@ -245,12 +245,12 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		if (optionOffset < 0) 				optionOffset = maxCursors;		// Wrap around to bottom of list
 		if (optionOffset > maxCursors)		optionOffset = 0;		// Wrap around to top of list
 
-		if (pressed & KEY_A) {
-			if (assignedOp[optionOffset] == 0) {
+		if (pressed & KEY_A) {//c
+			if (assignedOp[optionOffset] == 0) {//q
 				applaunch = true;
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
-			} else if (assignedOp[optionOffset] == 1) {
+			/*q*/} else if (assignedOp[optionOffset] == 1) {
 				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
 					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 					printf("Creating directory...");
@@ -278,86 +278,88 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 					printf("Creating directory...");
 					mkdir("fat:/_nds/Relaunch/out", 0777);
 				}
-			} else if (assignedOp[optionOffset] == 3) {
+			} else if (assignedOp[optionOffset] == 3) {//b
 				printf("Press the hotkey to set");
-				/*CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
-	while (true) {
-		if (pressed & KEY_A) {
+while (true) {//a
+	if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_B) {
+	} else if (pressed & KEY_B) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_X) {
+	} else if (pressed & KEY_X) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_Y) {
+	} else if (pressed & KEY_Y) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_L) {
+	} else if (pressed & KEY_L) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_R) {
+	} else if (pressed & KEY_R) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_START) {
+	} else if (pressed & KEY_START) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_SELECT) {
+	} else if (pressed & KEY_SELECT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_TOUCH) {
+	} else if (pressed & KEY_TOUCH) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_UP) {
+	} else if (pressed & KEY_UP) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_DOWN) {
+	} else if (pressed & KEY_DOWN) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_LEFT) {
+	} else if (pressed & KEY_LEFT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else if (pressed & KEY_RIGHT) {
+	} else if (pressed & KEY_RIGHT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
 		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
-		} else { 
+	} else {//e
 			return (false);
-	}*/
+	}//e
 
-	return assignedOp[optionOffset];
-	}
-		if (pressed & KEY_B) {
+			return assignedOp[optionOffset];
+			}
+			if (pressed & KEY_B) {//h
 			return -1;
-		}
-	}
+			} //h
+		}//a
+	}//b
+}//c
 
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
