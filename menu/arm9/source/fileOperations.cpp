@@ -33,11 +33,8 @@ void printBytes(int bytes)
 	else if (abs(bytes) < 1024 * 1024 * 1024)
 		printf("%.1f MB", (float)bytes / 1024 / 1024);
 
-	else if (abs(bytes) < 1024 * 1024 * 1024 * 1024)
+	else
 		printf("%.1f GB", (float)bytes / 1024 / 1024 / 1024);
-
-	else (abs(bytes) < 1024 * 1024 * 1024 * 1024 * 1024)
-		printf("%.1f TB", (float)bytes / 1024 / 1024 / 1024 / 1024);
 }
 
 off_t getFileSize(const char *fileName)
