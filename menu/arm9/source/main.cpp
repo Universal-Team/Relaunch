@@ -138,7 +138,11 @@ int main(int argc, char **argv) {
 
 	appInited = true;
 	
-	nitroFSInit("sd:/menu.nds"); // Currently it only works if the file is `sd:/menu.nds`
+	if(sdMounted) {
+		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
+	} else {
+		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
+	}
 
 	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
 
