@@ -356,8 +356,22 @@ scanKeys();
 		}
 	}
 				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
-				return assignedOp[optionOffset];
 }
+				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
+				}
+			}
+			return assignedOp[optionOffset];
+		}
+		if (pressed & KEY_B) {
+			return -1;
+		}
+	}
 
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
