@@ -199,23 +199,23 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 0;
 		printf("   Boot file\n");
 	}
+	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
+		maxCursors++;
+		assignedOp[maxCursors] = 1;
+		printf("   Set as hotkey app\n");
+	}
 	if((entry->name.substr(entry->name.find_last_of(".") + 1) == "nds")
 	|| (entry->name.substr(entry->name.find_last_of(".") + 1) == "NDS"))
 
 	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
-		assignedOp[maxCursors] = 1;
+		assignedOp[maxCursors] = 2;
 		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
-		assignedOp[maxCursors] = 2;
-		printf("   Copy to /_nds/Relaunch/out\n");
-	}
-	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
-		maxCursors++;
 		assignedOp[maxCursors] = 3;
-		printf("   Set as hotkey app\n");
+		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
@@ -247,40 +247,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
 			} else if (assignedOp[optionOffset] == 1) {
-				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch", 0777);
-				}
-				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 2) {
-				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch", 0777);
-				}
-				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 3) {
 				printf("Press the button to set\nas the hotkey");
 				for(int i=0;i<30;i++) {
 					swiWaitForVBlank();
@@ -356,6 +322,40 @@ while (true) {
 			return (false);
 	}
 }
+			} else if (assignedOp[optionOffset] == 2) {
+				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("sd:/_nds/Relaunch", 0777);
+				}
+				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("sd:/_nds/Relaunch/out", 0777);
+				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
+			} else if (assignedOp[optionOffset] == 3) {
+				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("fat:/_nds/Relaunch", 0777);
+				}
+				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("fat:/_nds/Relaunch/out", 0777);
+				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
 			}
 			return assignedOp[optionOffset];
 		}
