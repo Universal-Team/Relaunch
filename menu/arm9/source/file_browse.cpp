@@ -354,11 +354,11 @@ scanKeys();
 		} else { 
 			return (0);
 		}
-	}
 				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
-				return assignedOp[optionOffset];
+			}
+	return assignedOp[optionOffset];
+	}
 }
-
 bool fileBrowse_paste(char destPath[256]) {
 	int pressed = 0;
 	int optionOffset = 0;
