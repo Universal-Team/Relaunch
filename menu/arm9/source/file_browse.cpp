@@ -295,6 +295,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 				printf("Press the hotkey to set");
+
 scanKeys();
 	int pressed = keysHeld();
 
@@ -302,59 +303,71 @@ scanKeys();
 		if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_B) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_X) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_Y) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_L) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_R) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_START) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_SELECT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_TOUCH) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_UP) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_DOWN) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_LEFT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else if (pressed & KEY_RIGHT) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath);
+		ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			break;
 		} else { 
 			return (false);
 		}
-				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 			}
 			return assignedOp[optionOffset];
 		}
