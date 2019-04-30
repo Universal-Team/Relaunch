@@ -302,10 +302,6 @@ bool fileBrowse_paste(char destPath[256]) {
 	iprintf ("\x1b[%d;0H", OPTIONS_ENTRIES_START_ROW);
 	maxCursors++;
 	printf("   Copy path\n");
-	if (!clipboardInNitro) {
-		maxCursors++;
-		printf("   Move path\n");
-	}
 	printf("\n");
 	printf("(<A> select, <B> cancel)");
 	while (true) {
