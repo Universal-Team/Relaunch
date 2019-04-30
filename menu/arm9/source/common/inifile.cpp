@@ -13,7 +13,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+*/
 
 #include <cstdio>
 #include <cstdlib>
@@ -386,4 +386,3 @@ bool CIniFile::ReplaceLine(size_t line,const std::string& str)
   m_FileContainer[line]=str;
   return true;
 }
-*/
