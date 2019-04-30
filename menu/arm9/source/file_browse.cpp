@@ -205,12 +205,12 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 1;
-		printf("   Copy to sd:/_nds/Relaunch/out\n");
+		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
 		assignedOp[maxCursors] = 2;
-		printf("   Copy to fat:/_nds/Relaunch/out");
+		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
 		maxCursors++;
