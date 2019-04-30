@@ -179,7 +179,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	printf ("\x1b[0;27H");
 	printf ("\x1B[42m");		// Print green color
 	printf ("      ");	// Clear time
-	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
 	char fullPath[256];
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
@@ -373,7 +373,7 @@ bool fileBrowse_paste(char destPath[256]) {
 	printf ("\x1b[0;27H");
 	printf ("\x1B[42m");		// Print green color
 	printf ("      ");	// Clear time
-	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
 	printf(clipboardFolder ? "Paste folder here?" : "Paste file here?");
 	printf("\n\n");
@@ -477,9 +477,9 @@ string browseForFile (void) {
 	while (true) {
 		DirEntry* entry = &dirContents.at(fileOffset);
 
-		consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 		fileBrowse_drawBottomScreen(entry, fileOffset);
-		consoleInit(NULL, 0, BgType_Text4bpp, BgSize_T_256x256, 15, 0, true, true);
+		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 		showDirectoryContents (dirContents, fileOffset, screenOffset);
 
 		stored_SCFG_MC = REG_SCFG_MC;
@@ -607,7 +607,7 @@ string browseForFile (void) {
 			printf ("\x1b[0;27H");
 			printf ("\x1B[42m");		// Print green color
 			printf ("      ");	// Clear time
-			consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 			printf ("\x1B[47m");		// Print foreground white color
 			iprintf("Delete \"%s\"?\n", entry->name.c_str());
 			printf ("(<A> yes, <B> no)");
