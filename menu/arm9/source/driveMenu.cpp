@@ -88,9 +88,9 @@ void dm_drawTopScreen(void) {
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
-			printf ("\x1b[46m > ");		// Print foreground cyan color
+			printf ("\x1b[46m> ");		// Print foreground cyan color
 		} else {
-			printf ("\x1b[42m   ");		// Print foreground green color
+			printf ("\x1b[42m  ");		// Print foreground green color
 		}
 		if (dmAssignedOp[i] == 0) {
 			printf ("[sd:]");
