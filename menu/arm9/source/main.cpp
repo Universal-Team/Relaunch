@@ -33,6 +33,7 @@
 #include "file_browse.h"
 #include "fileOperations.h"
 #include "nitrofs.h"
+#include "font.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
@@ -110,9 +111,20 @@ int main(int argc, char **argv) {
 	REG_BG3PC_SUB = 0;
 	REG_BG3PD_SUB = 1<<8;*/ //background stuff
 
-	// Subscreen as a console
-	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-
+	//// Subscreen as a console 
+	//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true); //commented out as TEST
+//font stuff start
+	PrintConsole *console = consoleInit(0,0, BgType_Text4bpp, BgSize_T_256x256, map_base, tile_base, false, false);
+	ConsoleFont font;
+	font.gfx = (u16*)fontTiles;
+	font.pal = (u16*)fontPal;
+	font.numChars = 95;
+	font.numColors =  fontPalLen / 2;
+	font.bpp = 4;
+	font.asciiOffset = 32;
+	font.convertSingleColor = false;
+	consoleSetFont(console, &font);
+//font stuff end
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
