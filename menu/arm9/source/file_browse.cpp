@@ -146,9 +146,9 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		// Set row
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if ((fileOffset - startRow) == i) {
-			printf ("\x1b[46m > ");		// Print foreground cyan color
+			printf ("\x1b[46m> ");		// Print foreground cyan color
 		} else {
-			printf ("\x1b[42m   ");		// Print foreground green color
+			printf ("\x1b[42m  ");		// Print foreground green color
 		}
 
 		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
