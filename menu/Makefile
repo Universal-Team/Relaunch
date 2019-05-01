@@ -102,6 +102,7 @@ endif
 #---------------------------------------------------------------------------------
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
+					$(BMPFILES:.bmp=.o) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
  
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
@@ -192,7 +193,23 @@ else
 	$(bin2o)
 
 -include $(DEPSDIR)/*.d
- 
+
+#---------------------------------------------------------------------------------
+# This rule creates assembly source files using grit
+# grit takes an image file and a .grit describing how the file is to be processed
+# add additional rules like this for each image extension
+# you use in the graphics folders 
+#---------------------------------------------------------------------------------
+%.s %.h	: %.bmp %.grit
+#---------------------------------------------------------------------------------
+	grit $< -fts -o$*
+
+
+#---------------------------------------------------------------------------------
+%.s %.h   : %.png %.grit
+#---------------------------------------------------------------------------------
+	grit $< -fts -o$*
+
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
