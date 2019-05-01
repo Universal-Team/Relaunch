@@ -32,7 +32,7 @@
 #include "driveOperations.h"
 #include "file_browse.h"
 #include "fileOperations.h"
-#include "common/nitrofs.h"
+#include "nitrofs.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	/*REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
 	REG_BG3X = 0;
 	REG_BG3Y = 0;
 	REG_BG3PA = 1<<8;
@@ -108,11 +108,12 @@ int main(int argc, char **argv) {
 	REG_BG3PA_SUB = 1<<8;
 	REG_BG3PB_SUB = 0;
 	REG_BG3PC_SUB = 0;
-	REG_BG3PD_SUB = 1<<8;
+	REG_BG3PD_SUB = 1<<8;*/ //background stuff
 
 	// Subscreen as a console
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 
+	consoleSetFont(console, &font);
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);

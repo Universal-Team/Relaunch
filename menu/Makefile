@@ -29,7 +29,7 @@ SOURCES		:=	source
 INCLUDES	:=	include source
 DATA		:=	data
 NITRODATA	:=	nitrofiles
-GRAPHICS	:=  gfx
+GRAPHICS	:=  	gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
