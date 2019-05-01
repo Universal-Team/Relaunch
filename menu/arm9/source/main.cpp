@@ -32,7 +32,7 @@
 #include "driveOperations.h"
 #include "file_browse.h"
 #include "fileOperations.h"
-#include "nitrofs.h"
+#include "common/nitrofs.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
