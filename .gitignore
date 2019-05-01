@@ -6,4 +6,9 @@
 *.nds
 *.bin
 */build/*
+*build/*
+*build
 *.ipch
+*/.vscode/*
+*.vscode/*
+*.vscode
