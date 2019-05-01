@@ -72,7 +72,8 @@ int main(int argc, char **argv) {
 	// overwrite reboot stub identifier
 	extern u64 *fake_heap_end;
 	*fake_heap_end = 0;
-
+	const int tile_base = 0; // font stuff
+	const int map_base = 20; // font stuff
 	defaultExceptionHandler();
 
 	int pathLen;
