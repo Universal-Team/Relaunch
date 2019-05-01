@@ -84,16 +84,15 @@ int main(int argc, char **argv) {
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 
 	// initialize VRAM banks
-	// I'm not sure if uncommenting these would be good, or unnessesary
-	// vramSetBankA(VRAM_A_TEXTURE);
-	// vramSetBankB(VRAM_B_TEXTURE);
+	vramSetBankA(VRAM_A_TEXTURE);
+	vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
 	vramSetBankD(VRAM_D_MAIN_BG_0x06000000);
-	// vramSetBankE(VRAM_E_TEX_PALETTE);
-	// vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
-	// vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5); // 16Kb of palette ram, and font textures take up 8*16 bytes.
-	// vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
-	// vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	vramSetBankE(VRAM_E_TEX_PALETTE);
+	vramSetBankF(VRAM_F_TEX_PALETTE_SLOT4);
+	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5); // 16Kb of palette ram, and font textures take up 8*16 bytes.
+	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
+	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
 	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
 	REG_BG3X = 0;
@@ -138,7 +137,7 @@ int main(int argc, char **argv) {
 
 	appInited = true;
 	
-	if(sdMounted) {
+	/*if(sdMounted) {
 		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
 	} else {
 		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
@@ -165,7 +164,7 @@ int main(int argc, char **argv) {
 			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
 			x++;
 		}
-	}
+	}*/
 
 	while(1) {
 

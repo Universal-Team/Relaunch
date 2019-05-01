@@ -36,7 +36,6 @@
 #define ENTRIES_PER_SCREEN 22
 #define ENTRIES_START_ROW 1
 #define ENTRY_PAGE_LENGTH 10
-
 using namespace std;
 
 bool flashcardMountSkipped = true;
@@ -75,10 +74,10 @@ void loadBootNds(void) {
 	}
 
 void dm_drawTopScreen(void) {
-	printf ("\x1B[42m");
+	printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("Relaunch.nds v0.0");
-	printf ("\x1B[47m");
+	printf ("\x1B[47m"); //white
 
 	// Move to 2nd row
 	printf ("\x1b[1;0H");
@@ -89,9 +88,9 @@ void dm_drawTopScreen(void) {
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
-			printf ("\x1b[36m");		// Print foreground cyan color
+			printf ("\x1b[46m > ");		// Print foreground cyan color
 		} else {
-			printf ("\x1b[33m");		// Print foreground green color
+			printf ("\x1b[42m   ");		// Print foreground green color
 		}
 		if (dmAssignedOp[i] == 0) {
 			printf ("[sd:]");
@@ -111,10 +110,6 @@ void dm_drawTopScreen(void) {
 			}
 		} else if (dmAssignedOp[i] == 3) {
 			printf ("Launch boot.nds");
-		if((access("/boot.nds", F_OK) == 0)) {
-				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW); // go to the right of the screen
-				printf ("[x]"); // print the "cannot do this" [x] icon
-			}
 		}
 	}
 }
@@ -175,6 +170,10 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
+		if (!isDSiMode() && isRegularDS) {
+			dmMaxCursors++;
+			dmAssignedOp[dmMaxCursors] = 3;
+		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
 		if (dmCursorPosition > dmMaxCursors)	dmCursorPosition = 0;		// Wrap around to top of list
@@ -190,7 +189,7 @@ void driveMenu (void) {
 
 		stored_SCFG_MC = REG_SCFG_MC;
 
-		printf ("\x1B[42m");		// Print green color for time text
+		printf ("\x1b[43m");		// Print yellow color for time text
 
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {

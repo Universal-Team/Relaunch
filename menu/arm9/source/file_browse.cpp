@@ -127,7 +127,7 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	iprintf ("\x1b[2J");
 	
 	// Print the path
-	printf ("\x1B[42m");		// Print green color
+	printf ("\x1b[42m"); 	// Print green color
 	printf ("\x1b[0;0H");
 	if (strlen(path) < SCREEN_COLS) {
 		iprintf ("%s", path);
@@ -146,9 +146,9 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		// Set row
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if ((fileOffset - startRow) == i) {
-			printf ("\x1b[36m");		// Print foreground cyan color
+			printf ("\x1b[46m > ");		// Print foreground cyan color
 		} else {
-			printf ("\x1b[33m");		// Print foreground green color
+			printf ("\x1b[42m   ");		// Print foreground green color
 		}
 
 		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
@@ -177,7 +177,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	printf ("\x1B[42m");		// Print green color
+	printf ("\x1b[43m");		// Print yellow color
 	printf ("      ");	// Clear time
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
@@ -193,40 +193,38 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			break;
 		}
 	}
+	printf ("\x1b[42m");
 	iprintf ("\x1b[%d;0H", cursorScreenPos + OPTIONS_ENTRIES_START_ROW);
 	if (entry->isApp) {
 		maxCursors++;
 		assignedOp[maxCursors] = 0;
 		printf("   Boot file\n");
 	}
-	if (access("fat:/_nds/Relaunch/Relaunch.ini", F_OK)) {
-		maxCursors++;
-		assignedOp[maxCursors] = 1;
-		printf("   Set as hotkey app\n");
-	}
-	if((entry->name.substr(entry->name.find_last_of(".") + 1) == "nds")
-	|| (entry->name.substr(entry->name.find_last_of(".") + 1) == "NDS"))
-
 	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
-		assignedOp[maxCursors] = 2;
+		assignedOp[maxCursors] = 1;
 		printf("   Copy to /_nds/Relaunch/out\n");
 	}
 	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
 		maxCursors++;
-		assignedOp[maxCursors] = 3;
+		assignedOp[maxCursors] = 2;
 		printf("   Copy to /_nds/Relaunch/out\n");
 	}
+	if (flashcardMounted) {
+		maxCursors++;
+		assignedOp[maxCursors] = 3;
+		printf("   Set as hotkey app\n");
+	}
 	printf("\n");
-	printf("(<A> select, <B> cancel)");
+	printf(" <A> select\n <B> cancel");
 	while (true) {
 		// Clear old cursors
 		for (int i = OPTIONS_ENTRIES_START_ROW+cursorScreenPos; i < (maxCursors+1) + OPTIONS_ENTRIES_START_ROW+cursorScreenPos; i++) {
 			iprintf ("\x1b[%d;0H  ", i);
 		}
 		// Show cursor
-		iprintf ("\x1b[%d;0H->", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-
+		iprintf ("\x1b[46m");
+		iprintf ("\x1b[%d;0H >", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {
 			scanKeys();
@@ -247,8 +245,44 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
 			} else if (assignedOp[optionOffset] == 1) {
+				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("sd:/_nds/Relaunch", 0777);
+				}
+				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("sd:/_nds/Relaunch/out", 0777);
+				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
+			} else if (assignedOp[optionOffset] == 2) {
+				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("fat:/_nds/Relaunch", 0777);
+				}
+				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
+					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+					printf("Creating directory...");
+					mkdir("fat:/_nds/Relaunch/out", 0777);
+				}
+				char destPath[256];
+				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
+				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
+				printf("Copying...           ");
+				remove(destPath);
+				fcopy(entry->name.c_str(), destPath);
+			} else if (assignedOp[optionOffset] == 3) {
+				iprintf ("\x1b[2J");
+				printf ("\x1B[42m");//green
 				printf("Press the button to set\nas the hotkey");
-				for(int i=0;i<30;i++) {
+				for(int i=0;i<60;i++) { // wait for 1 second
 					swiWaitForVBlank();
 				}
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
@@ -322,40 +356,6 @@ while (true) {
 			return (false);
 	}
 }
-			} else if (assignedOp[optionOffset] == 2) {
-				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch", 0777);
-				}
-				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 3) {
-				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch", 0777);
-				}
-				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
 			}
 			return assignedOp[optionOffset];
 		}
@@ -371,7 +371,7 @@ bool fileBrowse_paste(char destPath[256]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	printf ("\x1B[42m");		// Print green color
+	printf ("\x1b[43m");		// Print yellow color
 	printf ("      ");	// Clear time
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
@@ -443,7 +443,7 @@ void recRemove(DirEntry* entry, std::vector<DirEntry> dirContents) {
 }
 
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
-	printf ("\x1B[40m");		// Print foreground black color
+	printf ("\x1B[42m");		// Print foreground green color
 	printf ("\x1b[0;0H");
 	printf (entry->name.c_str());
 	printf ("\n");
@@ -458,9 +458,9 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 	}
 	if (clipboardOn) {
 		printf ("\x1b[9;0H");
-		printf ("\x1B[47m");		// Print foreground white color
+		printf ("\x1B[42m");		// Print foreground green color
 		printf ("[CLIPBOARD]\n");
-		printf ("\x1B[40m");		// Print foreground black color
+		printf ("\x1B[42m");		// Print foreground green color
 		printf (clipboardFilename);
 	}
 }
@@ -548,7 +548,7 @@ string browseForFile (void) {
 				screenMode = 0;
 				return "null";
 			} else if (entry->isDirectory) {
-				printf("\x1b[36m"); // print cyan color for the entering directory text?
+				printf("\x1b[46m"); // print cyan color
 				iprintf("Entering directory\n");
 				// Enter selected directory
 				chdir (entry->name.c_str());
@@ -589,6 +589,7 @@ string browseForFile (void) {
 			kbd->OnKeyPressed = OnKeyPressed;
 
 			keyboardShow();
+			printf ("\x1B[42m"); //green
 			printf("Rename to: \n");
 			fgets(newName, 256, stdin);
 			newName[strlen(newName)-1] = 0;
@@ -608,7 +609,7 @@ string browseForFile (void) {
 			printf ("\x1B[42m");		// Print green color
 			printf ("      ");	// Clear time
 			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-			printf ("\x1B[47m");		// Print foreground white color
+			printf ("\x1B[42m");		// Print foreground green color
 			iprintf("Delete \"%s\"?\n", entry->name.c_str());
 			printf ("(<A> yes, <B> no)");
 			while (true) {
@@ -618,9 +619,11 @@ string browseForFile (void) {
 				if (pressed & KEY_A) {
 					consoleClear();
 					if (entry->isDirectory) {
+						printf ("\x1B[42m"); //green
 						printf ("Deleting folder, please wait...");
 						recRemove(entry, dirContents);
 					} else {
+						printf ("\x1B[42m"); //green
 						printf ("Deleting file, please wait...");
 						remove(entry->name.c_str());
 					}
