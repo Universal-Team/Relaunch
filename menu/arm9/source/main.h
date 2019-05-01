@@ -15,5 +15,6 @@ extern bool isRegularDS;
 
 extern bool applaunch;
 
+extern void setFont();
 
 #endif //MAIN_H

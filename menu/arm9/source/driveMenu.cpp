@@ -27,14 +27,14 @@
 #include <dirent.h>
 
 #include "main.h"
-#include "date.h"
 #include "driveOperations.h"
 #include "fileOperations.h"
 #include "nds_loader_arm9.h"
+#include "font.h"
 
 #define SCREEN_COLS 32
 #define ENTRIES_PER_SCREEN 22
-#define ENTRIES_START_ROW 1
+#define ENTRIES_START_ROW 3
 #define ENTRY_PAGE_LENGTH 10
 using namespace std;
 
@@ -44,8 +44,9 @@ static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
 static int dmAssignedOp[3] = {-1};
 static int dmMaxCursors = -1;
-
-static u8 gbaFixedValue = 0;
+const int tile_base = 0; // font stuff
+const int map_base = 20; // font stuff
+static u8 gbaFixedValue = 0; //dab
 
 void loadGbaCart(void) {
 	irqDisable(IRQ_VBLANK);
@@ -76,11 +77,11 @@ void loadBootNds(void) {
 void dm_drawTopScreen(void) {
 	printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("Relaunch.nds v0.0");
+	printf ("\nRelaunch.nds v0.0");
 	printf ("\x1B[47m"); //white
 
-	// Move to 2nd row
-	printf ("\x1b[1;0H");
+	// Move to 4th row
+	printf ("\x1b[3;0H");
 
 	if (dmMaxCursors == -1) {
 		printf ("No drives found!");
@@ -119,9 +120,9 @@ void dm_drawBottomScreen(void) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
-	printf ("\x1B[43m");		// Print foreground yellow color
+	printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\nEveryone\nis\nLegal");
+	printf("\n\n Everyone\n   is\n  legal");
 	printf("\x1B[47m");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
@@ -189,14 +190,8 @@ void driveMenu (void) {
 
 		stored_SCFG_MC = REG_SCFG_MC;
 
-		printf ("\x1b[43m");		// Print yellow color for time text
-
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {
-			// Move to right side of screen
-			printf ("\x1b[0;27H");
-			// Print time
-			printf (RetTime().c_str());
 	
 			scanKeys();
 			pressed = keysDownRepeat();
@@ -251,24 +246,6 @@ void driveMenu (void) {
 				dmTextPrinted = false;
 				loadBootNds();
 				break;
-				}
-			}
-		}
-
-		// Unmount/Remount SD card
-		if ((held & KEY_R) && (pressed & KEY_B)) {
-			dmTextPrinted = false;
-			if (isDSiMode() && sdMountedDone) {
-				if (sdMounted) {
-					sdUnmount();
-				} else if (isRegularDS) {
-					sdMounted = sdMount();
-				}
-			} else {
-				if (flashcardMounted) {
-					flashcardUnmount();
-				} else {
-					flashcardMounted = flashcardMount();
 				}
 			}
 		}

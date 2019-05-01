@@ -33,6 +33,7 @@
 #include "file_browse.h"
 #include "fileOperations.h"
 #include "nitrofs.h"
+#include "font.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
@@ -42,18 +43,33 @@ char titleName[32] = {" "};
 int screenMode = 0;
 
 bool appInited = false;
-
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
-
 bool applaunch = false;
 
 static u16 bmpImageBuffer[256*192];
-
 static int bg3;
+
+const int tile_base = 0; // font stuff
+const int map_base = 20; // font stuff
 
 using namespace std;
 
+
+void setFont() {
+const int tile_base = 0; // font stuff
+const int map_base = 20; // font stuff
+	PrintConsole *console = consoleInit(0,0, BgType_Text4bpp, BgSize_T_256x256, map_base, tile_base, false, false);
+	ConsoleFont font;
+	font.gfx = (u16*)fontTiles;
+	font.pal = (u16*)fontPal;
+	font.numChars = 95;
+	font.numColors =  fontPalLen / 2;
+	font.bpp = 4;
+	font.asciiOffset = 32;
+	font.convertSingleColor = false;
+	consoleSetFont(console, &font);
+}
 //---------------------------------------------------------------------------------
 void stop (void) {
 //---------------------------------------------------------------------------------
@@ -71,7 +87,6 @@ int main(int argc, char **argv) {
 	// overwrite reboot stub identifier
 	extern u64 *fake_heap_end;
 	*fake_heap_end = 0;
-
 	defaultExceptionHandler();
 
 	int pathLen;
@@ -94,7 +109,7 @@ int main(int argc, char **argv) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	/*REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
 	REG_BG3X = 0;
 	REG_BG3Y = 0;
 	REG_BG3PA = 1<<8;
@@ -108,11 +123,11 @@ int main(int argc, char **argv) {
 	REG_BG3PA_SUB = 1<<8;
 	REG_BG3PB_SUB = 0;
 	REG_BG3PC_SUB = 0;
-	REG_BG3PD_SUB = 1<<8;*/ //background stuff
+	REG_BG3PD_SUB = 1<<8;
 
 	// Subscreen as a console
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-
+	//setFont();
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);

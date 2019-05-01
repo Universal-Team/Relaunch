@@ -25,23 +25,22 @@
 
 #include "file_browse.h"
 #include "main.h"
-#include "date.h"
 #include "fileOperations.h"
 #include "driveMenu.h"
 #include "driveOperations.h"
 #include "inifile.h"
+#include "font.h"
 
 #define SCREEN_COLS 22
-#define ENTRIES_PER_SCREEN 23
-#define ENTRIES_START_ROW 1
+#define ENTRIES_PER_SCREEN 21
+#define ENTRIES_START_ROW 3
 #define OPTIONS_ENTRIES_START_ROW 2
 #define ENTRY_PAGE_LENGTH 10
 bool bigJump = false;
-
+const int tile_base = 0; // font stuff
+const int map_base = 20; // font stuff
 using namespace std;
-
 static char path[PATH_MAX];
-
 bool nameEndsWith (const string& name) {
 
 	if (name.size() == 0) return false;
@@ -67,7 +66,6 @@ bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
 
 void getDirectoryContents (vector<DirEntry>& dirContents) {
 	struct stat st;
-
 	dirContents.clear();
 
 	DIR *pdir = opendir ("."); 
@@ -122,17 +120,17 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 
 void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow) {
 	getcwd(path, PATH_MAX);
-	
+
 	// Clear the screen
 	iprintf ("\x1b[2J");
 	
 	// Print the path
-	printf ("\x1b[42m"); 	// Print green color
+	printf ("\x1b[43m"); 	// Print yellow color
 	printf ("\x1b[0;0H");
 	if (strlen(path) < SCREEN_COLS) {
-		iprintf ("%s", path);
+		iprintf ("\n%s", path);
 	} else {
-		iprintf ("%s", path + strlen(path) - SCREEN_COLS);
+		iprintf ("\n%s", path + strlen(path) - SCREEN_COLS);
 	}
 	
 	// Move to 2nd row
@@ -177,8 +175,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	printf ("\x1b[43m");		// Print yellow color
-	printf ("      ");	// Clear time
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	printf ("\x1B[47m");		// Print foreground white color
 	char fullPath[256];
@@ -374,6 +370,7 @@ bool fileBrowse_paste(char destPath[256]) {
 	printf ("\x1b[43m");		// Print yellow color
 	printf ("      ");	// Clear time
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+	
 	printf ("\x1B[47m");		// Print foreground white color
 	printf(clipboardFolder ? "Paste folder here?" : "Paste file here?");
 	printf("\n\n");
@@ -484,14 +481,8 @@ string browseForFile (void) {
 
 		stored_SCFG_MC = REG_SCFG_MC;
 
-		printf ("\x1B[42m");		// Print green color for time text
-
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {
-			// Move to right side of screen
-			printf ("\x1b[0;26H");
-			// Print time
-			printf (" %s" ,RetTime().c_str());
 	
 			scanKeys();
 			pressed = keysDownRepeat();
