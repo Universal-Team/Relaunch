@@ -23,11 +23,12 @@ VERSION	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 # DATA is a list of directories containing binary files embedded using bin2o
 # GRAPHICS is a list of directories containing image files to be converted with grit
 #---------------------------------------------------------------------------------
-TARGET		:=	Relaunch
+TARGET		:=	menu
 BUILD		:=	build
 SOURCES		:=	source
 INCLUDES	:=	include
 DATA		:=	data
+NITRODATA	:=	nitrofiles
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -119,8 +120,8 @@ dist:	all
 	@tar -cvjf $(TARGET)-$(VERSION).tar.bz2 hbmenu testfiles README.html COPYING hbmenu -X exclude.lst
 	
 $(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
-  # simple nds srl without dsi extended header thx Robz!
-	ndstool	-h 0x200 -c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf -b icon.bmp "Relaunch;FlameKat53"
+	ndstool	-c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
+			-g HBBA 01 "RELAUNCH" -z 80040000 -u 00030004 -a 00000143 -d $(NITRODATA) -b icon.bmp "Relaunch Menu;RocketRobz, FlameKat53"
 
 $(TARGET).arm7: arm7/$(TARGET).elf
 	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
@@ -144,7 +145,7 @@ arm9/$(TARGET).elf:
 clean:
 	@echo clean ...
 	@rm -fr data
-	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).nds
+	@rm -fr $(BUILD) $(TARGET).elf
 	@rm -fr $(TARGET).arm7.elf
 	@rm -fr $(TARGET).arm9.elf
 	@$(MAKE) -C bootloader clean
