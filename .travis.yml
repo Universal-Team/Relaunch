@@ -37,17 +37,17 @@ script:
   - cp '7zfile/*' 'Relaunch/3DS'
   - cp '7zfile/*' 'Relaunch/DSi'
   - make Flashcart
-  - mv 'menu/menu.nds' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
-  - mv 'main/Relaunch.nds' 'Relaunch/Flashcart/Relaunch.nds'
+  - mv 'menu_Flashcart.bin' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_Flashcart.nds' 'Relaunch/Flashcart/Relaunch.nds'
   - make clean
   - chmod +x make_cia
   - make 3DS
-  - mv 'menu/menu.nds' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
-  - mv 'main/Relaunch.cia' 'Relaunch/3DS/Relaunch.cia'
+  - mv 'menu.nds' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_3DS.cia' 'Relaunch/3DS/Relaunch.cia'
   - make clean
   - make DSi
-  - mv 'menu/menu.nds' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
-  - mv 'main/Relaunch.nds' 'Relaunch/DSi/Relaunch.nds'
+  - mv 'menu.nds' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_DSi.nds' 'Relaunch/DSi/Relaunch.nds'
   - 7z a Relaunch.7z Relaunch/
 
 addons:
