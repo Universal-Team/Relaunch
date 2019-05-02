@@ -23,9 +23,6 @@ allFlashcart: buildFlashcart
 buildDSi3DS:
 	@mv "main/Makefile_DSi-3DS" "main/Makefile"
 	@$(MAKE) -C main
-	@mv "menu/Makefile_Flashcart" "menu/Makefile"
-	@$(MAKE) -C menu
-	@mv "menu/Makefile" "menu/Makefile_Flashcart"
 	@mv "menu/Makefile_DSi-3DS" "menu/Makefile"
 	@$(MAKE) -C menu
 	@mv "main/Makefile" "main/Makefile_DSi-3DS"
