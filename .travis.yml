@@ -28,13 +28,24 @@ install:
 script:
   - export COMMIT_TAG="$(git log --format=%h -1)"
   - export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
-  - make
-  - make 3DS
-  - make DSi
   - mkdir Relaunch/
-  - mkdir Relaunch/Flashcard/
-  - mkdir Relaunch/DSi/
+  - mkdir Relaunch/Flashcart/
   - mkdir Relaunch/3DS/
+  - mkdir Relaunch/DSi/
+  - rm '7zfile/_nds/Relaunch/placeholder_file'
+  - cp '7zfile/*' 'Relaunch/Flashcart'
+  - cp '7zfile/*' 'Relaunch/3DS'
+  - cp '7zfile/*' 'Relaunch/DSi'
+  - make Flashcart
+  - mv 'menu/menu_Flashcart.bin' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
+  - mv 'main/Relaunch/Relaunch_Flashcart.nds' 'Relaunch/Flashcart/Relaunch.nds'
+  - make 3DS
+  - mv 'menu/menu_3DS.bin' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
+  - mv 'main/Relaunch/Relaunch_3DS.cia' 'Relaunch/3DS/Relaunch.cia'
+  - make DSi
+  - mv 'menu/menu_DSi.bin' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
+  - mv 'main/Relaunch/Relaunch_DSi.nds' 'Relaunch/DSi/Relaunch.nds'
+  - 7z a Relaunch.7z Relaunch/
 
 addons:
   apt:
