@@ -49,6 +49,7 @@ script:
   - mv './menu_DSi.bin' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
   - mv './Relaunch_DSi.nds' 'Relaunch/DSi/Relaunch.nds'
   - 7z a Relaunch.7z Relaunch/
+  - ls
 
 addons:
   apt:
