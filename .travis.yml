@@ -36,7 +36,7 @@ script:
   - mv './menu_Flashcart.bin' 'Relaunch/Flashcart/menu.bin'
   - mv './Relaunch_Flashcart.nds' 'Relaunch/Flashcart/Relaunch.nds'
   - make clean
-  - chmod +x make_cia
+  - sudo chmod +x make_cia
   - make 3DS
   - mv './menu_3DS.bin' 'Relaunch/3DS/menu.bin'
   - mv './Relaunch_3DS.cia' 'Relaunch/3DS/Relaunch.cia'
