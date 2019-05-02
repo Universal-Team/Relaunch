@@ -9,35 +9,29 @@ DSi: .PHONYDSi
 
 Flashcart: .PHONYFlashcart
 
-.PHONY3DS: all3DS mainDSi3DS menuDSi3DS renameDSi3DS moveDSi3DS makecia
+.PHONY3DS: all3DS buildDSi3DS makecia
 
-.PHONYDSi: allDSi mainDSi3DS menuDSi3DS renameDSi3DS moveDSi3DS
+.PHONYDSi: allDSi buildDSi3DS
 
-.PHONYFlashcart: allFlashcart mainFlashcart menuFlashcart renameFlashcart moveFlashcart
+.PHONYFlashcart: allFlashcart buildFlashcart
 
-allDSi:	mainDSi3DS menuDSi3DS renameDSi3DS moveDSi3DS
+allDSi:	buildDSi3DS
 
-all3DS:	mainDSi3DS menuDSi3DS renameDSi3DS moveDSi3DS makecia
+all3DS:	buildDSi3DS makecia
 
-allFlashcart: mainFlashcart menuFlashcart renameFlashcart moveFlashcart
+allFlashcart: buildFlashcart
 
-mainDSi3DS:
+buildDSi3DS:
 	@mv "main/Makefile_DSi-3DS" "main/Makefile"
 	@$(MAKE) -C main
-
-menuDSi3DS:
 	@mv "menu/Makefile_Flashcart" "menu/Makefile"
 	@$(MAKE) -C menu
 	@mv "menu/Makefile" "menu/Makefile_Flashcart"
 	@mv "menu/Makefile_DSi-3DS" "menu/Makefile"
 	@$(MAKE) -C menu
-	
-renameDSi3DS:
 	@mv "main/Makefile" "main/Makefile_DSi-3DS"
 	@mv "menu/Makefile" "menu/Makefile_DSi-3DS"
 	@mv "menu/menu.nds" "menu/menu.bin"
-	
-moveDSi3DS:
 	@mv "menu/menu.bin" "./menu_DSi.bin"
 	@mv "main/Relaunch.nds" "./Relaunch_DSi.nds"
 	
@@ -47,20 +41,14 @@ makecia:
 	@rm -fr Relaunch_3DS.nds
 	@mv "./menu_DSi.bin" "./menu_3DS.bin"
 
-mainFlashcart:
+buildFlashcart:
 	@mv "main/Makefile_Flashcart" "main/Makefile"
 	@$(MAKE) -C main
-
-menuFlashcart:
 	@mv "menu/Makefile_Flashcart" "menu/Makefile"
 	@$(MAKE) -C menu
-	
-renameFlashcart:
 	@mv "main/Makefile" "main/Makefile_Flashcart"
 	@mv "menu/Makefile" "menu/Makefile_Flashcart"
 	@mv "menu/menu.nds" "menu/menu.bin"
-	
-moveFlashcart:
 	@mv "menu/menu.bin" "./menu_Flashcart.bin"
 	@mv "main/Relaunch.nds" "./Relaunch_Flashcart.nds"
 
