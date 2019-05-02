@@ -42,11 +42,11 @@ script:
   - make clean
   - chmod +x make_cia
   - make 3DS
-  - mv 'menu.nds' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
+  - mv 'menu_3DS.bin' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
   - mv 'Relaunch_3DS.cia' 'Relaunch/3DS/Relaunch.cia'
   - make clean
   - make DSi
-  - mv 'menu.nds' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
+  - mv 'menu_DSi.bin' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
   - mv 'Relaunch_DSi.nds' 'Relaunch/DSi/Relaunch.nds'
   - 7z a Relaunch.7z Relaunch/
 
