@@ -16,6 +16,7 @@ cache:
 
 before_install:
   - curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
+  - sudo apt-get install -y p7zip-full
 
 install:
   - sudo dpkg -i pacman.deb
@@ -27,8 +28,28 @@ install:
 script:
   - export COMMIT_TAG="$(git log --format=%h -1)"
   - export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
-  - make
-  
+  - mkdir Relaunch/
+  - mkdir Relaunch/Flashcart/
+  - mkdir Relaunch/3DS/
+  - mkdir Relaunch/DSi/
+  - rm '7zfile/_nds/Relaunch/placeholder_file'
+  - cp '7zfile/*' 'Relaunch/Flashcart'
+  - cp '7zfile/*' 'Relaunch/3DS'
+  - cp '7zfile/*' 'Relaunch/DSi'
+  - make Flashcart
+  - make clean
+  - make 3DS
+  - make clean
+  - make DSi
+  - make clean
+  - mv 'menu_Flashcart.bin' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_Flashcart.nds' 'Relaunch/Flashcart/Relaunch.nds'
+  - mv 'menu_DSi.bin' 'Relaunch/DSi/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_DSi.nds' 'Relaunch/DSi/Relaunch.nds'
+  - mv 'menu_3DS.bin' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
+  - mv 'Relaunch_3DS.cia' 'Relaunch/3DS/Relaunch.cia'
+  - 7z a Relaunch.7z Relaunch/
+
 addons:
   apt:
     sources:
@@ -41,6 +62,15 @@ addons:
 
 after_success:
   - echo 'yummy breakfast :3 (Build Successful)'
+  - git config --local user.name "TWLBot"
+  - git clone --depth 1 https://$GITHUB_TOKEN@github.com/TWLBot/overflow-builds.git
+  - cd overflow-builds/
+  - cp ../Relaunch.7z Relaunch.7z
+  - git stage .
+  - git commit -m "Relaunch | $COMMIT_TAG"
+  - git push origin master
+  - export CURRENT_DATE=$(date +'%Y%m%d-%H%M%S')
+  - git tag v$CURRENT_DATE
 
 after_failure:
   - echo 'gross breakfast (Build Failed)'
