@@ -40,6 +40,7 @@ script:
   - mv 'menu/menu.nds' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
   - mv 'main/Relaunch.nds' 'Relaunch/Flashcart/Relaunch.nds'
   - make clean
+  - chmod +x make_cia
   - make 3DS
   - mv 'menu/menu.nds' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
   - mv 'main/Relaunch.cia' 'Relaunch/3DS/Relaunch.cia'
