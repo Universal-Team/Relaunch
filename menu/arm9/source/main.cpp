@@ -26,6 +26,8 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
+#include <dswifi9.h>
+#include <netinet/in.h>
 
 #include "nds_loader_arm9.h"
 #include "driveMenu.h"
@@ -47,18 +49,68 @@ bool arm7SCFGLocked = false;
 bool isRegularDS = true;
 bool applaunch = false;
 
-static u16 bmpImageBuffer[256*192];
-static int bg3;
+static u16 bmpImageBuffer[256*192]; //for background
 
 const int tile_base = 0; // font stuff
 const int map_base = 20; // font stuff
 
 using namespace std;
 
+void wifiInit() {
+	struct in_addr ip, gateway, mask, dns1, dns2;
 
+	printf("Connecting to Wifi");
+
+	if(!Wifi_InitDefault(WFC_CONNECT)) {
+		iprintf("Not Connected to Wifi");
+	} else {
+
+		iprintf("Connected to Wifi\n\n");
+
+		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
+		
+		iprintf("ip     : %s\n", inet_ntoa(ip) );
+		iprintf("gateway: %s\n", inet_ntoa(gateway) );
+		iprintf("mask   : %s\n", inet_ntoa(mask) );
+		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
+		iprintf("dns2   : %s\n", inet_ntoa(dns2) );
+		
+		
+	}
+}
+void loadBG() {
+		if(sdMounted) {
+		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
+	} else {
+		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
+	}
+
+	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
+
+	if (fileBottom) {
+		// Start loading
+		fseek(fileBottom, 0xe, SEEK_SET);
+		u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
+		fseek(fileBottom, pixelStart, SEEK_SET);
+		fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
+		u16* src = bmpImageBuffer;
+		int x = 0;
+		int y = 191;
+		for (int i=0; i<256*192; i++) {
+			if (x >= 256) {
+				x = 0;
+				y--;
+			}
+			u16 val = *(src++);
+			BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+			x++;
+		}
+	}
+}
 void setFont() {
-const int tile_base = 0; // font stuff
-const int map_base = 20; // font stuff
+	const int tile_base = 0; // font stuff
+	const int map_base = 20; // font stuff
 	PrintConsole *console = consoleInit(0,0, BgType_Text4bpp, BgSize_T_256x256, map_base, tile_base, false, false);
 	ConsoleFont font;
 	font.gfx = (u16*)fontTiles;
@@ -151,35 +203,17 @@ int main(int argc, char **argv) {
 	keysSetRepeat(25,5);
 
 	appInited = true;
-	
-	/*if(sdMounted) {
-		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
-	} else {
-		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
+
+	if(appInited) {
+			printf(" ");
+				for(int i=0;i<60;i++) { // wait for a second 
+					swiWaitForVBlank();
+		}
 	}
 
-	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
+	//wifiInit(); //start wifi initiation
+	//loadBG(); //load the background
 
-	if (fileBottom) {
-		// Start loading
-		fseek(fileBottom, 0xe, SEEK_SET);
-		u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
-		fseek(fileBottom, pixelStart, SEEK_SET);
-		fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
-		u16* src = bmpImageBuffer;
-		int x = 0;
-		int y = 191;
-		for (int i=0; i<256*192; i++) {
-			if (x >= 256) {
-				x = 0;
-				y--;
-			}
-			u16 val = *(src++);
-			BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			x++;
-		}
-	}*/
 
 	while(1) {
 

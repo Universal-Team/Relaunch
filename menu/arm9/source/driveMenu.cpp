@@ -25,6 +25,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <dswifi9.h>
+#include <netinet/in.h>
 
 #include "main.h"
 #include "driveOperations.h"
@@ -61,17 +63,9 @@ void loadGbaCart(void) {
 	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
 	}
 
-void loadBootNds(void) {
-	irqDisable(IRQ_VBLANK);
-	vramSetBankA(VRAM_A_MAIN_BG);
-	vramSetBankB(VRAM_B_MAIN_BG);
-	// Clear VRAM A and B
-	for (u32 i = 0; i < 0x80000; i++) {
-		*(u32*)(0x06000000+i) = 0;
-		*(u32*)(0x06200000+i) = 0;
-	}
-// Launch boot.nds
-	runNdsFile("/boot.nds", 0, NULL, false);
+void wifiTest(void) {
+// start FTP server
+	//do nothing for now
 	}
 
 void dm_drawTopScreen(void) {
@@ -110,7 +104,7 @@ void dm_drawTopScreen(void) {
 				printf ("[x]");
 			}
 		} else if (dmAssignedOp[i] == 3) {
-			printf ("Launch boot.nds");
+			printf ("WifiFTP");
 		}
 	}
 }
@@ -141,8 +135,8 @@ void dm_drawBottomScreen(void) {
 		printf ("\n\n\n\n\n\nLaunch Slot-2 Cart\n");
 		printf ("\n(GBA Game)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
-		printf ("\n\n\n\n\n\nLaunch boot.nds\n");
-		printf ("\n(boot.nds)");
+		printf ("\n\n\n\n\n\nWifiFTP\n");
+		printf ("\n(Wireless FTP Server)");
 	}
 }
 
@@ -244,7 +238,7 @@ void driveMenu (void) {
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 3) {
 				dmTextPrinted = false;
-				loadBootNds();
+				wifiTest();
 				break;
 				}
 			}
