@@ -205,8 +205,16 @@ int main(int argc, char **argv) {
 	appInited = true;
 
 	if(appInited) {
-			printf(" ");
-				for(int i=0;i<60;i++) { // wait for a second 
+			printf("Loading.");
+				for(int i=0;i<20;i++) { // wait for a little bit 
+					swiWaitForVBlank();
+		}
+			printf(".");
+				for(int i=0;i<20;i++) { // wait
+					swiWaitForVBlank();
+		}
+			printf(".");
+				for(int i=0;i<20;i++) { // wait
 					swiWaitForVBlank();
 		}
 	}
