@@ -114,7 +114,6 @@ void setFontTop() {
 	font.bpp = 4;
 	font.asciiOffset = 32;
 	font.convertSingleColor = false;
-	//font.convertSingleColor = true;
 	consoleSetFont(console, &font);
 }
 void setFontSub() {
@@ -127,7 +126,6 @@ void setFontSub() {
 	font.bpp = 4;
 	font.asciiOffset = 32;
 	font.convertSingleColor = false;
-	//font.convertSingleColor = true;
 	consoleSetFont(console, &font);
 }
 void bgPre() {
