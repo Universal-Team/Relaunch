@@ -122,7 +122,7 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	iprintf ("\x1b[2J");
 	
 	// Print the path
-	printf ("\x1b[43m"); 	// Print yellow color
+	//printf ("\x1b[43m"); 	// Print yellow color
 	printf ("\x1b[0;0H");
 	if (strlen(path) < SCREEN_COLS) {
 		iprintf ("\n%s", path);
@@ -172,7 +172,8 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+	//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+	setFontSub();
 	char fullPath[256];
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
 	printf(fullPath);
@@ -185,7 +186,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			break;
 		}
 	}
-	printf ("\x1b[42m");
+	//printf ("\x1b[42m");
 	iprintf ("\x1b[%d;0H", cursorScreenPos + OPTIONS_ENTRIES_START_ROW);
 	if (entry->isApp) {
 		maxCursors++;
@@ -215,7 +216,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			iprintf ("\x1b[%d;0H  ", i);
 		}
 		// Show cursor
-		iprintf ("\x1b[46m");
+		//iprintf ("\x1b[46m");
 		iprintf ("\x1b[%d;0H >", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {
@@ -364,9 +365,9 @@ bool fileBrowse_paste(char destPath[256]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-	
-	printf ("\x1B[47m");		// Print foreground white color
+	//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+	setFontSub();
+
 	printf(clipboardFolder ? "Paste folder here?" : "Paste file here?");
 	printf("\n\n");
 	iprintf ("\x1b[%d;0H", OPTIONS_ENTRIES_START_ROW);
@@ -435,7 +436,7 @@ void recRemove(DirEntry* entry, std::vector<DirEntry> dirContents) {
 }
 
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
-	printf ("\x1B[42m");		// Print foreground green color
+	//printf ("\x1B[42m");		// Print foreground green color
 	printf ("\x1b[0;0H");
 	printf (entry->name.c_str());
 	printf ("\n");
@@ -450,9 +451,9 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 	}
 	if (clipboardOn) {
 		printf ("\x1b[9;0H");
-		printf ("\x1B[42m");		// Print foreground green color
+		//printf ("\x1B[42m");		// Print foreground green color
 		printf ("[CLIPBOARD]\n");
-		printf ("\x1B[42m");		// Print foreground green color
+		//printf ("\x1B[42m");		// Print foreground green color
 		printf (clipboardFilename);
 	}
 }
@@ -469,9 +470,11 @@ string browseForFile (void) {
 	while (true) {
 		DirEntry* entry = &dirContents.at(fileOffset);
 
-		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+		//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+		setFontSub();
 		fileBrowse_drawBottomScreen(entry, fileOffset);
-		consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
+		//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
+		setFontTop();
 		showDirectoryContents (dirContents, fileOffset, screenOffset);
 
 		stored_SCFG_MC = REG_SCFG_MC;
@@ -495,7 +498,6 @@ string browseForFile (void) {
 				&& !(pressed & KEY_A) && !(pressed & KEY_B) && !(pressed & KEY_X) && !(pressed & KEY_Y)
 				&& !(pressed & KEY_SELECT));
 	
-		printf ("\x1B[47m");		// Print foreground white color
 		iprintf ("\x1b[%d;0H", fileOffset - screenOffset + ENTRIES_START_ROW);
 
 		if (isDSiMode() && !pressed && secondaryDrive && REG_SCFG_MC == 0x11 && flashcardMounted) {
@@ -534,8 +536,8 @@ string browseForFile (void) {
 				screenMode = 0;
 				return "null";
 			} else if (entry->isDirectory) {
-				printf("\x1b[46m"); // print cyan color
-				iprintf("Entering directory\n");
+				//printf("\x1b[46m"); // print cyan color
+				iprintf("  Entering directory\n");
 				// Enter selected directory
 				chdir (entry->name.c_str());
 				getDirectoryContents (dirContents);
@@ -575,7 +577,7 @@ string browseForFile (void) {
 			kbd->OnKeyPressed = OnKeyPressed;
 
 			keyboardShow();
-			printf ("\x1B[42m"); //green
+			//printf ("\x1B[42m"); //green
 			printf("Rename to: \n");
 			fgets(newName, 256, stdin);
 			newName[strlen(newName)-1] = 0;
@@ -592,10 +594,8 @@ string browseForFile (void) {
 		// Delete file/folder
 		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
 			printf ("\x1b[0;27H");
-			printf ("\x1B[42m");		// Print green color
-			printf ("      ");	// Clear time
 			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-			printf ("\x1B[42m");		// Print foreground green color
+			//printf ("\x1B[42m");		// Print foreground green color
 			iprintf("Delete \"%s\"?\n", entry->name.c_str());
 			printf ("(<A> yes, <B> no)");
 			while (true) {
@@ -605,11 +605,11 @@ string browseForFile (void) {
 				if (pressed & KEY_A) {
 					consoleClear();
 					if (entry->isDirectory) {
-						printf ("\x1B[42m"); //green
+						//printf ("\x1B[42m"); //green
 						printf ("Deleting folder, please wait...");
 						recRemove(entry, dirContents);
 					} else {
-						printf ("\x1B[42m"); //green
+						//printf ("\x1B[42m"); //green
 						printf ("Deleting file, please wait...");
 						remove(entry->name.c_str());
 					}
