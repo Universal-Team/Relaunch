@@ -29,8 +29,7 @@
 #include <netinet/in.h>
 
 #include "main.h"
-#include "driveOperations.h"
-#include "fileOperations.h"
+#include "Operations.h"
 #include "nds_loader_arm9.h"
 #include "font.h"
 
@@ -46,9 +45,7 @@ static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
 static int dmAssignedOp[3] = {-1};
 static int dmMaxCursors = -1;
-const int tile_base = 0; // font stuff
-const int map_base = 20; // font stuff
-static u8 gbaFixedValue = 0; //dab
+static u8 gbaFixedValue = 0; 
 
 void loadGbaCart(void) {
 	irqDisable(IRQ_VBLANK);
@@ -64,15 +61,15 @@ void loadGbaCart(void) {
 	}
 
 void wifiTest(void) {
+	wifiInit(); //start wifi initiation
 // start FTP server
-	//do nothing for now
+	printf("Error!");
 	}
 
 void dm_drawTopScreen(void) {
-	printf ("\x1b[43m"); //yellow
+	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.0");
-	printf ("\x1B[47m"); //white
+	printf ("\nRelaunch.nds v0.1");
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -83,9 +80,11 @@ void dm_drawTopScreen(void) {
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
-			printf ("\x1b[46m> ");		// Print foreground cyan color
+			//printf ("\x1b[46m# ");		// Print foreground cyan color
+			printf("# ");
 		} else {
-			printf ("\x1b[42m  ");		// Print foreground green color
+			//printf ("\x1b[42m  ");		// Print foreground green color
+			printf("  ");
 		}
 		if (dmAssignedOp[i] == 0) {
 			printf ("[sd:]");
@@ -110,14 +109,14 @@ void dm_drawTopScreen(void) {
 }
 			    
 void dm_drawBottomScreen(void) {
-	printf ("\x1B[47m");		// Print foreground white color
+	//printf ("\x1B[47m");		// Print foreground white color
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
-	printf ("\x1b[43m");		// Print background yellow color
+	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
 	printf("\n\n Everyone\n   is\n  legal");
-	printf("\x1B[47m");
+	//printf("\x1B[47m");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("[sd:] SDCARD");
@@ -174,9 +173,9 @@ void driveMenu (void) {
 		if (dmCursorPosition > dmMaxCursors)	dmCursorPosition = 0;		// Wrap around to top of list
 
 		if (!dmTextPrinted) {
-			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+		setFontSub();
 			dm_drawBottomScreen();
-			consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
+		setFontTop();
 			dm_drawTopScreen();
 
 			dmTextPrinted = true;

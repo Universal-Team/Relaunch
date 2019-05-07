@@ -31,9 +31,8 @@
 
 #include "nds_loader_arm9.h"
 #include "driveMenu.h"
-#include "driveOperations.h"
 #include "file_browse.h"
-#include "fileOperations.h"
+#include "Operations.h"
 #include "nitrofs.h"
 #include "font.h"
 
@@ -51,15 +50,12 @@ bool applaunch = false;
 
 static u16 bmpImageBuffer[256*192]; //for background
 
-const int tile_base = 0; // font stuff
-const int map_base = 20; // font stuff
-
 using namespace std;
 
 void wifiInit() {
 	struct in_addr ip, gateway, mask, dns1, dns2;
 
-	printf("Connecting to Wifi");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
 
 	if(!Wifi_InitDefault(WFC_CONNECT)) {
 		iprintf("Not Connected to Wifi");
@@ -108,10 +104,8 @@ void loadBG() {
 		}
 	}
 }
-void setFont() {
-	const int tile_base = 0; // font stuff
-	const int map_base = 20; // font stuff
-	PrintConsole *console = consoleInit(0,0, BgType_Text4bpp, BgSize_T_256x256, map_base, tile_base, false, false);
+void setFontTop() {
+	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 	ConsoleFont font;
 	font.gfx = (u16*)fontTiles;
 	font.pal = (u16*)fontPal;
@@ -120,7 +114,38 @@ void setFont() {
 	font.bpp = 4;
 	font.asciiOffset = 32;
 	font.convertSingleColor = false;
+	//font.convertSingleColor = true;
 	consoleSetFont(console, &font);
+}
+void setFontSub() {
+	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
+	ConsoleFont font;
+	font.gfx = (u16*)fontTiles;
+	font.pal = (u16*)fontPal;
+	font.numChars = 95;
+	font.numColors =  fontPalLen / 2;
+	font.bpp = 4;
+	font.asciiOffset = 32;
+	font.convertSingleColor = false;
+	//font.convertSingleColor = true;
+	consoleSetFont(console, &font);
+}
+void bgPre() {
+	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	REG_BG3X = 0;
+	REG_BG3Y = 0;
+	REG_BG3PA = 1<<8;
+	REG_BG3PB = 0;
+	REG_BG3PC = 0;
+	REG_BG3PD = 1<<8;
+
+	REG_BG3CNT_SUB = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	REG_BG3X_SUB = 0;
+	REG_BG3Y_SUB = 0;
+	REG_BG3PA_SUB = 1<<8;
+	REG_BG3PB_SUB = 0;
+	REG_BG3PC_SUB = 0;
+	REG_BG3PD_SUB = 1<<8;
 }
 //---------------------------------------------------------------------------------
 void stop (void) {
@@ -143,8 +168,7 @@ int main(int argc, char **argv) {
 
 	int pathLen;
 	std::string filename;
-	
-	bool yHeld = false;
+
 
 	// initialize video mode
 	videoSetMode(MODE_3_2D | DISPLAY_BG3_ACTIVE);
@@ -161,25 +185,9 @@ int main(int argc, char **argv) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
-	REG_BG3X = 0;
-	REG_BG3Y = 0;
-	REG_BG3PA = 1<<8;
-	REG_BG3PB = 0;
-	REG_BG3PC = 0;
-	REG_BG3PD = 1<<8;
+	bgPre();
 
-	REG_BG3CNT_SUB = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
-	REG_BG3X_SUB = 0;
-	REG_BG3Y_SUB = 0;
-	REG_BG3PA_SUB = 1<<8;
-	REG_BG3PB_SUB = 0;
-	REG_BG3PC_SUB = 0;
-	REG_BG3PD_SUB = 1<<8;
-
-	// Subscreen as a console
-	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-	//setFont();
+	setFontTop();
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
@@ -189,15 +197,9 @@ int main(int argc, char **argv) {
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
 
 	if (isDSiMode()) {
-		scanKeys();
-		if (keysHeld() & KEY_Y) {
-			yHeld = true;
-		}
 		sdMounted = sdMount();
-	}
-	if (!isDSiMode() || !yHeld) {
+	} else {
 		flashcardMounted = flashcardMount();
-		flashcardMountSkipped = false;
 	}
 
 	keysSetRepeat(25,5);
@@ -205,6 +207,7 @@ int main(int argc, char **argv) {
 	appInited = true;
 
 	if(appInited) {
+		loadBG(); //load the background
 			printf("Loading.");
 				for(int i=0;i<20;i++) { // wait for a little bit 
 					swiWaitForVBlank();
@@ -218,9 +221,6 @@ int main(int argc, char **argv) {
 					swiWaitForVBlank();
 		}
 	}
-
-	//wifiInit(); //start wifi initiation
-	//loadBG(); //load the background
 
 
 	while(1) {

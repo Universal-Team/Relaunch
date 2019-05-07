@@ -25,9 +25,8 @@
 
 #include "file_browse.h"
 #include "main.h"
-#include "fileOperations.h"
 #include "driveMenu.h"
-#include "driveOperations.h"
+#include "Operations.h"
 #include "inifile.h"
 #include "font.h"
 
@@ -37,8 +36,6 @@
 #define OPTIONS_ENTRIES_START_ROW 2
 #define ENTRY_PAGE_LENGTH 10
 bool bigJump = false;
-const int tile_base = 0; // font stuff
-const int map_base = 20; // font stuff
 using namespace std;
 static char path[PATH_MAX];
 bool nameEndsWith (const string& name) {
@@ -144,9 +141,11 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		// Set row
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if ((fileOffset - startRow) == i) {
-			printf ("\x1b[46m> ");		// Print foreground cyan color
+			//printf ("\x1b[46m# ");		// Print foreground cyan color
+			printf("# ");
 		} else {
-			printf ("\x1b[42m  ");		// Print foreground green color
+			//printf ("\x1b[42m  ");		// Print foreground green color
+			printf("  ");
 		}
 
 		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
@@ -163,8 +162,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 			printBytes((int)entry->size);
 		}
 	}
-
-	printf ("\x1B[47m");		// Print foreground white color
 }
 
 int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
@@ -176,7 +173,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 
 	printf ("\x1b[0;27H");
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
-	printf ("\x1B[47m");		// Print foreground white color
 	char fullPath[256];
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
 	printf(fullPath);
@@ -275,7 +271,8 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				remove(destPath);
 				fcopy(entry->name.c_str(), destPath);
 			} else if (assignedOp[optionOffset] == 3) {
-				iprintf ("\x1b[2J");
+	// Clear the screen
+	iprintf ("\x1b[2J");
 				printf ("\x1B[42m");//green
 				printf("Press the button to set\nas the hotkey");
 				for(int i=0;i<60;i++) { // wait for 1 second
@@ -367,8 +364,6 @@ bool fileBrowse_paste(char destPath[256]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	printf ("\x1b[43m");		// Print yellow color
-	printf ("      ");	// Clear time
 	consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	
 	printf ("\x1B[47m");		// Print foreground white color
@@ -385,7 +380,7 @@ bool fileBrowse_paste(char destPath[256]) {
 			iprintf ("\x1b[%d;0H  ", i);
 		}
 		// Show cursor
-		iprintf ("\x1b[%d;0H->", optionOffset + OPTIONS_ENTRIES_START_ROW);
+		iprintf ("\x1b[%d;0H#", optionOffset + OPTIONS_ENTRIES_START_ROW);
 
 		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
 		do {

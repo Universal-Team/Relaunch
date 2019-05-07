@@ -1,6 +1,19 @@
-#ifndef FLASHCARD_H
-#define FLASHCARD_H
+#include <nds.h>
 
+#ifndef FILE_COPY
+#define FILE_COPY
+
+extern char clipboard[256];
+extern char clipboardFilename[256];
+extern bool clipboardFolder;
+extern bool clipboardOn;
+extern bool clipboardUsed;
+extern bool clipboardDrive;	// false == SD card, true == Flashcard
+
+extern void printBytes(int bytes);
+
+extern off_t getFileSize(const char *fileName);
+extern int fcopy(const char *sourcePath, const char *destinationPath);
 extern u8 stored_SCFG_MC;
 
 extern bool sdMounted;
@@ -23,4 +36,4 @@ extern void sdUnmount(void);
 extern bool flashcardMount(void);
 extern void flashcardUnmount(void);
 
-#endif //FLASHCARD_H
+#endif // FILE_COPY
