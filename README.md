@@ -29,4 +29,6 @@
 <h3 align= "center">Credits</h3>
 </p>
 
-[RocketRobz](https://github.com/RocketRobz): [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu
+[nocash](http://problemkaputt.de):, Unlaunch, which this app is a lookalike to, and the font, which is taken from Unlaunch.
+
+[RocketRobz](https://github.com/RocketRobz): [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu.
