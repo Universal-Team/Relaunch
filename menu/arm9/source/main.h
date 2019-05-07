@@ -15,6 +15,8 @@ extern bool isRegularDS;
 
 extern bool applaunch;
 
-extern void setFont();
+extern void setFontTop();
+extern void setFontSub();
+extern void wifiInit();
 
 #endif //MAIN_H
