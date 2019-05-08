@@ -203,8 +203,6 @@ void driveMenu (void) {
 				}
 			}
 		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(held & KEY_R));
-	
-		printf ("\x1B[47m");		// Print foreground white color
 
 		if ((pressed & KEY_UP) && dmMaxCursors != -1) {
 			dmCursorPosition -= 1;
