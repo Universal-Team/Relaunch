@@ -26,6 +26,9 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <dswifi9.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 
 #include "main.h"
@@ -61,11 +64,29 @@ void loadGbaCart(void) {
 	}
 
 void wifiTest(void) {
-	wifiInit(); //start wifi initiation
-// start FTP server
-	printf("Error!");
-	}
+	struct in_addr ip, gateway, mask, dns1, dns2;
 
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
+
+	ledBlink(1);
+
+	if(!Wifi_InitDefault(WFC_CONNECT)) {
+		iprintf("Not Connected to Wifi");
+	} else {
+
+		iprintf("Connected to Wifi\n\n");
+
+		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
+		
+		iprintf("ip     : %s\n", inet_ntoa(ip) );
+		iprintf("gateway: %s\n", inet_ntoa(gateway) );
+		//iprintf("mask   : %s\n", inet_ntoa(mask) );
+		//iprintf("dns1   : %s\n", inet_ntoa(dns1) );
+		//iprintf("dns2   : %s\n", inet_ntoa(dns2) );
+// start FTP server
+	printf("not yet implemented...");
+	}
+}
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");

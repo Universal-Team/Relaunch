@@ -26,8 +26,6 @@
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
-#include <dswifi9.h>
-#include <netinet/in.h>
 
 #include "nds_loader_arm9.h"
 #include "driveMenu.h"
@@ -52,28 +50,6 @@ static u16 bmpImageBuffer[256*192]; //for background
 
 using namespace std;
 
-void wifiInit() {
-	struct in_addr ip, gateway, mask, dns1, dns2;
-
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
-
-	if(!Wifi_InitDefault(WFC_CONNECT)) {
-		iprintf("Not Connected to Wifi");
-	} else {
-
-		iprintf("Connected to Wifi\n\n");
-
-		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
-		
-		iprintf("ip     : %s\n", inet_ntoa(ip) );
-		iprintf("gateway: %s\n", inet_ntoa(gateway) );
-		iprintf("mask   : %s\n", inet_ntoa(mask) );
-		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
-		iprintf("dns2   : %s\n", inet_ntoa(dns2) );
-		
-		
-	}
-}
 void loadBG() {
 		if(sdMounted) {
 		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
