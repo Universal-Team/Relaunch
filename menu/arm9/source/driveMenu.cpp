@@ -69,7 +69,7 @@ void wifiTest(void) {
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.1");
+	printf ("\nRelaunch.nds v0.2");
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
