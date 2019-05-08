@@ -17,6 +17,5 @@ extern bool applaunch;
 
 extern void setFontTop();
 extern void setFontSub();
-extern void wifiInit();
 
 #endif //MAIN_H
