@@ -274,13 +274,17 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 			} else if (assignedOp[optionOffset] == 3) {
 	// Clear the screen
 	iprintf ("\x1b[2J");
-				printf ("\x1B[42m");//green
 				printf("Press the button to set\nas the hotkey");
-				for(int i=0;i<60;i++) { // wait for 1 second
+				for (int i = 0; i < 60*1; i++) {
 					swiWaitForVBlank();
 				}
 				CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 while (true) {
+do {
+	scanKeys();
+	pressed = keysHeld();
+	swiWaitForVBlank();
+} while (!pressed);
 	if (pressed & KEY_A) {
 		printf("Please Wait...");
 		ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath);
