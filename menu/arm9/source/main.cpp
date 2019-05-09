@@ -28,8 +28,7 @@
 #include <unistd.h>
 
 #include "nds_loader_arm9.h"
-#include "driveMenu.h"
-#include "file_browse.h"
+#include "menu.h"
 #include "Operations.h"
 #include "nitrofs.h"
 #include "font.h"
