@@ -20,11 +20,13 @@
 
 ------------------------------------------------------------------*/
 
+//basic things
 #include <nds.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+//wifi stuffs
 #include <dswifi9.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -60,16 +62,17 @@ void loadGbaCart(void) {
 		*(u32*)(0x06200000+i) = 0;
 	}
 // Switch to GBA mode
-	runNdsFile("_nds/Relaunch/gba.bin", 0, NULL, false);
+	runNdsFile("_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
 	}
-
+void loadDSCart() {
+runNdsFile("_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+}
 void wifiTest(void) {
-	struct in_addr ip, gateway, mask, dns1, dns2;
+	/*struct in_addr ip, gateway, mask, dns1, dns2;*/
 
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
-
-	ledBlink(1);
-
+	//printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNot Yet Implemented");
+/*
 	if(!Wifi_InitDefault(WFC_CONNECT)) {
 		iprintf("Not Connected to Wifi");
 	} else {
@@ -84,8 +87,8 @@ void wifiTest(void) {
 		//iprintf("dns1   : %s\n", inet_ntoa(dns1) );
 		//iprintf("dns2   : %s\n", inet_ntoa(dns2) );
 // start FTP server
-	printf("not yet implemented...");
-	}
+
+	}*/
 }
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
@@ -118,26 +121,22 @@ void dm_drawTopScreen(void) {
 				iprintf (" %s", fatLabel);
 			}
 		} else if (dmAssignedOp[i] == 2) {
-			printf ("Launch Slot-2 Cart");
-			if (gbaFixedValue != 0x96) {
-				iprintf ("\x1b[%d;29H", i + ENTRIES_START_ROW);
-				printf ("[x]");
-			}
+			printf ("GBA GAME");
 		} else if (dmAssignedOp[i] == 3) {
-			printf ("WifiFTP");
+			printf ("DS GAME");
+		} else if (dmAssignedOp[i] == 4) {
+			printf ("WIFIFTP");
 		}
 	}
 }
 			    
 void dm_drawBottomScreen(void) {
-	//printf ("\x1B[47m");		// Print foreground white color
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
 	printf("\n\n Everyone\n   is\n  legal");
-	//printf("\x1B[47m");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("[sd:] SDCARD");
@@ -152,9 +151,12 @@ void dm_drawBottomScreen(void) {
 		}
 		printf ("\n(Slot-1 SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 2) {
-		printf ("\n\n\n\n\n\nLaunch Slot-2 Cart\n");
-		printf ("\n(GBA Game)");
+		printf ("\n\n\n\n\n\nGBA GAME\n");
+		printf ("\n(Launch Slot-2 Card)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
+		printf ("\n\n\n\n\n\nDS GAME\n");
+		printf ("\n(Launch Slot-1 Card)");
+	} else if (dmAssignedOp[dmCursorPosition] == 4) {
 		printf ("\n\n\n\n\n\nWifiFTP\n");
 		printf ("\n(Wireless FTP Server)");
 	}
@@ -185,9 +187,13 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (!isDSiMode() && isRegularDS) {
+		if (isDSiMode()) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
+		}
+		if (!isDSiMode()) {
+			dmMaxCursors++;
+			dmAssignedOp[dmMaxCursors] = 4;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -254,7 +260,11 @@ void driveMenu (void) {
 				dmTextPrinted = false;
 				loadGbaCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 3) {
+			} else if (dmAssignedOp[dmCursorPosition] == 3 && isDSiMode() && sdMounted) {
+				dmTextPrinted = false;
+				loadDSCart();
+				break;
+			} else if (dmAssignedOp[dmCursorPosition] == 4) {
 				dmTextPrinted = false;
 				wifiTest();
 				break;
