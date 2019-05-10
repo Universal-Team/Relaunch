@@ -200,8 +200,12 @@ int main(int argc, char **argv) {
 
 		if (screenMode == 0) {
 			driveMenu();
-		} else {
+		} 
+		if (screenMode == 1) {
 			filename = browseForFile();
+		}
+		if (screenMode == 2) {
+			eqMenu();
 		}
 
 		if (applaunch) {

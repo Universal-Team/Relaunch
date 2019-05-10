@@ -18,7 +18,7 @@ void getDirectoryContents (vector<DirEntry>& dirContents);
 extern bool flashcardMountSkipped;
 
 extern void driveMenu (void);
-
+extern void eqMenu (void);
 
 
 #endif //MENU_H
