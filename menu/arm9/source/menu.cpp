@@ -75,11 +75,10 @@ void loadDSCart() {
 runNdsFile("_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
 }
 void wifiTest(void) {
-	/*struct in_addr ip, gateway, mask, dns1, dns2;*/
+	struct in_addr ip, gateway, mask, dns1, dns2;
 
-	//printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNot Yet Implemented");
-/*
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
+
 	if(!Wifi_InitDefault(WFC_CONNECT)) {
 		iprintf("Not Connected to Wifi");
 	} else {
@@ -95,7 +94,7 @@ void wifiTest(void) {
 		//iprintf("dns2   : %s\n", inet_ntoa(dns2) );
 // start FTP server
 
-	}*/
+	}
 }
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
@@ -293,6 +292,7 @@ void driveMenu (void) {
 
 // file browse stuff below!
 // file browse stuff below! (yes this is on 2 lines)
+
 bool nameEndsWith (const string& name) {
 
 	if (name.size() == 0) return false;
@@ -610,7 +610,6 @@ bool fileBrowse_paste(char destPath[256]) {
 	int maxCursors = -1;
 
 	printf ("\x1b[0;27H");
-	//consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	setFontSub();
 
 	printf(clipboardFolder ? "Paste folder here?" : "Paste file here?");
