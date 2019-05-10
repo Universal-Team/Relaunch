@@ -73,7 +73,6 @@ int main() {
 	powerOn(POWER_SOUND);
 
 	readUserSettings();
-	ledBlink(0);
 
 	irqInit();
 	// Start the RTC tracking IRQ
