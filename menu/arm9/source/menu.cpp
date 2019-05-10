@@ -28,12 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
-//wifi stuffs
-#include <dswifi9.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
 
 #include "nds_loader_arm9.h"
 #include "main.h"
@@ -46,6 +40,7 @@
 #define ENTRIES_PER_SCREEN 21
 #define ENTRIES_START_ROW 3
 #define OPTIONS_ENTRIES_START_ROW 2
+#define ENTRIES_START_ROW_EQ 3
 #define ENTRY_PAGE_LENGTH 10
 bool bigJump = false;
 using namespace std;
@@ -57,6 +52,15 @@ static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
 static int dmAssignedOp[3] = {-1};
 static int dmMaxCursors = -1;
+static bool eqTextPrinted = false;
+static int eqCursorPosition = 0;
+static int eqAssignedOp[3] = {-1};
+static int eqMaxCursors = -1;
+static int noLock = 0;
+static int aLock = 0;
+static int bLock = 0;
+static int xLock = 0;
+static int yLock = 0;
 static u8 gbaFixedValue = 0; 
 
 void loadGbaCart(void) {
@@ -73,28 +77,6 @@ void loadGbaCart(void) {
 	}
 void loadDSCart() {
 runNdsFile("_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
-}
-void wifiTest(void) {
-	struct in_addr ip, gateway, mask, dns1, dns2;
-
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nConnecting to Wifi");
-
-	if(!Wifi_InitDefault(WFC_CONNECT)) {
-		iprintf("Not Connected to Wifi");
-	} else {
-
-		iprintf("Connected to Wifi\n\n");
-
-		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
-		
-		iprintf("ip     : %s\n", inet_ntoa(ip) );
-		iprintf("gateway: %s\n", inet_ntoa(gateway) );
-		//iprintf("mask   : %s\n", inet_ntoa(mask) );
-		//iprintf("dns1   : %s\n", inet_ntoa(dns1) );
-		//iprintf("dns2   : %s\n", inet_ntoa(dns2) );
-// start FTP server
-
-	}
 }
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
@@ -122,16 +104,11 @@ void dm_drawTopScreen(void) {
 				iprintf (" %s", sdLabel);
 			}
 		} else if (dmAssignedOp[i] == 1) {
-			printf ("[fat:]");
-			if (fatLabel[0] != '\0') {
-				iprintf (" %s", fatLabel);
-			}
-		} else if (dmAssignedOp[i] == 2) {
 			printf ("GBA GAME");
-		} else if (dmAssignedOp[i] == 3) {
+		} else if (dmAssignedOp[i] == 2) {
 			printf ("DS GAME");
-		} else if (dmAssignedOp[i] == 4) {
-			printf ("WIFIFTP");
+		} else if (dmAssignedOp[i] == 3) {
+			printf ("OPTIONS");
 		}
 	}
 }
@@ -151,20 +128,14 @@ void dm_drawBottomScreen(void) {
 		}
 		printf ("\n(SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 1) {
-		printf ("\n\n\n\n\n\n[fat:] FLASHCART");
-		if (fatLabel[0] != '\0') {
-			iprintf (" \n(%s)", fatLabel);
-		}
-		printf ("\n(Slot-1 SD FAT)");
-	} else if (dmAssignedOp[dmCursorPosition] == 2) {
 		printf ("\n\n\n\n\n\nGBA GAME\n");
 		printf ("\n(Launch Slot-2 Card)");
-	} else if (dmAssignedOp[dmCursorPosition] == 3) {
+	} else if (dmAssignedOp[dmCursorPosition] == 2) {
 		printf ("\n\n\n\n\n\nDS GAME\n");
 		printf ("\n(Launch Slot-1 Card)");
-	} else if (dmAssignedOp[dmCursorPosition] == 4) {
-		printf ("\n\n\n\n\n\nWifiFTP\n");
-		printf ("\n(Wireless FTP Server)");
+	} else if (dmAssignedOp[dmCursorPosition] == 3) {
+		printf ("\n\n\n\n\n\nOPTIONS\n");
+		printf ("\n(Settings & File Browser)");
 	}
 }
 
@@ -185,21 +156,17 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 0;
 		}
-		if (flashcardMounted) {
+		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 1;
 		}
-		if (!isDSiMode() && isRegularDS) {
+		if (isDSiMode()) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (isDSiMode()) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 3;
-		}
 		if (!isDSiMode()) {
 			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 4;
+			dmAssignedOp[dmMaxCursors] = 3;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -256,23 +223,17 @@ void driveMenu (void) {
 				chdir("sd:/");
 				screenMode = 1;
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 1 && flashcardMounted) {
-				dmTextPrinted = false;
-				secondaryDrive = true;
-				chdir("fat:/");
-				screenMode = 1;
-				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
+			} else if (dmAssignedOp[dmCursorPosition] == 1 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
 				dmTextPrinted = false;
 				loadGbaCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 3 && isDSiMode() && sdMounted) {
+			} else if (dmAssignedOp[dmCursorPosition] == 2 && isDSiMode() && sdMounted) {
 				dmTextPrinted = false;
 				loadDSCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 4) {
+			} else if (dmAssignedOp[dmCursorPosition] == 3) {
 				dmTextPrinted = false;
-				wifiTest();
+				screenMode = 2;
 				break;
 				}
 			}
@@ -775,7 +736,7 @@ string browseForFile (void) {
 			DirEntry* entry = &dirContents.at(fileOffset);
 			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0)))
 			{
-				screenMode = 0;
+				screenMode = 2;
 				return "null";
 			} else if (entry->isDirectory) {
 				//printf("\x1b[46m"); // print cyan color
@@ -800,7 +761,7 @@ string browseForFile (void) {
 
 		if (pressed & KEY_B) {
 			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
-				screenMode = 0;
+				screenMode = 2;
 				return "null";
 			}
 			// Go up a directory
@@ -919,4 +880,202 @@ string browseForFile (void) {
 			clipboardOn = !clipboardOn;
 		}
 	}
+}
+
+// OPTIONS MENU THINGS BELOW
+// OPTIONS MENU THINGS BELOW
+
+void eq_drawTopScreen(void) {
+	//printf ("\x1b[43m"); //yellow
+	printf ("\x1b[0;0H");
+	printf ("\nCHANGE BOOT DEFAULT/HOTKEYS:");
+
+	// Move to 4th row
+	printf ("\x1b[3;0H");
+
+	if (eqMaxCursors == -1) {
+		printf ("um, this shouldn't happen!");
+	} else
+	for (int i = 0; i <= eqMaxCursors; i++) {
+		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW_EQ);
+		if (eqCursorPosition == i) {
+			//printf ("\x1b[46m# ");		// Print foreground cyan color
+			printf("# ");
+		} else {
+			//printf ("\x1b[42m  ");		// Print foreground green color
+			printf("  ");
+		}
+		if (eqAssignedOp[i] == 0) {
+			printf ("NO BUTTON");
+		} else if (eqAssignedOp[i] == 1) {
+			printf ("BUTTON A");
+		} else if (eqAssignedOp[i] == 2) {
+			printf ("BUTTON B");
+		} else if (eqAssignedOp[i] == 3) {
+			printf ("BUTTON X");
+		} else if (eqAssignedOp[i] == 4) {
+			printf ("BUTTON Y");
+		} else if (eqAssignedOp[i] == 5) {
+			printf ("SAVE & EXIT");
+		}
+	}
+}
+			    
+void eq_drawBottomScreen(void) {
+	printf ("\x1b[23;0H");
+	printf (titleName);
+
+	//printf ("\x1b[43m");		// Print background yellow color
+	printf ("\x1b[0;0H");
+	printf("\n\n Everyone\n   is\n  legal");
+	printf("\x1b[0;1H");
+	if (eqAssignedOp[eqCursorPosition] == 0) {
+		printf ("\n\n\n\n\n\nNO BUTTON\n");
+		printf ("\n(BOOT DEFAULT)");
+	} else if (eqAssignedOp[eqCursorPosition] == 1) {
+		printf ("\n\n\n\n\n\nBUTTON A\n");
+		printf ("\n(BOOT A)");
+	} else if (eqAssignedOp[eqCursorPosition] == 2) {
+		printf ("\n\n\n\n\n\nBUTTON B\n");
+		printf ("\n(BOOT B)");
+	} else if (eqAssignedOp[eqCursorPosition] == 3) {
+		printf ("\n\n\n\n\n\nBUTTON X\n");
+		printf ("\n(BUTTON X)");
+	} else if (eqAssignedOp[eqCursorPosition] == 4) {
+		printf ("\n\n\n\n\n\nBUTTON Y\n");
+		printf ("\n(BUTTON Y)");
+	} else if (eqAssignedOp[eqCursorPosition] == 5) {
+		printf ("\n\n\n\n\n\nSAVE & EXIT\n");
+		printf ("\n(SAVE & EXIT)");
+	}
+}
+void eqMenu (void) {
+	int pressed = 0;
+	int held = 0;
+	noLock = 0;
+	aLock = 0;
+	bLock = 0;
+	xLock = 0;
+	yLock = 0;
+	eqTextPrinted = false;
+
+	while (true) {
+		for (int i = 0; i < 3; i++) {
+			eqAssignedOp[i] = -1;
+		}
+		eqMaxCursors = -1;
+		if (flashcardMounted){
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 0;
+		}
+		if (flashcardMounted) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 1;
+		}
+		if (flashcardMounted) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 2;
+		}
+		if (flashcardMounted) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 3;
+		}
+		if (flashcardMounted) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 4;
+		}
+		if (flashcardMounted) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 5;
+		}
+
+		if (eqCursorPosition < 0) 	eqCursorPosition = eqMaxCursors;		// Wrap around to bottom of list
+		if (eqCursorPosition > eqMaxCursors)	eqCursorPosition = 0;		// Wrap around to top of list
+
+		if (!eqTextPrinted) {
+		setFontSub();
+			eq_drawBottomScreen();
+		setFontTop();
+			eq_drawTopScreen();
+
+			eqTextPrinted = true;
+		}
+
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+	
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (!isDSiMode() && isRegularDS) {
+				if (*(u8*)(0x080000B2) != gbaFixedValue) {
+					eqTextPrinted = false;
+					break;
+				}
+			} else if (isDSiMode()) {
+				if (REG_SCFG_MC != stored_SCFG_MC) {
+					eqTextPrinted = false;
+					break;
+				}
+			}
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(held & KEY_R));
+
+		if ((pressed & KEY_UP) && eqMaxCursors != -1) {
+			eqCursorPosition -= 1;
+			eqTextPrinted = false;
+		}
+		if ((pressed & KEY_DOWN) && eqMaxCursors != -1) {
+			eqCursorPosition += 1;
+			eqTextPrinted = false;
+		}
+
+		if (eqCursorPosition < 0) 	eqCursorPosition = eqMaxCursors;		// Wrap around to bottom of list
+		if (eqCursorPosition > eqMaxCursors)	eqCursorPosition = 0;		// Wrap around to top of list
+
+		if (pressed & KEY_A) {
+			if (eqAssignedOp[eqCursorPosition] == 0) {
+				eqTextPrinted = false;
+				secondaryDrive = true;
+				chdir("fat:/");
+				noLock = 1;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 1) {
+				eqTextPrinted = false;
+				secondaryDrive = true;
+				chdir("fat:/");
+				aLock = 1;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 2) {
+				eqTextPrinted = false;
+				secondaryDrive = true;
+				chdir("fat:/");
+				bLock = 1;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 3) {
+				eqTextPrinted = false;
+				secondaryDrive = true;
+				chdir("fat:/");
+				xLock = 1;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 4) {
+				eqTextPrinted = false;
+				secondaryDrive = true;
+				chdir("fat:/");
+				yLock = 1;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 5) {
+				screenMode = 0;
+				break;
+			}
+		}
+}
 }
