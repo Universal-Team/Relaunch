@@ -47,7 +47,6 @@ using namespace std;
 static char path[PATH_MAX];
 
 bool flashcardMountSkipped = true;
-static bool flashcardMountRan = true;
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
 static int dmAssignedOp[3] = {-1};
@@ -61,7 +60,6 @@ static int aLock = 0;
 static int bLock = 0;
 static int xLock = 0;
 static int yLock = 0;
-static u8 gbaFixedValue = 0; 
 
 void loadGbaCart(void) {
 	irqDisable(IRQ_VBLANK);
@@ -144,10 +142,6 @@ void driveMenu (void) {
 	int held = 0;
 
 	while (true) {
-		if (!isDSiMode() && isRegularDS) {
-			gbaFixedValue = *(u8*)(0x080000B2);
-		}
-
 		for (int i = 0; i < 3; i++) {
 			dmAssignedOp[i] = -1;
 		}
@@ -156,7 +150,7 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 0;
 		}
-		if (access("/_nds/Relaunch", F_OK) == 0) {
+		if (access("/_nds/Relaunch/", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 1;
 		}
@@ -164,7 +158,7 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (access("/_nds/Relaunch", F_OK) == 0) {
+		if (access("/_nds/Relaunch/", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
 		}
@@ -191,12 +185,7 @@ void driveMenu (void) {
 			held = keysHeld();
 			swiWaitForVBlank();
 
-			if (!isDSiMode() && isRegularDS) {
-				if (*(u8*)(0x080000B2) != gbaFixedValue) {
-					dmTextPrinted = false;
-					break;
-				}
-			} else if (isDSiMode()) {
+			if (isDSiMode()) {
 				if (REG_SCFG_MC != stored_SCFG_MC) {
 					dmTextPrinted = false;
 					break;
@@ -227,7 +216,7 @@ void driveMenu (void) {
 				dmTextPrinted = false;
 				loadDSCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
+			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS) {
 				dmTextPrinted = false;
 				loadGbaCart();
 				break;
@@ -235,20 +224,9 @@ void driveMenu (void) {
 				dmTextPrinted = false;
 				screenMode = 2;
 				break;
-				}
 			}
 		}
-
-		if (isDSiMode() && !flashcardMountSkipped && !pressed && !held) {
-			if (REG_SCFG_MC == 0x11) {
-				if (flashcardMounted) {
-					flashcardUnmount();
-				}
-			} else if (!flashcardMountRan) {
-				flashcardMounted = flashcardMount();	// Try to mount flashcard
-			}
-			flashcardMountRan = false;
-		}
+	}
 }
 
 // file browse stuff below!
@@ -1011,12 +989,7 @@ void eqMenu (void) {
 			held = keysHeld();
 			swiWaitForVBlank();
 
-			if (!isDSiMode() && isRegularDS) {
-				if (*(u8*)(0x080000B2) != gbaFixedValue) {
-					eqTextPrinted = false;
-					break;
-				}
-			} else if (isDSiMode()) {
+			if (isDSiMode()) {
 				if (REG_SCFG_MC != stored_SCFG_MC) {
 					eqTextPrinted = false;
 					break;
