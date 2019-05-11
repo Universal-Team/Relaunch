@@ -1,6 +1,7 @@
 *.o
 *.d
 *.elf
+*.cia
 *.map
 *.DS_Store
 *.nds
