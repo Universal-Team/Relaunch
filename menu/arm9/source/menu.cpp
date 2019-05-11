@@ -73,10 +73,10 @@ void loadGbaCart(void) {
 		*(u32*)(0x06200000+i) = 0;
 	}
 // Switch to GBA mode
-	runNdsFile("_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
+	runNdsFile("/_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
 	}
 void loadDSCart() {
-runNdsFile("_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+runNdsFile("/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
 }
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
@@ -104,9 +104,9 @@ void dm_drawTopScreen(void) {
 				iprintf (" %s", sdLabel);
 			}
 		} else if (dmAssignedOp[i] == 1) {
-			printf ("GBA GAME");
-		} else if (dmAssignedOp[i] == 2) {
 			printf ("DS GAME");
+		} else if (dmAssignedOp[i] == 2) {
+			printf ("GBA GAME");
 		} else if (dmAssignedOp[i] == 3) {
 			printf ("OPTIONS");
 		}
@@ -128,11 +128,11 @@ void dm_drawBottomScreen(void) {
 		}
 		printf ("\n(SD FAT)");
 	} else if (dmAssignedOp[dmCursorPosition] == 1) {
-		printf ("\n\n\n\n\n\nGBA GAME\n");
-		printf ("\n(Launch Slot-2 Card)");
-	} else if (dmAssignedOp[dmCursorPosition] == 2) {
 		printf ("\n\n\n\n\n\nDS GAME\n");
 		printf ("\n(Launch Slot-1 Card)");
+	} else if (dmAssignedOp[dmCursorPosition] == 2) {
+		printf ("\n\n\n\n\n\nGBA GAME\n");
+		printf ("\n(Launch Slot-2 Card)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
 		printf ("\n\n\n\n\n\nOPTIONS\n");
 		printf ("\n(Settings & File Browser)");
@@ -156,15 +156,15 @@ void driveMenu (void) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 0;
 		}
-		if (!isDSiMode() && isRegularDS) {
+		if (access("/_nds/Relaunch", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 1;
 		}
-		if (isDSiMode()) {
+		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (!isDSiMode()) {
+		if (access("/_nds/Relaunch", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
 		}
@@ -223,13 +223,13 @@ void driveMenu (void) {
 				chdir("sd:/");
 				screenMode = 1;
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 1 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
-				dmTextPrinted = false;
-				loadGbaCart();
-				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 2 && isDSiMode() && sdMounted) {
+			} else if (dmAssignedOp[dmCursorPosition] == 1) {
 				dmTextPrinted = false;
 				loadDSCart();
+				break;
+			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS && flashcardMounted && gbaFixedValue == 0x96) {
+				dmTextPrinted = false;
+				loadGbaCart();
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 3) {
 				dmTextPrinted = false;
