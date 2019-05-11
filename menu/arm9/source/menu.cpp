@@ -1050,5 +1050,5 @@ void eqMenu (void) {
 				break;
 			}
 		}
-}
+	}
 }
