@@ -106,6 +106,8 @@ void dm_drawTopScreen(void) {
 		} else if (dmAssignedOp[i] == 2) {
 			printf ("GBA GAME");
 		} else if (dmAssignedOp[i] == 3) {
+			printf ("WIFIBOOT");
+		} else if (dmAssignedOp[i] == 4) {
 			printf ("OPTIONS");
 		}
 	}
@@ -132,6 +134,9 @@ void dm_drawBottomScreen(void) {
 		printf ("\n\n\n\n\n\nGBA GAME\n");
 		printf ("\n(Launch Slot-2 Card)");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
+		printf ("\n\n\n\n\n\nWIFIBOOT\n");
+		printf ("\n(dslink clone in asm by nocash)");
+	} else if (dmAssignedOp[dmCursorPosition] == 4) {
 		printf ("\n\n\n\n\n\nOPTIONS\n");
 		printf ("\n(Settings & File Browser)");
 	}
@@ -161,6 +166,10 @@ void driveMenu (void) {
 		if (access("/_nds/Relaunch/", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
+		}
+		if (access("/_nds/Relaunch/", F_OK) == 0) {
+			dmMaxCursors++;
+			dmAssignedOp[dmMaxCursors] = 4;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -221,6 +230,10 @@ void driveMenu (void) {
 				loadGbaCart();
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 3) {
+				dmTextPrinted = false;
+				runNdsFile("/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
+				break;
+			} else if (dmAssignedOp[dmCursorPosition] == 4) {
 				dmTextPrinted = false;
 				screenMode = 2;
 				break;
