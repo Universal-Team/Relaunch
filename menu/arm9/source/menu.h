@@ -15,6 +15,7 @@ struct DirEntry {
 
 std::string browseForFile (void);
 void getDirectoryContents (vector<DirEntry>& dirContents);
+extern void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow);
 extern bool flashcardMountSkipped;
 
 extern void driveMenu (void);
