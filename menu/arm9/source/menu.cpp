@@ -37,7 +37,7 @@
 #include "font.h"
 
 #define SCREEN_COLS 32
-#define ENTRIES_PER_SCREEN 21
+#define ENTRIES_PER_SCREEN 19
 #define ENTRIES_START_ROW 3
 #define OPTIONS_ENTRIES_START_ROW 2
 #define ENTRIES_START_ROW_EQ 3
@@ -60,6 +60,7 @@ static int aLock = 0;
 static int bLock = 0;
 static int xLock = 0;
 static int yLock = 0;
+static int errorLock = 0;
 
 void loadGbaCart(void) {
 	irqDisable(IRQ_VBLANK);
@@ -85,7 +86,7 @@ void dm_drawTopScreen(void) {
 	printf ("\x1b[3;0H");
 
 	if (dmMaxCursors == -1) {
-		printf ("No drives found!");
+		printf ("This Shouldn't Happen!");
 	} else
 	for (int i = 0; i <= dmMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
@@ -97,17 +98,12 @@ void dm_drawTopScreen(void) {
 			printf("  ");
 		}
 		if (dmAssignedOp[i] == 0) {
-			printf ("[sd:]");
-			if (sdLabel[0] != '\0') {
-				iprintf (" %s", sdLabel);
-			}
-		} else if (dmAssignedOp[i] == 1) {
 			printf ("DS GAME");
-		} else if (dmAssignedOp[i] == 2) {
+		} else if (dmAssignedOp[i] == 1) {
 			printf ("GBA GAME");
-		} else if (dmAssignedOp[i] == 3) {
+		} else if (dmAssignedOp[i] == 2) {
 			printf ("WIFIBOOT");
-		} else if (dmAssignedOp[i] == 4) {
+		} else if (dmAssignedOp[i] == 3) {
 			printf ("OPTIONS");
 		}
 	}
@@ -122,54 +118,57 @@ void dm_drawBottomScreen(void) {
 	printf("\n\n Everyone\n   is\n  legal");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
-		printf ("[sd:] SDCARD");
-		if (sdLabel[0] != '\0') {
-			iprintf (" (%s)", sdLabel);
-		}
-		printf ("\n(SD FAT)");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\ncart:");
 	} else if (dmAssignedOp[dmCursorPosition] == 1) {
-		printf ("\n\n\n\n\n\nDS GAME\n");
-		printf ("\n(Launch Slot-1 Card)");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\nslot2:");
 	} else if (dmAssignedOp[dmCursorPosition] == 2) {
-		printf ("\n\n\n\n\n\nGBA GAME\n");
-		printf ("\n(Launch Slot-2 Card)");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\nwifi:");
 	} else if (dmAssignedOp[dmCursorPosition] == 3) {
-		printf ("\n\n\n\n\n\nWIFIBOOT\n");
-		printf ("\n(dslink clone in asm by nocash)");
-	} else if (dmAssignedOp[dmCursorPosition] == 4) {
-		printf ("\n\n\n\n\n\nOPTIONS\n");
-		printf ("\n(Settings & File Browser)");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\nsett:");
 	}
 }
 
 void driveMenu (void) {
 	int pressed = 0;
 	int held = 0;
+	/*int fileOffset = 0;
+	int screenOffset;
+	if (!isDSiMode()) {
+		screenOffset = 5;
+	} else { 
+		screenOffset = 4;
+	}
+	vector<DirEntry> dirContents;
+	getDirectoryContents(dirContents);*/
 
 	while (true) {
 		for (int i = 0; i < 3; i++) {
 			dmAssignedOp[i] = -1;
 		}
 		dmMaxCursors = -1;
-		if (isDSiMode() && sdMounted){
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 0;
 		}
-		if (access("/_nds/Relaunch/", F_OK) == 0) {
+		if (!isDSiMode() && isRegularDS) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 1;
 		}
-		if (!isDSiMode() && isRegularDS) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (access("/_nds/Relaunch/", F_OK) == 0) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
-		}
-		if (access("/_nds/Relaunch/", F_OK) == 0) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 4;
 		}
 
 		if (dmCursorPosition < 0) 	dmCursorPosition = dmMaxCursors;		// Wrap around to bottom of list
@@ -180,6 +179,7 @@ void driveMenu (void) {
 			dm_drawBottomScreen();
 		setFontTop();
 			dm_drawTopScreen();
+			//showDirectoryContents(dirContents, fileOffset, screenOffset);
 
 			dmTextPrinted = true;
 		}
@@ -215,25 +215,19 @@ void driveMenu (void) {
 		if (dmCursorPosition > dmMaxCursors)	dmCursorPosition = 0;		// Wrap around to top of list
 
 		if (pressed & KEY_A) {
-			if (dmAssignedOp[dmCursorPosition] == 0 && isDSiMode() && sdMounted) {
-				dmTextPrinted = false;
-				secondaryDrive = false;
-				chdir("sd:/");
-				screenMode = 1;
-				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 1) {
+			if (dmAssignedOp[dmCursorPosition] == 0) {
 				dmTextPrinted = false;
 				loadDSCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 2 && isRegularDS) {
+			} else if (dmAssignedOp[dmCursorPosition] == 1 && isRegularDS) {
 				dmTextPrinted = false;
 				loadGbaCart();
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 3) {
+			} else if (dmAssignedOp[dmCursorPosition] == 2) {
 				dmTextPrinted = false;
 				runNdsFile("/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 4) {
+			} else if (dmAssignedOp[dmCursorPosition] == 3) {
 				dmTextPrinted = false;
 				screenMode = 2;
 				break;
@@ -245,16 +239,16 @@ void driveMenu (void) {
 // file browse stuff below!
 // file browse stuff below! (yes this is on 2 lines)
 
+void OnKeyPressed(int key) {
+	if(key > 0)
+		iprintf("%c", key);
+}
+
 bool nameEndsWith (const string& name) {
 
 	if (name.size() == 0) return false;
 
 	return true;
-}
-
-void OnKeyPressed(int key) {
-	if(key > 0)
-		iprintf("%c", key);
 }
 
 bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
@@ -303,15 +297,22 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 					dirEntry.isApp = false;
 				}
 
-				if (dirEntry.name.compare(".") != 0 && (dirEntry.isDirectory || nameEndsWith(dirEntry.name))) {
-					dirContents.push_back (dirEntry);
-				}
-			}
-
+if ((strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0) ||
+	(strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "NDS") == 0) ||
+    (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "argv") == 0) ||
+	(strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "ARGV") == 0) ||
+    (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "dsi") == 0) ||
+	(strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "DSI") == 0) ||
+	(strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "app") == 0) ||
+	(strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "APP") == 0) ||
+    (dirEntry.name.compare(".") != 0 && (dirEntry.isDirectory))) {
+    dirContents.push_back (dirEntry);
+}
 		}
+	}
 		
 		closedir(pdir);
-	}	
+}
 	
 	sort(dirContents.begin(), dirContents.end(), dirEntryPredicate);
 
@@ -324,9 +325,6 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 
 void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow) {
 	getcwd(path, PATH_MAX);
-
-	// Clear the screen
-	iprintf ("\x1b[2J");
 	
 	// Print the path
 	//printf ("\x1b[43m"); 	// Print yellow color
@@ -345,7 +343,8 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		const DirEntry* entry = &dirContents.at(i + startRow);
 		char entryName[SCREEN_COLS + 1];
 
-		// Set row
+		// Set row if in the file browser
+		if (screenMode == 1) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if ((fileOffset - startRow) == i) {
 			//printf ("\x1b[46m# ");		// Print foreground cyan color
@@ -354,14 +353,12 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
+	}
 
 		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
 		entryName[SCREEN_COLS] = '\0';
 		printf (entryName);
-		if (strcmp(entry->name.c_str(), "..") == 0) {
-			printf ("\x1b[%d;28H", i + ENTRIES_START_ROW);
-			printf ("(..)");
-		} else if (entry->isDirectory) {
+		if (entry->isDirectory) {
 			printf ("\x1b[%d;27H", i + ENTRIES_START_ROW);
 			printf ("(dir)");
 		} else {
@@ -399,23 +396,11 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 		assignedOp[maxCursors] = 0;
 		printf("   Boot file\n");
 	}
-	if (sdMounted && (strcmp (path, "sd:/_nds/Relaunch/out/") != 0)) {
+	if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		maxCursors++;
 		assignedOp[maxCursors] = 1;
-		printf("   Copy to /_nds/Relaunch/out\n");
-	}
-	if (flashcardMounted && (strcmp (path, "fat:/_nds/Relaunch/out/") != 0)) {
-		maxCursors++;
-		assignedOp[maxCursors] = 2;
-		printf("   Copy to /_nds/Relaunch/out\n");
-	}
-	if (flashcardMounted) {
-		maxCursors++;
-		assignedOp[maxCursors] = 3;
 		printf("   Set as hotkey app\n");
 	}
-	printf("\n");
-	printf(" <A> select\n <B> cancel");
 	while (true) {
 		// Clear old cursors
 		for (int i = OPTIONS_ENTRIES_START_ROW+cursorScreenPos; i < (maxCursors+1) + OPTIONS_ENTRIES_START_ROW+cursorScreenPos; i++) {
@@ -434,7 +419,7 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 
 		if (pressed & KEY_UP) 		optionOffset -= 1;
 		if (pressed & KEY_DOWN) 	optionOffset += 1;
-		
+
 		if (optionOffset < 0) 				optionOffset = maxCursors;		// Wrap around to bottom of list
 		if (optionOffset > maxCursors)		optionOffset = 0;		// Wrap around to top of list
 
@@ -444,40 +429,6 @@ int fileBrowse_A(DirEntry* entry, char path[PATH_MAX]) {
 				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
 				printf("Now loading...");
 			} else if (assignedOp[optionOffset] == 1) {
-				if (access("sd:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch", 0777);
-				}
-				if (access("sd:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("sd:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "sd:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 2) {
-				if (access("fat:/_nds/Relaunch", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch", 0777);
-				}
-				if (access("fat:/_nds/Relaunch/out", F_OK) != 0) {
-					iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-					printf("Creating directory...");
-					mkdir("fat:/_nds/Relaunch/out", 0777);
-				}
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "fat:/_nds/Relaunch/out/%s", entry->name.c_str());
-				iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW+cursorScreenPos);
-				printf("Copying...           ");
-				remove(destPath);
-				fcopy(entry->name.c_str(), destPath);
-			} else if (assignedOp[optionOffset] == 3) {
 	// Clear the screen
 	iprintf ("\x1b[2J");
 				printf("Press the button to set\nas the hotkey");
@@ -556,81 +507,6 @@ do {
 	}
 }
 
-bool fileBrowse_paste(char destPath[256]) {
-	int pressed = 0;
-	int optionOffset = 0;
-	int maxCursors = -1;
-
-	printf ("\x1b[0;27H");
-	setFontSub();
-
-	printf(clipboardFolder ? "Paste folder here?" : "Paste file here?");
-	printf("\n\n");
-	iprintf ("\x1b[%d;0H", OPTIONS_ENTRIES_START_ROW);
-	maxCursors++;
-	printf("   Copy path\n");
-	printf("\n");
-	printf("(<A> select, <B> cancel)");
-	while (true) {
-		// Clear old cursors
-		for (int i = OPTIONS_ENTRIES_START_ROW; i < (maxCursors+1) + OPTIONS_ENTRIES_START_ROW; i++) {
-			iprintf ("\x1b[%d;0H  ", i);
-		}
-		// Show cursor
-		iprintf ("\x1b[%d;0H#", optionOffset + OPTIONS_ENTRIES_START_ROW);
-
-		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
-		do {
-			scanKeys();
-			pressed = keysDownRepeat();
-			swiWaitForVBlank();
-		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN)
-				&& !(pressed & KEY_A) && !(pressed & KEY_B));
-
-		if (pressed & KEY_UP) 		optionOffset -= 1;
-		if (pressed & KEY_DOWN) 	optionOffset += 1;
-		
-		if (optionOffset < 0) 				optionOffset = maxCursors;		// Wrap around to bottom of list
-		if (optionOffset > maxCursors)		optionOffset = 0;		// Wrap around to top of list
-
-		if (pressed & KEY_A) {
-			iprintf ("\x1b[%d;3H", optionOffset + OPTIONS_ENTRIES_START_ROW);
-			if (optionOffset == 0) {
-				printf("Copying...");
-				remove(destPath);
-				fcopy(clipboard, destPath);
-			} else {
-				printf("Moving...");
-				if (secondaryDrive == clipboardDrive) {
-					rename(clipboard, destPath);
-				} else {
-					fcopy(clipboard, destPath);		// Copy file to destination, since renaming won't work
-					remove(clipboard);				// Delete source file after copying
-				}
-				clipboardUsed = false;		// Disable clipboard restore
-			}
-			clipboardOn = false;	// Clear clipboard after copying or moving
-			return true;
-		}
-		if (pressed & KEY_B) {
-			return false;
-		}
-	}
-}
-
-void recRemove(DirEntry* entry, std::vector<DirEntry> dirContents) {
-	DirEntry* startEntry = entry;
-	chdir (entry->name.c_str());
-	getDirectoryContents(dirContents);
-	for (int i = 1; i < ((int)dirContents.size()); i++) {
-		entry = &dirContents.at(i);
-		if (entry->isDirectory)	recRemove(entry, dirContents);
-		remove(entry->name.c_str());
-	}
-	chdir ("..");
-	remove(startEntry->name.c_str());
-}
-
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 	//printf ("\x1B[42m");		// Print foreground green color
 	printf ("\x1b[0;0H");
@@ -644,13 +520,6 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 		} else {
 			printf ("%i Bytes", (int)entry->size);
 		}
-	}
-	if (clipboardOn) {
-		printf ("\x1b[9;0H");
-		//printf ("\x1B[42m");		// Print foreground green color
-		printf ("[CLIPBOARD]\n");
-		//printf ("\x1B[42m");		// Print foreground green color
-		printf (clipboardFilename);
 	}
 }
 
@@ -669,7 +538,7 @@ string browseForFile (void) {
 		setFontSub();
 		fileBrowse_drawBottomScreen(entry, fileOffset);
 		setFontTop();
-		showDirectoryContents (dirContents, fileOffset, screenOffset);
+		showDirectoryContents(dirContents, fileOffset, screenOffset);
 
 		stored_SCFG_MC = REG_SCFG_MC;
 
@@ -744,9 +613,6 @@ string browseForFile (void) {
 				if (getOp == 0) {
 					// Return the chosen file
 					return entry->name;
-				} else if (getOp == 1 || getOp == 2) {
-					getDirectoryContents (dirContents);		// Refresh directory listing
-				}
 			}
 		}
 
@@ -761,116 +627,8 @@ string browseForFile (void) {
 			screenOffset = 0;
 			fileOffset = 0;
 		}
-
-		// Rename file/folder
-		if ((held & KEY_R) && (pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
-			pressed = 0;
-			consoleDemoInit();
-			Keyboard *kbd = keyboardDemoInit(); 
-			char newName[256];
-			kbd->OnKeyPressed = OnKeyPressed;
-
-			keyboardShow();
-			//printf ("\x1B[42m"); //green
-			printf("Rename to: \n");
-			fgets(newName, 256, stdin);
-			newName[strlen(newName)-1] = 0;
-			keyboardHide();
-			consoleClear();
-
-			if (newName[0] != '\0') {
-				if (rename(entry->name.c_str(), newName) == 0) {
-					getDirectoryContents (dirContents);
-				}
-			}
-		}
-
-		// Delete file/folder
-		if ((pressed & KEY_X) && (strcmp (entry->name.c_str(), "..") != 0)) {
-			printf ("\x1b[0;27H");
-			setFontSub();
-			//printf ("\x1B[42m");		// Print foreground green color
-			iprintf("Delete \"%s\"?\n", entry->name.c_str());
-			printf ("(<A> yes, <B> no)");
-			while (true) {
-				scanKeys();
-				pressed = keysDownRepeat();
-				swiWaitForVBlank();
-				if (pressed & KEY_A) {
-					consoleClear();
-					if (entry->isDirectory) {
-						//printf ("\x1B[42m"); //green
-						printf ("Deleting folder, please wait...");
-						recRemove(entry, dirContents);
-					} else {
-						//printf ("\x1B[42m"); //green
-						printf ("Deleting file, please wait...");
-						remove(entry->name.c_str());
-					}
-					char filePath[256];
-					snprintf(filePath, sizeof(filePath), "%s%s", path, entry->name.c_str());
-					if (strcmp(filePath, clipboard) == 0) {
-						clipboardUsed = false;	// Disable clipboard restore
-						clipboardOn = false;
-					}
-					getDirectoryContents (dirContents);
-					fileOffset--;
-					pressed = 0;
-					break;
-				}
-				if (pressed & KEY_B) {
-					pressed = 0;
-					break;
-				}
-			}
-		}
-
-		// Create new folder
-		if ((held & KEY_R) && (pressed & KEY_Y)) {
-			pressed = 0;
-			consoleDemoInit();
-			Keyboard *kbd = keyboardDemoInit(); 
-			char newName[256];
-			kbd->OnKeyPressed = OnKeyPressed;
-
-			keyboardShow();
-			printf("Name for new folder: \n");
-			fgets(newName, 256, stdin);
-			newName[strlen(newName)-1] = 0;
-			keyboardHide();
-			consoleClear();
-
-			if (newName[0] != '\0') {
-				if (mkdir(newName, 0777) == 0) {
-					getDirectoryContents (dirContents);
-				}
-			}
-		}
-
-		// Copy file/folder
-		if (pressed & KEY_Y) {
-			if (clipboardOn) {
-				char destPath[256];
-				snprintf(destPath, sizeof(destPath), "%s%s", path, clipboardFilename);
-				if (string(clipboard) != string(destPath)) {
-					if (fileBrowse_paste(destPath)) {
-						getDirectoryContents (dirContents);
-					}
-				}
-			} else if (strcmp(entry->name.c_str(), "..") != 0) {
-				snprintf(clipboard, sizeof(clipboard), "%s%s", path, entry->name.c_str());
-				snprintf(clipboardFilename, sizeof(clipboardFilename), "%s", entry->name.c_str());
-				clipboardFolder = entry->isDirectory;
-				clipboardOn = true;
-				clipboardDrive = secondaryDrive;
-				clipboardUsed = true;
-			}
-		}
-
-		if ((pressed & KEY_SELECT) && clipboardUsed) {
-			clipboardOn = !clipboardOn;
-		}
 	}
+}
 }
 
 // OPTIONS MENU THINGS BELOW
@@ -885,7 +643,7 @@ void eq_drawTopScreen(void) {
 	printf ("\x1b[3;0H");
 
 	if (eqMaxCursors == -1) {
-		printf ("um, this shouldn't happen!");
+		printf ("This shouldn't happen!");
 	} else
 	for (int i = 0; i <= eqMaxCursors; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW_EQ);
@@ -907,6 +665,10 @@ void eq_drawTopScreen(void) {
 		} else if (eqAssignedOp[i] == 4) {
 			printf ("BUTTON Y");
 		} else if (eqAssignedOp[i] == 5) {
+			printf ("LOAD ERROR");
+		} else if (eqAssignedOp[i] == 6) {
+			printf ("BUTTON A+B (FILEMENU - FIXED)");
+		} else if (eqAssignedOp[i] == 7) {
 			printf ("SAVE & EXIT");
 		}
 	}
@@ -920,25 +682,6 @@ void eq_drawBottomScreen(void) {
 	printf ("\x1b[0;0H");
 	printf("\n\n Everyone\n   is\n  legal");
 	printf("\x1b[0;1H");
-	if (eqAssignedOp[eqCursorPosition] == 0) {
-		printf ("\n\n\n\n\n\nNO BUTTON\n");
-		printf ("\n(BOOT DEFAULT)");
-	} else if (eqAssignedOp[eqCursorPosition] == 1) {
-		printf ("\n\n\n\n\n\nBUTTON A\n");
-		printf ("\n(BOOT A)");
-	} else if (eqAssignedOp[eqCursorPosition] == 2) {
-		printf ("\n\n\n\n\n\nBUTTON B\n");
-		printf ("\n(BOOT B)");
-	} else if (eqAssignedOp[eqCursorPosition] == 3) {
-		printf ("\n\n\n\n\n\nBUTTON X\n");
-		printf ("\n(BUTTON X)");
-	} else if (eqAssignedOp[eqCursorPosition] == 4) {
-		printf ("\n\n\n\n\n\nBUTTON Y\n");
-		printf ("\n(BUTTON Y)");
-	} else if (eqAssignedOp[eqCursorPosition] == 5) {
-		printf ("\n\n\n\n\n\nSAVE & EXIT\n");
-		printf ("\n(SAVE & EXIT)");
-	}
 }
 void eqMenu (void) {
 	int pressed = 0;
@@ -948,6 +691,7 @@ void eqMenu (void) {
 	bLock = 0;
 	xLock = 0;
 	yLock = 0;
+	errorLock = 0;
 	eqTextPrinted = false;
 
 	while (true) {
@@ -955,29 +699,37 @@ void eqMenu (void) {
 			eqAssignedOp[i] = -1;
 		}
 		eqMaxCursors = -1;
-		if (flashcardMounted){
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0){
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 0;
 		}
-		if (flashcardMounted) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 1;
 		}
-		if (flashcardMounted) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 2;
 		}
-		if (flashcardMounted) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 3;
 		}
-		if (flashcardMounted) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 4;
 		}
-		if (flashcardMounted) {
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 5;
+		}
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 6;
+		}
+		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 7;
 		}
 
 		if (eqCursorPosition < 0) 	eqCursorPosition = eqMaxCursors;		// Wrap around to bottom of list
@@ -1008,7 +760,7 @@ void eqMenu (void) {
 					break;
 				}
 			}
-		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(held & KEY_R));
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
 
 		if ((pressed & KEY_UP) && eqMaxCursors != -1) {
 			eqCursorPosition -= 1;
@@ -1018,6 +770,11 @@ void eqMenu (void) {
 			eqCursorPosition += 1;
 			eqTextPrinted = false;
 		}
+		if (pressed & KEY_B) {
+		screenMode = 0;
+		eqTextPrinted = false;
+		break;
+		}
 
 		if (eqCursorPosition < 0) 	eqCursorPosition = eqMaxCursors;		// Wrap around to bottom of list
 		if (eqCursorPosition > eqMaxCursors)	eqCursorPosition = 0;		// Wrap around to top of list
@@ -1026,39 +783,79 @@ void eqMenu (void) {
 			if (eqAssignedOp[eqCursorPosition] == 0) {
 				eqTextPrinted = false;
 				secondaryDrive = true;
+				if (flashcardMounted) {
+				secondaryDrive = true;
 				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 				noLock = 1;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 1) {
 				eqTextPrinted = false;
+				if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 				aLock = 1;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 2) {
 				eqTextPrinted = false;
+				if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 				bLock = 1;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 3) {
 				eqTextPrinted = false;
+				if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 				xLock = 1;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 4) {
 				eqTextPrinted = false;
+				if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 				yLock = 1;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 5) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				errorLock = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 6) {
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 7) {
+				eqTextPrinted = false;
 				screenMode = 0;
 				break;
 			}
