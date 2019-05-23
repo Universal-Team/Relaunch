@@ -20,7 +20,7 @@
 
 - 2.) Name your .nds files boot#.nds with # being one of these buttons; `A`, `B`, `X`, `Y`, `Start`, `Select`, `R`, `L` `Left`, `Right`, `Down`, `Up`, or `Touch`. Alternatively, you can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files.
 
-- 3.) Put all of your files into `_nds/Relaunch/extras/`, if you set custom paths in the .ini file you don't need to do this
+- 3.) Put all of your files into `/_nds/Relaunch/extras/`, if you set custom paths in the .ini file you don't need to do this.
 
 - 4.) Boot Relaunch and hold the button corresponding to the file you want to launch.
 
@@ -29,6 +29,6 @@
 <h3 align= "center">Credits</h3>
 </p>
 
-[nocash](http://problemkaputt.de):, Unlaunch, which this app is a lookalike to, and the font, which is taken from Unlaunch.
+[nocash](http://problemkaputt.de): [Unlaunch](http://problemkaputt.de/unlaunch.htm), which this app is a lookalike to, and the font, which is taken from Unlaunch.
 
 [RocketRobz](https://github.com/RocketRobz): [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu.
