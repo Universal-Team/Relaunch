@@ -517,17 +517,7 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 		printf ("\nPRV SIZE: 00000000\n");
 		printf (fullPath);
 }
-void recRemove(DirEntry* entry, std::vector<DirEntry> dirContents) {
-	DirEntry* startEntry = entry;
-	chdir (entry->name.c_str());
-	getDirectoryContents(dirContents);
-	for (int i = 1; i < ((int)dirContents.size()); i++) {
-		entry = &dirContents.at(i);
-		if (entry->isDirectory)	recRemove(entry, dirContents);
-		remove(entry->name.c_str());
-	}
-	remove(startEntry->name.c_str());
-}
+
 string browseForFile (void) {
 	int pressed = 0;
 	int held = 0;
