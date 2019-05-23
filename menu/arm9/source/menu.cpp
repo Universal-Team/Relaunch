@@ -319,10 +319,8 @@ if ((strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds"
 	sort(dirContents.begin(), dirContents.end(), dirEntryPredicate);
 
 	DirEntry dirEntry;
-	dirEntry.name = "..";	// ".." entry
 	dirEntry.isDirectory = true;
 	dirEntry.isApp = false;
-	dirContents.insert (dirContents.begin(), dirEntry);	// Add ".." to top of list
 }
 
 void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow) {
@@ -519,7 +517,17 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 		printf ("\nPRV SIZE: 00000000\n");
 		printf (fullPath);
 }
-
+void recRemove(DirEntry* entry, std::vector<DirEntry> dirContents) {
+	DirEntry* startEntry = entry;
+	chdir (entry->name.c_str());
+	getDirectoryContents(dirContents);
+	for (int i = 1; i < ((int)dirContents.size()); i++) {
+		entry = &dirContents.at(i);
+		if (entry->isDirectory)	recRemove(entry, dirContents);
+		remove(entry->name.c_str());
+	}
+	remove(startEntry->name.c_str());
+}
 string browseForFile (void) {
 	int pressed = 0;
 	int held = 0;
@@ -584,15 +592,12 @@ string browseForFile (void) {
 
 		if (pressed & KEY_A) {
 			DirEntry* entry = &dirContents.at(fileOffset);
-			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0))) {
-				screenMode = 2;
-				return "null";
-			} else if (entry->isDirectory) {
+			if (entry->isDirectory) {
 				//printf("\x1b[46m"); // print cyan color
 				iprintf("  Entering directory\n");
 				// Enter selected directory
 				chdir (entry->name.c_str());
-				getDirectoryContents (dirContents);
+				getDirectoryContents(dirContents);
 				screenOffset = 0;
 				fileOffset = 0;
 			} else if (entry->isApp) {
