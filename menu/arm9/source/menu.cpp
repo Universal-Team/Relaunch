@@ -509,13 +509,15 @@ do {
 }
 
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
-	//printf ("\x1B[42m");		// Print foreground green color
+	char fullPath[256];
+	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
+
 	printf ("\x1b[0;0H");
 	printf("\n\n No one\n   is\n  illegal");
 	printf("\x1b[0;1H");
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
-		printf ("\nPRV SIZE: 00000000");
-		printf ("\n%s", fullpath);
+		printf ("\nPRV SIZE: 00000000\n");
+		printf (fullPath);
 }
 
 string browseForFile (void) {
