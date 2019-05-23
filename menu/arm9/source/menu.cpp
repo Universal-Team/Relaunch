@@ -72,11 +72,8 @@ void loadGbaCart(void) {
 		*(u32*)(0x06200000+i) = 0;
 	}
 // Switch to GBA mode
-	runNdsFile("/_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
+	runNdsFile("fat:/_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
 	}
-void loadDSCart() {
-runNdsFile("/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
-}
 void dm_drawTopScreen(void) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
@@ -154,19 +151,22 @@ void driveMenu (void) {
 			dmAssignedOp[i] = -1;
 		}
 		dmMaxCursors = -1;
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 0;
 		}
-		if (!isDSiMode() && isRegularDS) {
+		if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 1;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 2;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			dmMaxCursors++;
 			dmAssignedOp[dmMaxCursors] = 3;
 		}
@@ -200,7 +200,7 @@ void driveMenu (void) {
 					break;
 				}
 			}
-		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(held & KEY_R));
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 
 		if ((pressed & KEY_UP) && dmMaxCursors != -1) {
 			dmCursorPosition -= 1;
@@ -217,7 +217,11 @@ void driveMenu (void) {
 		if (pressed & KEY_A) {
 			if (dmAssignedOp[dmCursorPosition] == 0) {
 				dmTextPrinted = false;
-				loadDSCart();
+				if (flashcardMounted) {
+				runNdsFile("fat:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+				} else {
+				runNdsFile("sd:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+				}
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 1 && isRegularDS) {
 				dmTextPrinted = false;
@@ -225,7 +229,11 @@ void driveMenu (void) {
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 2) {
 				dmTextPrinted = false;
-				runNdsFile("/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
+				if (flashcardMounted) {
+				runNdsFile("fat:/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
+				} else {
+				runNdsFile("sd:/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
+				}
 				break;
 			} else if (dmAssignedOp[dmCursorPosition] == 3) {
 				dmTextPrinted = false;
@@ -238,18 +246,6 @@ void driveMenu (void) {
 
 // file browse stuff below!
 // file browse stuff below! (yes this is on 2 lines)
-
-void OnKeyPressed(int key) {
-	if(key > 0)
-		iprintf("%c", key);
-}
-
-bool nameEndsWith (const string& name) {
-
-	if (name.size() == 0) return false;
-
-	return true;
-}
 
 bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
 
@@ -676,35 +672,43 @@ void eqMenu (void) {
 			eqAssignedOp[i] = -1;
 		}
 		eqMaxCursors = -1;
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0){
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0){
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 0;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 1;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 2;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 3;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 4;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 5;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 6;
 		}
-		if (access("/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 7;
 		}
