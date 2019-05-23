@@ -115,7 +115,7 @@ void dm_drawBottomScreen(void) {
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\n Everyone\n   is\n  legal");
+	printf("\n\n No one\n   is\n  illegal");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
@@ -290,7 +290,9 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "argv")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "ARGV")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "app")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP"))
 				{
 					dirEntry.isApp = true;
 				} else {
@@ -352,8 +354,8 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		} else {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
-		}
 	}
+}
 
 		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
 		entryName[SCREEN_COLS] = '\0';
@@ -363,7 +365,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 			printf ("(dir)");
 		} else {
 			printf ("\x1b[%d;23H", i + ENTRIES_START_ROW);
-			printBytes((int)entry->size);
 		}
 	}
 }
@@ -510,17 +511,11 @@ do {
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 	//printf ("\x1B[42m");		// Print foreground green color
 	printf ("\x1b[0;0H");
-	printf (entry->name.c_str());
-	printf ("\n");
-	if (strcmp(entry->name.c_str(), "..") != 0) {
-		if (entry->isDirectory) {
-			printf ("(dir)");
-		} else if (entry->size == 1) {
-			printf ("%i Byte", (int)entry->size);
-		} else {
-			printf ("%i Bytes", (int)entry->size);
-		}
-	}
+	printf("\n\n No one\n   is\n  illegal");
+	printf("\x1b[0;1H");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\n%s", fullpath);
 }
 
 string browseForFile (void) {
@@ -563,13 +558,7 @@ string browseForFile (void) {
 	
 		iprintf ("\x1b[%d;0H", fileOffset - screenOffset + ENTRIES_START_ROW);
 
-		if (isDSiMode() && !pressed && secondaryDrive && REG_SCFG_MC == 0x11 && flashcardMounted) {
-			flashcardUnmount();
-			screenMode = 0;
-			return "null";
-		}
-
-		if (pressed & KEY_UP) {		fileOffset -= 1; bigJump = false;  }
+		if (pressed & KEY_UP) {		fileOffset -= 1; bigJump = false; }
 		if (pressed & KEY_DOWN) {	fileOffset += 1; bigJump = false; }
 		if (pressed & KEY_LEFT) {	fileOffset -= ENTRY_PAGE_LENGTH; bigJump = true; }
 		if (pressed & KEY_RIGHT) {	fileOffset += ENTRY_PAGE_LENGTH; bigJump = true; }
@@ -594,8 +583,7 @@ string browseForFile (void) {
 
 		if (pressed & KEY_A) {
 			DirEntry* entry = &dirContents.at(fileOffset);
-			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0)))
-			{
+			if (((strcmp (entry->name.c_str(), "..") == 0) && (strcmp (path, (secondaryDrive ? "fat:/" : "sd:/")) == 0))) {
 				screenMode = 2;
 				return "null";
 			} else if (entry->isDirectory) {
@@ -606,9 +594,7 @@ string browseForFile (void) {
 				getDirectoryContents (dirContents);
 				screenOffset = 0;
 				fileOffset = 0;
-			} else if (bothSDandFlashcard() || entry->isApp
-					|| strcmp (path, (secondaryDrive ? "fat:/_nds/Relaunch/out/" : "sd:/_nds/Relaunch/out/")) != 0)
-			{
+			} else if (entry->isApp) {
 				int getOp = fileBrowse_A(entry, path);
 				if (getOp == 0) {
 					// Return the chosen file
@@ -617,18 +603,11 @@ string browseForFile (void) {
 		}
 
 		if (pressed & KEY_B) {
-			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
 				screenMode = 2;
 				return "null";
 			}
-			// Go up a directory
-			chdir ("..");
-			getDirectoryContents (dirContents);
-			screenOffset = 0;
-			fileOffset = 0;
 		}
 	}
-}
 }
 
 // OPTIONS MENU THINGS BELOW
