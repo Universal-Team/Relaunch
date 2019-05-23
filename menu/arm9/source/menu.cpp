@@ -115,7 +115,7 @@ void dm_drawBottomScreen(void) {
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\n No one\n   is\n  illegal");
+	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
 	if (dmAssignedOp[dmCursorPosition] == 0) {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
@@ -513,7 +513,7 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
 
 	printf ("\x1b[0;0H");
-	printf("\n\n No one\n   is\n  illegal");
+	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000\n");
@@ -555,8 +555,7 @@ string browseForFile (void) {
 				break;
 			}
 		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_LEFT) && !(pressed & KEY_RIGHT)
-				&& !(pressed & KEY_A) && !(pressed & KEY_B) && !(pressed & KEY_X) && !(pressed & KEY_Y)
-				&& !(pressed & KEY_SELECT));
+				&& !(pressed & KEY_A) && !(pressed & KEY_B));
 	
 		iprintf ("\x1b[%d;0H", fileOffset - screenOffset + ENTRIES_START_ROW);
 
@@ -601,13 +600,12 @@ string browseForFile (void) {
 				if (getOp == 0) {
 					// Return the chosen file
 					return entry->name;
+				}
 			}
 		}
-
-		if (pressed & KEY_B) {
+			if (pressed & KEY_B) {
 				screenMode = 2;
 				return "null";
-			}
 		}
 	}
 }
@@ -661,8 +659,11 @@ void eq_drawBottomScreen(void) {
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\n Everyone\n   is\n  legal");
+	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000\n");
+		printf ("sett:");
 }
 void eqMenu (void) {
 	int pressed = 0;
