@@ -2,23 +2,9 @@
 # Goals for Build
 #----------------------------------------------------------------------------------------
 
-3DS: .PHONY3DS
+.PHONY: all
 
-DSi: .PHONYDSi
-
-Flashcart: .PHONYFlashcart
-
-.PHONY3DS: all3DS buildDSi3DS makecia
-
-.PHONYDSi: allDSi buildDSi3DS
-
-.PHONYFlashcart: allFlashcart buildFlashcart
-
-allDSi:	buildDSi3DS
-
-all3DS:	buildDSi3DS makecia
-
-allFlashcart: buildFlashcart
+all: buildDSi3DS buildFlashcart makecia
 
 buildDSi3DS:
 	@mv "main/Makefile_DSi-3DS" "main/Makefile"
@@ -30,12 +16,6 @@ buildDSi3DS:
 	@mv "menu/menu.nds" "menu/menu.bin"
 	@mv "menu/menu.bin" "./menu_DSi.bin"
 	@mv "main/Relaunch.nds" "./Relaunch_DSi.nds"
-	
-makecia:
-	@mv "./Relaunch_DSi.nds" "./Relaunch_3DS.nds"
-	@./make_cia --srl="Relaunch_3DS.nds"
-	@rm -fr Relaunch_3DS.nds
-	@mv "./menu_DSi.bin" "./menu_3DS.bin"
 
 buildFlashcart:
 	@mv "main/Makefile_Flashcart" "main/Makefile"
@@ -47,6 +27,12 @@ buildFlashcart:
 	@mv "menu/menu.nds" "menu/menu.bin"
 	@mv "menu/menu.bin" "./menu_Flashcart.bin"
 	@mv "main/Relaunch.nds" "./Relaunch_Flashcart.nds"
+
+makecia:
+	@cp "./Relaunch_DSi.nds" "./Relaunch_3DS.nds"
+	@./make_cia --srl="Relaunch_3DS.nds"
+	@rm -fr Relaunch_3DS.nds
+	@cp "./menu_DSi.bin" "./menu_3DS.bin"
 
 clean:
 	@echo clean build directories

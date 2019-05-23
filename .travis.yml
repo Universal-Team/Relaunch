@@ -38,12 +38,7 @@ script:
   - mkdir Relaunch/DSi/_nds/Relaunch/
   - mkdir Relaunch/3DS/_nds/Relaunch/
   - mkdir Relaunch/Flashcart/_nds/Relaunch/
-  - make Flashcart
-  - make clean
-  - chmod +x make_cia
-  - make 3DS
-  - make clean
-  - make DSi
+  - make
   - mv './menu_Flashcart.bin' 'Relaunch/Flashcart/_nds/Relaunch/menu.bin'
   - mv './Relaunch_Flashcart.nds' 'Relaunch/Flashcart/Relaunch.nds'
   - mv './menu_3DS.bin' 'Relaunch/3DS/_nds/Relaunch/menu.bin'
