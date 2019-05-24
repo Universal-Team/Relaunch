@@ -364,6 +364,7 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		if (entry->isDirectory) {
 			printf ("\x1b[%d;27H", i + ENTRIES_START_ROW);
 			printf ("(dir)");
+		}
 	}
 }
 
