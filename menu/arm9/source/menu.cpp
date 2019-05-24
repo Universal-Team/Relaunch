@@ -144,10 +144,6 @@ void driveMenu (void) {
 	fileMenu = true;
 	int pressed = 0;
 	int held = 0;
-	/*int fileOffset = 0;
-	int screenOffset = 0;
-	vector<DirEntry> dirContents;
-	getDirectoryContents(dirContents);*/
 
 	while (true) {
 		for (int i = 0; i < 3; i++) {
@@ -179,6 +175,7 @@ void driveMenu (void) {
 			dm_drawBottomScreen();
 		setFontTop();
 			dm_drawTopScreen();
+			//browseForFile2();
 
 			dmTextPrinted = true;
 		}
@@ -323,7 +320,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 
 	// Print the path
 	printf ("\x1b[1;0H");
-	if (strlen(path) < SCREEN_COLS) {
 	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
 	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
 	if (bLock == true) { printf("Select title for BUTTON B"); } else {}
@@ -339,9 +335,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	if (leftLock == true) { printf("Select title for DPAD LEFT"); } else {}
 	if (rightLock == true) { printf("Select title for DPAD RIGHT"); } else {}
 	if (errorLock == true) { printf("Select title for LOAD ERROR"); } else {}
-	} else {
-		printf("Relaunch.nds v0.2");
-	}
 
 	// Move to 2nd row
 	iprintf ("\x1b[1;0H");
@@ -367,9 +360,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 		if (entry->isDirectory) {
 			printf ("\x1b[%d;27H", i + ENTRIES_START_ROW);
 			printf ("(dir)");
-		} else {
-			printf ("\x1b[%d;23H", i + ENTRIES_START_ROW);
-		}
 	}
 }
 
@@ -497,6 +487,120 @@ string browseForFile (void) {
 		}
 	}
 }
+
+string browseForFile2 (void) {
+	int pressed = 0;
+	int held = 0;
+	int screenOffset = 0;
+	int fileOffset = 0;
+	vector<DirEntry> dirContents;
+
+	getDirectoryContents (dirContents);
+
+	while (true) {
+		DirEntry* entry = &dirContents.at(fileOffset);
+
+		setFontSub();
+		fileBrowse_drawBottomScreen(entry, fileOffset);
+		setFontTop();
+		showDirectoryContents(dirContents, fileOffset, screenOffset);
+
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (REG_SCFG_MC != stored_SCFG_MC) {
+				break;
+			}
+
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
+
+		iprintf ("\x1b[%d;0H", fileOffset - screenOffset + ENTRIES_START_ROW);
+
+		if (pressed & KEY_UP && fileOffset > 0) {		fileOffset -= 1;}
+		if (pressed & KEY_DOWN && fileOffset < (int)dirContents.size() - 1) {	fileOffset += 1;}
+
+		// Scroll screen if needed
+		if (fileOffset < screenOffset) 	{
+			screenOffset = fileOffset;
+			showDirectoryContents (dirContents, fileOffset, screenOffset);
+		}
+		if (fileOffset > screenOffset + ENTRIES_PER_SCREEN - 1) {
+			screenOffset = fileOffset - ENTRIES_PER_SCREEN + 1;
+			showDirectoryContents (dirContents, fileOffset, screenOffset);
+		}
+
+		getcwd(path, PATH_MAX);
+
+		if (pressed & KEY_A) {
+			DirEntry* entry = &dirContents.at(fileOffset);
+			if (entry->isDirectory) {
+				//printf("\x1b[46m"); // print cyan color
+				iprintf("  Please Wait...\n");
+				// Enter selected directory
+				chdir (entry->name.c_str());
+				getDirectoryContents(dirContents);
+				screenOffset = 0;
+				fileOffset = 0;
+			} else if (entry->isApp) {
+	setFontSub();
+	printf ("\x1b[0;27H");
+	char fullPath[256];
+	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
+
+		if (fileMenu == true) {
+				applaunch = true;
+		} else {
+
+	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+
+	if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); } else {}
+	if (noLock == true) { ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", fullPath); } else {}
+	if (bLock == true) { ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath); } else {}
+	if (xLock == true) { ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath); } else {}
+	if (yLock == true) { ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath); } else {}
+	if (lLock == true) { ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath); } else {}
+	if (rLock == true) { ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath); } else {}
+	if (startLock == true) { ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath); } else {}
+	if (selectLock == true) { ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath); } else {}
+	if (touchLock == true) { ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath); } else {}
+	if (upLock == true) { ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath); } else {}
+	if (downLock == true) { ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath); } else {}
+	if (leftLock == true) { ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath); } else {}
+	if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); } else {}
+	if (rightLock == true) { ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath); } else {}
+
+	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+
+		screenMode = 2;
+		return "null";
+}
+				if (fileMenu == true) {
+					// Return the chosen file
+					entry->name;
+				}
+			}
+		}
+		if (pressed & KEY_B) {
+			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
+				screenMode = 2;
+				return "null";
+			}
+			// Go up a directory
+			chdir ("..");
+			getDirectoryContents (dirContents);
+			screenOffset = 0;
+			fileOffset = 0;
+		}
+	}
+}
+
 
 // OPTIONS MENU THINGS BELOW
 // OPTIONS MENU THINGS BELOW
