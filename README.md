@@ -26,6 +26,7 @@
 
 - Also, Hold A and B on boot to open the menu.
 
+- Would you like to try Nightlies of Relaunch? They're right here! :D <https://github.com/TWLBot/overflow-builds>
 <h3 align= "center">Credits</h3>
 </p>
 
