@@ -36,7 +36,7 @@
 #include "inifile.h"
 #include "font.h"
 
-#define SCREEN_COLS 32
+#define SCREEN_COLS 30
 #define ENTRIES_PER_SCREEN 19
 #define ENTRIES_START_ROW 3
 #define ENTRIES_START_ROW_EQ 3
