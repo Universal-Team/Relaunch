@@ -39,7 +39,6 @@
 #define SCREEN_COLS 32
 #define ENTRIES_PER_SCREEN 19
 #define ENTRIES_START_ROW 3
-#define OPTIONS_ENTRIES_START_ROW 2
 #define ENTRIES_START_ROW_EQ 3
 #define ENTRY_PAGE_LENGTH 10
 using namespace std;
@@ -180,7 +179,6 @@ void driveMenu (void) {
 			dm_drawBottomScreen();
 		setFontTop();
 			dm_drawTopScreen();
-			//showDirectoryContents(dirContents, fileOffset, screenOffset);
 
 			dmTextPrinted = true;
 		}
@@ -324,12 +322,25 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	iprintf ("\x1b[2J");
 
 	// Print the path
-	//printf ("\x1b[43m"); 	// Print yellow color
-	printf ("\x1b[0;0H");
+	printf ("\x1b[1;0H");
 	if (strlen(path) < SCREEN_COLS) {
-		iprintf ("\n%s", path);
+	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
+	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
+	if (bLock == true) { printf("Select title for BUTTON B"); } else {}
+	if (xLock == true) { printf("Select title for BUTTON X"); } else {}
+	if (yLock == true) { printf("Select title for BUTTON Y"); } else {}
+	if (lLock == true) { printf("Select title for BUTTON L"); } else {}
+	if (rLock == true) { printf("Select title for BUTTON R"); } else {}
+	if (startLock == true) { printf("Select title for BUTTON START"); } else {}
+	if (selectLock == true) { printf("Select title for BUTTON SELECT"); } else {}
+	if (touchLock == true) { printf("Select title for TOUCH SCREEN"); } else {}
+	if (upLock == true) { printf("Select title for DPAD UP"); } else {}
+	if (downLock == true) { printf("Select title for DPAD DOWN"); } else {}
+	if (leftLock == true) { printf("Select title for DPAD LEFT"); } else {}
+	if (rightLock == true) { printf("Select title for DPAD RIGHT"); } else {}
+	if (errorLock == true) { printf("Select title for LOAD ERROR"); } else {}
 	} else {
-		iprintf ("\n%s", path + strlen(path) - SCREEN_COLS);
+		printf("Relaunch.nds v0.2");
 	}
 
 	// Move to 2nd row
@@ -447,6 +458,7 @@ string browseForFile (void) {
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
 	if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); } else {}
+	if (noLock == true) { ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", fullPath); } else {}
 	if (bLock == true) { ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath); } else {}
 	if (xLock == true) { ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath); } else {}
 	if (yLock == true) { ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath); } else {}
@@ -458,6 +470,7 @@ string browseForFile (void) {
 	if (upLock == true) { ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath); } else {}
 	if (downLock == true) { ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath); } else {}
 	if (leftLock == true) { ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath); } else {}
+	if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); } else {}
 	if (rightLock == true) { ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath); } else {}
 
 	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
