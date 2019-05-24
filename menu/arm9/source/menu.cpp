@@ -288,7 +288,11 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "app")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "bin")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "srldr")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dat")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DAT"))
 				{
 					dirEntry.isApp = true;
 				} else {
@@ -447,8 +451,8 @@ string browseForFile (void) {
 
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
-	if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); } else {}
 	if (noLock == true) { ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", fullPath); } else {}
+	if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); } else {}
 	if (bLock == true) { ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath); } else {}
 	if (xLock == true) { ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath); } else {}
 	if (yLock == true) { ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath); } else {}
@@ -460,8 +464,8 @@ string browseForFile (void) {
 	if (upLock == true) { ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath); } else {}
 	if (downLock == true) { ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath); } else {}
 	if (leftLock == true) { ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath); } else {}
-	if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); } else {}
 	if (rightLock == true) { ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath); } else {}
+	if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); } else {}
 
 	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 
