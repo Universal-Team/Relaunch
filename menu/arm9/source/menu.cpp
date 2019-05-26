@@ -28,11 +28,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <nds/arm9/dldi.h>
+#include <fat.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
 
 #include "nds_loader_arm9.h"
 #include "main.h"
 #include "menu.h"
-#include "Operations.h"
 #include "inifile.h"
 #include "font.h"
 
@@ -68,6 +71,17 @@ static bool leftLock = false;
 static bool rightLock = false;
 static bool touchLock = false;
 static bool errorLock = false;
+static sNDSHeader nds;
+u8 stored_SCFG_MC = 0;
+static bool slot1Enabled = true;
+bool sdMounted = false;
+bool sdMountedDone = false;				// true if SD mount is successful once
+bool flashcardMounted = false;
+bool secondaryDrive = false;				// false == SD card, true == Flashcard
+char sdLabel[12];
+char fatLabel[12];
+int sdSize = 0;
+int fatSize = 0;
 
 void loadGbaCart(void) {
 	irqDisable(IRQ_VBLANK);
@@ -854,4 +868,82 @@ void eqMenu (void) {
 			}
 		}
 	}
+}
+
+// file operation things
+// file operation things
+
+void fixLabel(bool fat) {
+	if (fat) {
+		for (int i = 0; i < 12; i++) {
+			if (((fatLabel[i] == ' ') && (fatLabel[i+1] == ' ') && (fatLabel[i+2] == ' '))
+			|| ((fatLabel[i] == ' ') && (fatLabel[i+1] == ' '))
+			|| (fatLabel[i] == ' ')) {
+				fatLabel[i] = '\0';
+				break;
+			}
+		}
+	} else {
+		for (int i = 0; i < 12; i++) {
+			if (((sdLabel[i] == ' ') && (sdLabel[i+1] == ' ') && (sdLabel[i+2] == ' '))
+			|| ((sdLabel[i] == ' ') && (sdLabel[i+1] == ' '))
+			|| (sdLabel[i] == ' ')) {
+				sdLabel[i] = '\0';
+				break;
+			}
+		}
+	}
+}
+
+bool sdFound(void) {
+	if (access("sd:/", F_OK) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool flashcardFound(void) {
+	if (access("fat:/", F_OK) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+TWL_CODE bool sdMount(void) {
+	fatMountSimple("sd", get_io_dsisd());
+	if (sdFound()) {
+		sdMountedDone = true;
+		fatGetVolumeLabel("sd", sdLabel);
+		fixLabel(false);
+		return true;
+	}
+	return false;
+}
+
+bool flashcardMount(void) {
+	if ((!isDSiMode()) || (arm7SCFGLocked && !sdMountedDone)) {
+		fatInitDefault();
+		if (flashcardFound()) {
+			fatGetVolumeLabel("fat", fatLabel);
+			fixLabel(true);
+			return true;
+		}
+		return false;
+	}
+}
+
+off_t getFileSize(const char *fileName)
+{
+    FILE* fp = fopen(fileName, "rb");
+    off_t fsize = 0;
+    if (fp) {
+        fseek(fp, 0, SEEK_END);
+        fsize = ftell(fp);			// Get source file's size
+		fseek(fp, 0, SEEK_SET);
+	}
+	fclose(fp);
+
+	return fsize;
 }
