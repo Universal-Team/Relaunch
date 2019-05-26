@@ -1,5 +1,5 @@
 /*
-    inifile.h
+    inifile.h + stringtool.h
     Copyright (C) 2007 Acekard, www.acekard.com
     Copyright (C) 2007-2009 somebody
     Copyright (C) 2009-2010 yellow wood goblin
@@ -21,6 +21,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdarg>
+#include <cstdio>
+#include <malloc.h>
 
 class CIniFile
 {
@@ -59,5 +62,7 @@ class CIniFile
     std::string GetString(const std::string& Section,const std::string& Item);
     int GetInt(const std::string& Section,const std::string& Item);
 };
+
+std::string formatString( const char* fmt, ... );
 
 #endif // _INIFILE_H_
