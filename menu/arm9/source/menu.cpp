@@ -50,7 +50,6 @@ static char path[PATH_MAX];
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
 static int dmAssignedOp[3] = {-1};
-static int dmMaxCursors = -1;
 static bool eqTextPrinted = false;
 static int eqCursorPosition = 0;
 static int eqAssignedOp[3] = {-1};
@@ -95,7 +94,7 @@ void loadGbaCart(void) {
 // Switch to GBA mode
 	runNdsFile("fat:/_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
 	}
-void dm_drawTopScreen(void) {
+void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("\nRelaunch.nds v0.2");
@@ -103,10 +102,7 @@ void dm_drawTopScreen(void) {
 	// Move to 4th row
 	printf ("\x1b[3;0H");
 
-	if (dmMaxCursors == -1) {
-		printf ("This Shouldn't Happen!");
-	} else
-	for (int i = 0; i <= dmMaxCursors; i++) {
+	for (int i = dmCursorPosition+0; i <= dmCursorPosition+18; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (dmCursorPosition == i) {
 			//printf ("\x1b[46m# ");		// Print foreground cyan color
@@ -115,15 +111,7 @@ void dm_drawTopScreen(void) {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
-		if (dmAssignedOp[i] == 0) {
-			printf ("DS GAME");
-		} else if (dmAssignedOp[i] == 1) {
-			printf ("GBA GAME");
-		} else if (dmAssignedOp[i] == 2) {
-			printf ("WIFIBOOT");
-		} else if (dmAssignedOp[i] == 3) {
-			printf ("OPTIONS");
-		}
+		printf((ndsFiles[i].name + "\n").c_str());
 	}
 }
 			    
@@ -158,37 +146,41 @@ void driveMenu (void) {
 	fileMenu = true;
 	int pressed = 0;
 	int held = 0;
+	
+	chdir("sd:/");
+	std::vector<DirEntry> ndsFiles;
+	findNdsFiles(ndsFiles);
+
+	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		DirEntry options;
+		options.name = "OPTIONS";
+		ndsFiles.insert(ndsFiles.begin(), options);
+	}
+	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		DirEntry wifiboot;
+		wifiboot.name = "WIFIBOOT";
+		ndsFiles.insert(ndsFiles.begin(), wifiboot);
+	}
+	if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0 && isRegularDS) {
+		DirEntry gbaGame;
+		gbaGame.name = "GBA GAME";
+		ndsFiles.insert(ndsFiles.begin(), gbaGame);
+	}
+	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+		DirEntry dsGame;
+		dsGame.name = "DS GAME";
+		ndsFiles.insert(ndsFiles.begin(), dsGame);
+	}
 
 	while (true) {
-		for (int i = 0; i < 3; i++) {
-			dmAssignedOp[i] = -1;
-		}
-		dmMaxCursors = -1;
-		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
-		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 0;
-		}
-		if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0 && isRegularDS) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 1;
-		}
-		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
-		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 2;
-		}
-		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
-		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
-			dmMaxCursors++;
-			dmAssignedOp[dmMaxCursors] = 3;
-		}
-
 		if (!dmTextPrinted) {
 		setFontSub();
 			dm_drawBottomScreen();
 		setFontTop();
-			dm_drawTopScreen();
+			dm_drawTopScreen(ndsFiles);
 			//browseForFile2();
 
 			dmTextPrinted = true;
@@ -211,11 +203,11 @@ void driveMenu (void) {
 			}
 		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 
-		if ((pressed & KEY_UP) && dmMaxCursors != -1 && dmCursorPosition != 0) {
+		if ((pressed & KEY_UP) && dmCursorPosition > 0) {
 			dmCursorPosition -= 1;
 			dmTextPrinted = false;
 		}
-		if ((pressed & KEY_DOWN) && dmMaxCursors != -1 && dmCursorPosition != 3) {
+		if ((pressed & KEY_DOWN) && dmCursorPosition < ndsFiles.size()) {
 			dmCursorPosition += 1;
 			dmTextPrinted = false;
 		}
@@ -328,6 +320,38 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 	DirEntry dirEntry;
 	dirEntry.isDirectory = true;
 	dirEntry.isApp = false;
+}
+
+void findNdsFiles(vector<DirEntry>& dirContents) {
+	struct stat st;
+	DIR *pdir = opendir(".");
+
+	if (pdir == NULL) {
+		iprintf("Unable to open the directory.");
+		for(int i=0;i<120;i++)
+			swiWaitForVBlank();
+	} else {
+		while (true) {
+			DirEntry dirEntry;
+
+			struct dirent* pent = readdir(pdir);
+			if (pent == NULL) break;
+
+			stat(pent->d_name, &st);
+			dirEntry.name = pent->d_name;
+			dirEntry.isDirectory = (st.st_mode & S_IFDIR) ? true : false;
+			if(!(dirEntry.isDirectory) && dirEntry.name.length() >= 3) {
+				if (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0) {
+					dirContents.push_back(dirEntry);
+				}
+			} else if (dirEntry.isDirectory && dirEntry.name.compare(".") != 0 && dirEntry.name.compare("..") != 0) {
+				chdir(dirEntry.name.c_str());
+				findNdsFiles(dirContents);
+				chdir("..");
+			}
+		}
+		closedir(pdir);
+	}
 }
 
 void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow) {
