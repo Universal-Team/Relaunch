@@ -180,18 +180,6 @@ int main(int argc, char **argv) {
 
 	if(appInited) {
 		loadBG(); //load the background
-			printf("Loading.");
-				for(int i=0;i<20;i++) { // wait for a little bit 
-					swiWaitForVBlank();
-		}
-			printf(".");
-				for(int i=0;i<20;i++) { // wait
-					swiWaitForVBlank();
-		}
-			printf(".");
-				for(int i=0;i<20;i++) { // wait
-					swiWaitForVBlank();
-		}
 	}
 
 

@@ -97,7 +97,7 @@ void loadGbaCart(void) {
 void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.2");
+	printf ("\nRelaunch.nds v0.3");
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -181,7 +181,6 @@ void driveMenu (void) {
 			dm_drawBottomScreen();
 		setFontTop();
 			dm_drawTopScreen(ndsFiles);
-			//browseForFile2();
 
 			dmTextPrinted = true;
 		}
