@@ -4,18 +4,7 @@
 	Ben "Epicpkmn11" Bogie
 	Rojelio "RocketRobz" Reyes
 ------------------------------------------------------------------*/
-#include <nds.h>
-#include <stdio.h>
-#include <fat.h>
-#include <sys/stat.h>
-#include <limits.h>
-#include <string.h>
-#include <unistd.h>
-
-#include "nds_loader_arm9.h"
-#include "menu.h"
-#include "nitrofs.h"
-#include "font.h"
+#include "includes.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
