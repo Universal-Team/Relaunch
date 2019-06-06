@@ -1059,7 +1059,6 @@ void eqMenu (void) {
 				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");*/
 				screenMode = 0;
 				break;
-			}
 		}
 	}
 }
