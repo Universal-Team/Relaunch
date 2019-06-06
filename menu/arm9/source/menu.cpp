@@ -295,11 +295,7 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "app")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "bin")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "srldr")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dat")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DAT"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP"))
 				{
 					dirEntry.isApp = true;
 				} else {
