@@ -1,3 +1,6 @@
+#ifndef _INCLUDES_H_
+#define _INCLUDES_H_
+
 #include <nds.h>
 #include <vector>
 #include <algorithm>
@@ -16,3 +19,5 @@
 #include "main.h"
 #include "menu.h"
 #include "font.h"
+
+#endif // _INCLUDES_H_
