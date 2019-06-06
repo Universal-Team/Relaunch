@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- Not Copyright -(-C-)- 2019
+ Not Copyright (ɔ) 2019
 	Evan "Flame" Rodgers
 	Ben "Epicpkmn11" Bogie
 	Rojelio "RocketRobz" Reyes
