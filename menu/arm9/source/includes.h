@@ -16,9 +16,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "nds_loader_arm9.h"
+#include "functions.h"
 #include "inifile.h"
-#include "nitrofs.h"
 #include "main.h"
 #include "menu.h"
 #include "font.h"
