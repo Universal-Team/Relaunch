@@ -1,36 +1,10 @@
 /*-----------------------------------------------------------------
- Copyright (C) 2005 - 2013
-	Michael "Chishm" Chisholm
-	Dave "WinterMute" Murphy
-	Claudio "sverx"
-
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 2
- of the License, or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+ Not Copyright (ɔ) 2019
+	Evan "Flame" Rodgers
+	Ben "Epicpkmn11" Bogie
+	Rojelio "RocketRobz" Reyes
 ------------------------------------------------------------------*/
-#include <nds.h>
-#include <stdio.h>
-#include <fat.h>
-#include <sys/stat.h>
-#include <limits.h>
-#include <string.h>
-#include <unistd.h>
-
-#include "nds_loader_arm9.h"
-#include "menu.h"
-#include "nitrofs.h"
-#include "font.h"
+#include "includes.h"
 
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
@@ -48,36 +22,6 @@ static u16 bmpImageBuffer[256*192]; //for background
 
 using namespace std;
 
-void loadBG() {
-		if(sdMounted) {
-		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
-	} else {
-		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
-	}
-
-	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
-
-	if (fileBottom) {
-		// Start loading
-		fseek(fileBottom, 0xe, SEEK_SET);
-		u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
-		fseek(fileBottom, pixelStart, SEEK_SET);
-		fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
-		u16* src = bmpImageBuffer;
-		int x = 0;
-		int y = 191;
-		for (int i=0; i<256*192; i++) {
-			if (x >= 256) {
-				x = 0;
-				y--;
-			}
-			u16 val = *(src++);
-			BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			x++;
-		}
-	}
-}
 void setFontTop() {
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 	ConsoleFont font;
@@ -101,23 +45,6 @@ void setFontSub() {
 	font.asciiOffset = 32;
 	font.convertSingleColor = false;
 	consoleSetFont(console, &font);
-}
-void bgPre() {
-	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
-	REG_BG3X = 0;
-	REG_BG3Y = 0;
-	REG_BG3PA = 1<<8;
-	REG_BG3PB = 0;
-	REG_BG3PC = 0;
-	REG_BG3PD = 1<<8;
-
-	REG_BG3CNT_SUB = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
-	REG_BG3X_SUB = 0;
-	REG_BG3Y_SUB = 0;
-	REG_BG3PA_SUB = 1<<8;
-	REG_BG3PB_SUB = 0;
-	REG_BG3PC_SUB = 0;
-	REG_BG3PD_SUB = 1<<8;
 }
 //---------------------------------------------------------------------------------
 void stop (void) {
@@ -146,7 +73,7 @@ int main(int argc, char **argv) {
 	videoSetMode(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 
-	// initialize VRAM banks
+	// initialize all the VRAM banks
 	vramSetBankA(VRAM_A_TEXTURE);
 	vramSetBankB(VRAM_B_TEXTURE);
 	vramSetBankC(VRAM_C_SUB_BG_0x06200000);
@@ -157,9 +84,25 @@ int main(int argc, char **argv) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	bgPre();
+	//background before loading
+	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	REG_BG3X = 0;
+	REG_BG3Y = 0;
+	REG_BG3PA = 1<<8;
+	REG_BG3PB = 0;
+	REG_BG3PC = 0;
+	REG_BG3PD = 1<<8;
 
-	setFontTop();
+	REG_BG3CNT_SUB = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
+	REG_BG3X_SUB = 0;
+	REG_BG3Y_SUB = 0;
+	REG_BG3PA_SUB = 1<<8;
+	REG_BG3PB_SUB = 0;
+	REG_BG3PC_SUB = 0;
+	REG_BG3PD_SUB = 1<<8;
+	//done initing things for background
+
+	setFontSub();
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
@@ -179,7 +122,37 @@ int main(int argc, char **argv) {
 	appInited = true;
 
 	if(appInited) {
-		loadBG(); //load the background
+		if(sdMounted) {
+		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
+	} else {
+		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
+	}
+
+	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
+
+	if (fileBottom) {
+		// Start loading
+		fseek(fileBottom, 0xe, SEEK_SET);
+		u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
+		fseek(fileBottom, pixelStart, SEEK_SET);
+		fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
+		u16* src = bmpImageBuffer;
+		int x = 0;
+		int y = 191;
+		for (int i=0; i<256*192; i++) {
+			if (x >= 256) {
+				x = 0;
+				y--;
+			}
+			u16 val = *(src++);
+			BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+			x++;
+		}
+	}
+		//print fake sizes coz we dont have dsiware on flashcards :p
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
 	}
 
 
@@ -227,7 +200,12 @@ int main(int argc, char **argv) {
 				argarray.push_back(strdup(filename.c_str()));
 			}
 			if ((strcasecmp (filename.c_str() + filename.size() - 4, ".dsi") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".DSI") == 0)) {
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".DSI") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".nds") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".NDS") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".app") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".APP") == 0)) {
+
 				char *name = argarray.at(0);
 				strcpy (filePath + pathLen, name);
 				free(argarray.at(0));
@@ -236,17 +214,6 @@ int main(int argc, char **argv) {
 				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
 				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
 				iprintf ("\x1b[31mStart failed. Error %i\n", err);
-			}
-			if ((strcasecmp (filename.c_str() + filename.size() - 4, ".nds") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".NDS") == 0)) {
-				char *name = argarray.at(0);
-				strcpy (filePath + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = filePath;
-				consoleClear();
-				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
-				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
-				iprintf ("Start failed. Error %i\n", err);
 			}
 
 			while(argarray.size() !=0 ) {
