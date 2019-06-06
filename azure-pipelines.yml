@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
     - master
-    - patch-3
 
 name:  $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)]
 
