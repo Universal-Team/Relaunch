@@ -33,5 +33,6 @@ steps:
 - script: |
      export DEVKITPRO="/opt/devkitpro"
      export DEVKITARM="/opt/devkitpro/devkitARM"
+     chmod +x makecia
      make
   displayName: 'Build Relaunch'
