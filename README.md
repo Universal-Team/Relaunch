@@ -5,6 +5,9 @@
   <a href="https://travis-ci.org/FlameKat53/Relaunch">
    <img src="https://travis-ci.org/FlameKat53/Relaunch.svg?branch=master">
   </a>
+  <a href="https://dev.azure.com/DS-Homebrew/Builds/_build?definitionId=21">
+   <img src="https://dev.azure.com/DS-Homebrew/Builds/_apis/build/status/FlameKat53.Relaunch?branchName=master">
+  </a>
   </span>
   <span style="padding-left: 5px;">
   <a href="https://discord.gg/yqSut8c">
