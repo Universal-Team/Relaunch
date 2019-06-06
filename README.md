@@ -1,5 +1,5 @@
-<img src="https://github.com/FlameKat53/Relaunch/blob/master/D0D9F2D9-CC0D-4F97-A759-5E1F9A5DF4F6.png?raw=true">
-<h4 align="center">By FlameKat53</h4>
+<img src="https://github.com/FlameKat53/Relaunch/blob/master/logo.png?raw=true">
+<h4 align="center">By FlameKat53 & Epicpkmn11</h4>
 <p align="center">
  <span style="padding-right: 5px;">
   <a href="https://travis-ci.org/FlameKat53/Relaunch">
@@ -22,6 +22,7 @@
 ## Advanced Usage
 
 - You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files.
+- If you read the line above, you know about custom paths, you can do this in the Relaunch Menu as well!
 - Hold `A` + `B` on boot in order to open the menu.
 - There are prebuilt nightly builds of Relaunch found on [TWLBot](https://github.com/TWLBot/overflow-builds)
 
