@@ -13,7 +13,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- 
+ ------------------------------------------------------------------
 	nitrofs.h - eris's wai ossum nitro filesystem device driver header  
 		Based on information found at http://frangoassado.org/ds/rom_spec.txt and from the #dsdev ppls
 		Kallisti (K) 2008-01-26 All rights reversed.
@@ -43,18 +43,81 @@
     
     2018-09-05 v0.9 - modernize devoptab (by RonnChyran)
         * Updated for libsysbase change in devkitARM r46 and above.
+------------------------------------------------------------------
+    inifile.h + stringtool.h
+    Copyright (C) 2007 Acekard, www.acekard.com
+    Copyright (C) 2007-2009 somebody
+    Copyright (C) 2009-2010 yellow wood goblin
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 ------------------------------------------------------------------*/
+
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
 #include <sys/dir.h>
 #include <sys/iosupport.h>
 #include <stdio.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <cstdarg>
+#include <cstdio>
+#include <malloc.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+class CIniFile
+{
+  public:
+    CIniFile();
+    CIniFile(const std::string& filename);
+    virtual ~CIniFile();
+
+  public:
+    bool LoadIniFile(const std::string& FileName);
+    bool SaveIniFile(const std::string& FileName);
+    bool SaveIniFileModified(const std::string& FileName);
+
+    std::string GetString(const std::string& Section,const std::string& Item,const std::string& DefaultValue);
+    void SetString(const std::string& Section,const std::string& Item,const std::string& Value);
+    int GetInt(const std::string& Section,const std::string& Item,int DefaultValue);
+    void SetInt(const std::string& Section,const std::string& Item,int Value);
+    void GetStringVector(const std::string& Section,const std::string& Item,std::vector<std::string>& strings,char delimiter=',');
+    void SetStringVector(const std::string& Section,const std::string& Item,std::vector<std::string>& strings,char delimiter=',');
+  protected:
+    std::string m_sFileName;
+    typedef std::vector<std::string> cStringArray;
+    cStringArray m_FileContainer;
+    bool m_bLastResult;
+    bool m_bModified;
+    bool m_bReadOnly;
+    typedef std::map<std::string,size_t> cSectionCache;
+    cSectionCache m_Cache;
+
+    bool InsertLine(size_t line,const std::string& str);
+    bool ReplaceLine(size_t line,const std::string& str);
+
+    void SetFileString(const std::string& Section,const std::string& Item,const std::string& Value);
+    std::string GetFileString(const std::string& Section,const std::string& Item);
+
+    std::string GetString(const std::string& Section,const std::string& Item);
+    int GetInt(const std::string& Section,const std::string& Item);
+};
+
+std::string formatString( const char* fmt, ... );
 
 #define LOAD_DEFAULT_NDS 0
 
