@@ -63,7 +63,7 @@ steps:
     git config --global user.email "flamekat54@aol.com"
     git config --global user.name "TWLBot"
     git clone https://$GITHUB_TOKEN@github.com/TWLBot/overflow-builds.git
-    cd Builds/
+    cd overflow-builds/
     cp ../Relaunch.7z Relaunch.7z
     git stage .
     git commit -m "Relaunch | $(COMMIT_TAG)"
