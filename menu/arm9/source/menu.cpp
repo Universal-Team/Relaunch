@@ -5,23 +5,7 @@
 	Rojelio "RocketRobz" Reyes
 ------------------------------------------------------------------*/
 
-#include <nds.h>
-#include <vector>
-#include <algorithm>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <nds/arm9/dldi.h>
-#include <fat.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
-
-#include "nds_loader_arm9.h"
-#include "main.h"
-#include "menu.h"
-#include "inifile.h"
-#include "font.h"
+#include "includes.h"
 
 #define SCREEN_COLS 30
 #define ENTRIES_PER_SCREEN 19
