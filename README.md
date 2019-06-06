@@ -1,5 +1,5 @@
 <img src="https://github.com/FlameKat53/Relaunch/blob/master/D0D9F2D9-CC0D-4F97-A759-5E1F9A5DF4F6.png?raw=true">
-<h4 align="center">By FlameKat53</h4>
+<h4 align="center">By FlameKat53 & Epicpkmn11</h4>
 <p align="center">
  <span style="padding-right: 5px;">
   <a href="https://travis-ci.org/FlameKat53/Relaunch">
