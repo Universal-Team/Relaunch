@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
 
 	bgPre();
 
-	setFontTop();
+	setFontSub();
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
@@ -180,6 +180,9 @@ int main(int argc, char **argv) {
 
 	if(appInited) {
 		loadBG(); //load the background
+		//print fake sizes coz we dont have dsiware on flashcards .-.
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
 	}
 
 
