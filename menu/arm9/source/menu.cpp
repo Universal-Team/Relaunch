@@ -359,7 +359,6 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	// Clear the screen
 	iprintf ("\x1b[2J");
 
-	// Print the path
 	printf ("\x1b[1;0H");
 	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
 	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
@@ -678,10 +677,28 @@ void eq_drawTopScreen(void) {
 		} else if (eqAssignedOp[i] == 4) {
 			printf ("BUTTON Y");
 		} else if (eqAssignedOp[i] == 5) {
-			printf ("LOAD ERROR");
+			printf ("BUTTON L");
 		} else if (eqAssignedOp[i] == 6) {
-			printf ("BUTTON A+B (FILEMENU - FIXED)");
+			printf ("BUTTON R");
 		} else if (eqAssignedOp[i] == 7) {
+			printf ("BUTTON START");
+		} else if (eqAssignedOp[i] == 8) {
+			printf ("BUTTON SELECT");
+		} else if (eqAssignedOp[i] == 9) {
+			printf ("TOUCH SCREEN");
+		} else if (eqAssignedOp[i] == 10) {
+			printf ("D-PAD UP");
+		} else if (eqAssignedOp[i] == 11) {
+			printf ("D-PAD DOWN");
+		} else if (eqAssignedOp[i] == 12) {
+			printf ("D-PAD LEFT");
+		} else if (eqAssignedOp[i] == 13) {
+			printf ("D-PAD RIGHT");
+		} else if (eqAssignedOp[i] == 14) {
+			printf ("LOAD ERROR");
+		} else if (eqAssignedOp[i] == 15) {
+			printf ("BUTTON A+B (FILEMENU - FIXED)");
+		} else if (eqAssignedOp[i] == 16) {
 			printf ("SAVE & EXIT");
 		}
 	}
@@ -763,6 +780,52 @@ void eqMenu (void) {
 		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 7;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 8;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 9;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 10;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 11;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 12;
+		}
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 13;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 14;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 15;
+		}
+		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
+			eqMaxCursors++;
+			eqAssignedOp[eqMaxCursors] = 16;
 		}
 
 		if (!eqTextPrinted) {
@@ -877,12 +940,120 @@ void eqMenu (void) {
 				secondaryDrive = false;
 				chdir("sd:/");
 				}
-				errorLock = true;
+				lLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 6) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				rLock = true;
+				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 7) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				startLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 8) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				selectLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 9) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				touchLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 10) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				upLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 11) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				downLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 12) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				leftLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 13) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				rightLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 14) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
+				errorLock = true;
+				screenMode = 1;
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 15) {
+				break;
+			} else if (eqAssignedOp[eqCursorPosition] == 16) {
 				eqTextPrinted = false;
 				/*CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 				ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");*/
