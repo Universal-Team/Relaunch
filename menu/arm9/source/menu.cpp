@@ -590,7 +590,7 @@ void eqMenu (void) {
 	errorLock = false;
 	eqTextPrinted = false;
 
-	while (true) {
+while (true) {
 		for (int i = 0; i < 3; i++) {
 			eqAssignedOp[i] = -1;
 		}
@@ -660,7 +660,6 @@ void eqMenu (void) {
 			eqMaxCursors++;
 			eqAssignedOp[eqMaxCursors] = 12;
 		}
-		}
 		if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
 		|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 			eqMaxCursors++;
@@ -691,7 +690,23 @@ void eqMenu (void) {
 			eqTextPrinted = true;
 		}
 
-	while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B)); {
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+	
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (isDSiMode()) {
+				if (REG_SCFG_MC != stored_SCFG_MC) {
+					eqTextPrinted = false;
+					break;
+				}
+			}
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
 
 		if ((pressed & KEY_UP) && eqMaxCursors != -1 && eqCursorPosition != 0) {
 			eqCursorPosition -= 1;
@@ -893,13 +908,14 @@ void eqMenu (void) {
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 16) {
 				eqTextPrinted = false;
-				/*ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");*/
+				//ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 				screenMode = 0;
 				break;
 			}
 		}
 	}
 }
+
 // file operation things
 // file operation things
 
