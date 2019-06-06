@@ -17,7 +17,6 @@
 #include <string.h>
 
 #include "functions.h"
-#include "inifile.h"
 #include "main.h"
 #include "menu.h"
 #include "font.h"
