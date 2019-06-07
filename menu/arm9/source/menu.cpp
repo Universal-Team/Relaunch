@@ -286,6 +286,9 @@ string browseForFile (void) {
 
 	getDirectoryContents (dirContents);
 
+	std::vector<DirEntry> ndsFiles;
+	findNdsFiles(ndsFiles);
+
 	while (true) {
 		DirEntry* entry = &dirContents.at(fileOffset);
 
