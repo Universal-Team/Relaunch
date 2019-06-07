@@ -35,4 +35,4 @@ extern "C"
 }
 #endif
 
-#endif // NDS_LOADER_ARM7_H
+#endif // NDS_LOADER_ARM9_H

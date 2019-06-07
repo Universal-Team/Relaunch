@@ -24,13 +24,13 @@
 
 ## Advanced Usage
 
-- You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files.
-- If you read the line above, you know about custom paths, you can do this in the Relaunch Menu as well!
+- You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files, you can also do this in the Relaunch menu.
 - Hold `A` + `B` on boot in order to open the menu.
-- There are prebuilt nightly builds of Relaunch found on [TWLBot](https://github.com/TWLBot/overflow-builds)
+- There are prebuilt nightlies of Relaunch avaliable on [TWLBot](https://github.com/TWLBot/overflow-builds)
 
 # Credits
 
 - [Flame](https://github.com/FlameKat53): The main developer of Relaunch
+- [Epicpkmn11](https://github.com/Epicpkmn11): Implementing tons of minor and some major additions I couldn't get to work .-.
 - [nocash](http://problemkaputt.de): Creating [Unlaunch](http://problemkaputt.de/unlaunch.htm), which this app is inspired by.
 - [RocketRobz](https://github.com/RocketRobz): Creating [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu.

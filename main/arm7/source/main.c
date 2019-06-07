@@ -1,4 +1,3 @@
-
 /*---------------------------------------------------------------------------------
 	default ARM7 core
 		Copyright (C) 2005 - 2010
@@ -72,7 +71,6 @@ int main() {
 	
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
-		// fifocheck();
 		swiWaitForVBlank();
 	}
 	return 0;
