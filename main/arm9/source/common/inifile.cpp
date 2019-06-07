@@ -18,7 +18,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include "inifile.h"
-#include "stringtool.h"
 #include <cstdarg>
 #include <malloc.h>
 
