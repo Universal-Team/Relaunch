@@ -723,184 +723,74 @@ while (true) {
 		}
 
 		if (pressed & KEY_A) {
-			if (eqAssignedOp[eqCursorPosition] == 0) {
+		
+			if (eqAssignedOp[eqCursorPosition] != 15 && eqAssignedOp[eqCursorPosition] != 16) {
 				eqTextPrinted = false;
-				secondaryDrive = true;
-				if (flashcardMounted) {
+			if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
-				} else {
+			} else {
 				secondaryDrive = false;
 				chdir("sd:/");
-				}
+			}
+		}
+			if (eqAssignedOp[eqCursorPosition] == 0) {
 				noLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 1) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				aLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 2) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				bLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 3) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				xLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 4) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				yLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 5) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				lLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 6) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				rLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 7) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				startLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 8) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				selectLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 9) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				touchLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 10) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				upLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 11) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				downLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 12) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				leftLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 13) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				rightLock = true;
 				screenMode = 1;
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 14) {
-				eqTextPrinted = false;
-				if (flashcardMounted) {
-				secondaryDrive = true;
-				chdir("fat:/");
-				} else {
-				secondaryDrive = false;
-				chdir("sd:/");
-				}
 				errorLock = true;
 				screenMode = 1;
 				break;

@@ -22,8 +22,6 @@ extern bool flashcardMountSkipped;
 extern void driveMenu (void);
 extern void eqMenu (void);
 
-extern void printBytes(int bytes);
-
 extern off_t getFileSize(const char *fileName);
 extern int fcopy(const char *sourcePath, const char *destinationPath);
 extern u8 stored_SCFG_MC;
