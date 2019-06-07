@@ -38,6 +38,9 @@ static bool leftLock = false;
 static bool rightLock = false;
 static bool touchLock = false;
 static bool errorLock = false;
+static sNDSHeader nds;
+u8 stored_SCFG_MC = 0;
+static bool slot1Enabled = true;
 bool sdMounted = false;
 bool sdMountedDone = false;				// true if SD mount is successful once
 bool flashcardMounted = false;
@@ -48,28 +51,10 @@ int sdSize = 0;
 int fatSize = 0;
 
 void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
-
-	if (fileMenu = true) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("\nRelaunch.nds v0.3");
-	} else {
-	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
-	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
-	if (bLock == true) { printf("Select title for BUTTON B"); } else {}
-	if (xLock == true) { printf("Select title for BUTTON X"); } else {}
-	if (yLock == true) { printf("Select title for BUTTON Y"); } else {}
-	if (lLock == true) { printf("Select title for BUTTON L"); } else {}
-	if (rLock == true) { printf("Select title for BUTTON R"); } else {}
-	if (startLock == true) { printf("Select title for BUTTON START"); } else {}
-	if (selectLock == true) { printf("Select title for BUTTON SELECT"); } else {}
-	if (touchLock == true) { printf("Select title for TOUCH SCREEN"); } else {}
-	if (upLock == true) { printf("Select title for DPAD UP"); } else {}
-	if (downLock == true) { printf("Select title for DPAD DOWN"); } else {}
-	if (leftLock == true) { printf("Select title for DPAD LEFT"); } else {}
-	if (rightLock == true) { printf("Select title for DPAD RIGHT"); } else {}
-	if (errorLock == true) { printf("Select title for LOAD ERROR"); } else {}
-	}
+
 	// Move to 4th row
 	printf ("\x1b[3;0H");
 
@@ -89,6 +74,7 @@ void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
 void dm_drawBottomScreen(void) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
+
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
 	printf("\n\n No one\n   is\n illegal");
@@ -109,19 +95,13 @@ void dm_drawBottomScreen(void) {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\nsett:");
-	} else if (dmAssignedOp[dmCursorPosition] > 3) {
-		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
-		printf ("\nPRV SIZE: 00000000\n");
-		printf ("nds app");
-	/*char fullPath[256];
-	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());*/
-		//printf (fullPath);
 	}
 }
 
 void driveMenu (void) {
 	fileMenu = true;
 	int pressed = 0;
+	int held = 0;
 	
 if (flashcardMounted) {
 	secondaryDrive = true;
@@ -139,25 +119,50 @@ if (flashcardMounted) {
 		options.name = "OPTIONS";
 		ndsFiles.insert(ndsFiles.begin(), options);
 	}
-	if (access("sd:/_nds/Relaunch/WIFIBOOT.NDS", F_OK) == 0 
-	|| access("fat:/_nds/Relaunch/WIFIBOOT.NDS", F_OK) == 0) {
+	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		DirEntry wifiboot;
 		wifiboot.name = "WIFIBOOT";
 		ndsFiles.insert(ndsFiles.begin(), wifiboot);
 	}
-	if (access("fat:/_nds/TWiLightMenu/gbaswitch.srldr", F_OK) == 0 && isRegularDS) {
+	if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0 && isRegularDS) {
 		DirEntry gbaGame;
 		gbaGame.name = "GBA GAME";
 		ndsFiles.insert(ndsFiles.begin(), gbaGame);
 	}
-	if (access("sd:/_nds/TWiLightMenu/slot1launch.srldr", F_OK) == 0 
-	|| access("fat:/_nds/TWiLightMenu/slot1launch.srldr", F_OK) == 0) {
+	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0 
+	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		DirEntry dsGame;
 		dsGame.name = "DS GAME";
 		ndsFiles.insert(ndsFiles.begin(), dsGame);
 	}
 
-while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
+	while (true) {
+		if (!dmTextPrinted) {
+		setFontSub();
+			dm_drawBottomScreen();
+		setFontTop();
+			dm_drawTopScreen(ndsFiles);
+
+			dmTextPrinted = true;
+		}
+
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		do {
+
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (isDSiMode()) {
+				if (REG_SCFG_MC != stored_SCFG_MC) {
+					dmTextPrinted = false;
+					break;
+				}
+			}
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 
 		if ((pressed & KEY_UP) && dmCursorPosition > 0) {
 			dmCursorPosition -= 1;
@@ -169,9 +174,6 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 		}
 
 		if (pressed & KEY_A) {
-			if (dmCursorPosition > 3) {
-			applaunch = true;
-			}
 			if (dmAssignedOp[dmCursorPosition] == 0) {
 				dmTextPrinted = false;
 				if (flashcardMounted) {
@@ -206,10 +208,10 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 				fileMenu = false;
 				screenMode = 2;
 				break;
+			}
 		}
 	}
 }
-
 
 // file browse stuff below!
 // file browse stuff below! (yes this is on 2 lines)
@@ -232,12 +234,66 @@ bool nameEndsWith (const string& name) {
 	return true;
 }
 
+void getDirectoryContents (vector<DirEntry>& dirContents) {
+	struct stat st;
+	dirContents.clear();
+
+	DIR *pdir = opendir ("."); 
+
+	if (pdir == NULL) {
+		iprintf ("Unable to open the directory.\n");
+	} else {
+
+		while(true) {
+			DirEntry dirEntry;
+
+			struct dirent* pent = readdir(pdir);
+			if(pent == NULL) break;
+
+			stat(pent->d_name, &st);
+			if (strcmp(pent->d_name, "..") != 0) {
+				dirEntry.name = pent->d_name;
+				dirEntry.isDirectory = (st.st_mode & S_IFDIR) ? true : false;
+				if (!dirEntry.isDirectory) {
+					dirEntry.size = getFileSize(dirEntry.name.c_str());
+				}
+				if((dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "nds")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "NDS")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "argv")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "ARGV")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "app")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP"))
+				{
+					dirEntry.isApp = true;
+				} else {
+					dirEntry.isApp = false;
+				}
+
+				if (dirEntry.name.compare(".") != 0 && (dirEntry.isDirectory || nameEndsWith(dirEntry.name))) {
+					dirContents.push_back (dirEntry);
+				}
+			}
+
+		}
+
+		closedir(pdir);
+	}	
+
+	sort(dirContents.begin(), dirContents.end(), dirEntryPredicate);
+
+	DirEntry dirEntry;
+	dirEntry.isDirectory = true;
+	dirEntry.isApp = false;
+}
+
 void findNdsFiles(vector<DirEntry>& dirContents) {
 	struct stat st;
 	DIR *pdir = opendir(".");
 
 	if (pdir == NULL) {
-		iprintf("Unable to open the directory, Please report to https://github.com/FlameKat53/Relaunch/issues");
+		iprintf("Unable to open the directory.");
 		for(int i=0;i<120;i++)
 			swiWaitForVBlank();
 	} else {
@@ -251,9 +307,7 @@ void findNdsFiles(vector<DirEntry>& dirContents) {
 			dirEntry.name = pent->d_name;
 			dirEntry.isDirectory = (st.st_mode & S_IFDIR) ? true : false;
 			if(!(dirEntry.isDirectory) && dirEntry.name.length() >= 3) {
-				if (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0)
-				|| (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "dsi") == 0)
-				|| (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "app") == 0) {
+				if (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0) {
 					dirContents.push_back(dirEntry);
 				}
 			} else if (dirEntry.isDirectory && dirEntry.name.compare(".") != 0 && dirEntry.name.compare("..") != 0) {
@@ -263,6 +317,57 @@ void findNdsFiles(vector<DirEntry>& dirContents) {
 			}
 		}
 		closedir(pdir);
+	}
+}
+
+void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow) {
+	getcwd(path, PATH_MAX);
+
+	// Clear the screen
+	iprintf ("\x1b[2J");
+
+	printf ("\x1b[1;0H");
+	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
+	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
+	if (bLock == true) { printf("Select title for BUTTON B"); } else {}
+	if (xLock == true) { printf("Select title for BUTTON X"); } else {}
+	if (yLock == true) { printf("Select title for BUTTON Y"); } else {}
+	if (lLock == true) { printf("Select title for BUTTON L"); } else {}
+	if (rLock == true) { printf("Select title for BUTTON R"); } else {}
+	if (startLock == true) { printf("Select title for BUTTON START"); } else {}
+	if (selectLock == true) { printf("Select title for BUTTON SELECT"); } else {}
+	if (touchLock == true) { printf("Select title for TOUCH SCREEN"); } else {}
+	if (upLock == true) { printf("Select title for DPAD UP"); } else {}
+	if (downLock == true) { printf("Select title for DPAD DOWN"); } else {}
+	if (leftLock == true) { printf("Select title for DPAD LEFT"); } else {}
+	if (rightLock == true) { printf("Select title for DPAD RIGHT"); } else {}
+	if (errorLock == true) { printf("Select title for LOAD ERROR"); } else {}
+
+	// Move to 2nd row
+	iprintf ("\x1b[1;0H");
+
+	// Print directory listing
+	for (int i = 0; i < ((int)dirContents.size() - startRow) && i < ENTRIES_PER_SCREEN; i++) {
+		const DirEntry* entry = &dirContents.at(i + startRow);
+		char entryName[SCREEN_COLS + 1];
+
+		// Set row
+		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
+		if ((fileOffset - startRow) == i) {
+			//printf ("\x1b[46m# ");		// Print foreground cyan color
+			printf("# ");
+		} else {
+			//printf ("\x1b[42m  ");		// Print foreground green color
+			printf("  ");
+		}
+
+		strncpy (entryName, entry->name.c_str(), SCREEN_COLS);
+		entryName[SCREEN_COLS] = '\0';
+		printf (entryName);
+		if (entry->isDirectory) {
+			printf ("\x1b[%d;27H", i + ENTRIES_START_ROW);
+			printf ("(dir)");
+		}
 	}
 }
 
@@ -280,11 +385,12 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 
 string browseForFile (void) {
 	int pressed = 0;
+	int held = 0;
 	int screenOffset = 0;
 	int fileOffset = 0;
+	vector<DirEntry> dirContents;
 
-	std::vector<DirEntry> ndsFiles;
-	findNdsFiles(ndsFiles);
+	getDirectoryContents (dirContents);
 
 	while (true) {
 		DirEntry* entry = &dirContents.at(fileOffset);
@@ -292,13 +398,27 @@ string browseForFile (void) {
 		setFontSub();
 		fileBrowse_drawBottomScreen(entry, fileOffset);
 		setFontTop();
-		dm_drawTopScreen(ndsFiles);
+		showDirectoryContents(dirContents, fileOffset, screenOffset);
 
-while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (REG_SCFG_MC != stored_SCFG_MC) {
+				break;
+			}
+
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
 
 		iprintf ("\x1b[%d;0H", fileOffset - screenOffset + ENTRIES_START_ROW);
 
-		if (pressed & KEY_UP && fileOffset > 0) {	fileOffset -= 1;}
+		if (pressed & KEY_UP && fileOffset > 0) {		fileOffset -= 1;}
 		if (pressed & KEY_DOWN && fileOffset < (int)dirContents.size() - 1) {	fileOffset += 1;}
 
 		// Scroll screen if needed
@@ -318,7 +438,7 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 			if (entry->isDirectory) {
 				//printf("\x1b[46m"); // print cyan color
 				iprintf("  Please Wait...\n");
-				// Enter the directory
+				// Enter selected directory
 				chdir (entry->name.c_str());
 				getDirectoryContents(dirContents);
 				screenOffset = 0;
@@ -328,6 +448,10 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 	printf ("\x1b[0;27H");
 	char fullPath[256];
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
+
+		if (fileMenu == true) {
+				applaunch = true;
+		} else {
 
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
@@ -368,9 +492,9 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 			getDirectoryContents (dirContents);
 			screenOffset = 0;
 			fileOffset = 0;
+		}
 	}
 }
-
 
 // OPTIONS MENU THINGS BELOW
 // OPTIONS MENU THINGS BELOW
@@ -448,6 +572,7 @@ void eq_drawBottomScreen(void) {
 
 void eqMenu (void) {
 	int pressed = 0;
+	int held = 0;
 	noLock = false;
 	aLock = false;
 	bLock = false;
@@ -565,7 +690,23 @@ while (true) {
 			eqTextPrinted = true;
 		}
 
-while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
+		stored_SCFG_MC = REG_SCFG_MC;
+
+		// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+		do {
+	
+			scanKeys();
+			pressed = keysDownRepeat();
+			held = keysHeld();
+			swiWaitForVBlank();
+
+			if (isDSiMode()) {
+				if (REG_SCFG_MC != stored_SCFG_MC) {
+					eqTextPrinted = false;
+					break;
+				}
+			}
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B));
 
 		if ((pressed & KEY_UP) && eqMaxCursors != -1 && eqCursorPosition != 0) {
 			eqCursorPosition -= 1;
@@ -575,7 +716,6 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 			eqCursorPosition += 1;
 			eqTextPrinted = false;
 		}
-
 		if (pressed & KEY_B) {
 		screenMode = 0;
 		eqTextPrinted = false;
@@ -583,14 +723,16 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 		}
 
 		if (pressed & KEY_A) {
-			eqTextPrinted = false;
-		if (flashcardMounted) {
-			secondaryDrive = true;
-			chdir("fat:/");
-		} else {
-			secondaryDrive = false;
-			chdir("sd:/");
-		}
+		
+			if (eqAssignedOp[eqCursorPosition] != 15 && eqAssignedOp[eqCursorPosition] != 16) {
+				eqTextPrinted = false;
+				if (flashcardMounted) {
+				secondaryDrive = true;
+				chdir("fat:/");
+				} else {
+				secondaryDrive = false;
+				chdir("sd:/");
+				}
 			if (eqAssignedOp[eqCursorPosition] == 0) {
 				noLock = true;
 				screenMode = 1;
@@ -654,7 +796,6 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 			} else if (eqAssignedOp[eqCursorPosition] == 15) {
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 16) {
-				eqTextPrinted = false;
 				//ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 				screenMode = 0;
 				break;
