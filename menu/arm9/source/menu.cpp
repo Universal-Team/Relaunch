@@ -38,7 +38,6 @@ static bool leftLock = false;
 static bool rightLock = false;
 static bool touchLock = false;
 static bool errorLock = false;
-static sNDSHeader nds;
 bool sdMounted = false;
 bool sdMountedDone = false;				// true if SD mount is successful once
 bool flashcardMounted = false;
@@ -726,7 +725,7 @@ bool flashcardMount(void) {
 		}
 		return false;
 	}
-}
+}// edit this boi?
 
 off_t getFileSize(const char *fileName)
 {
