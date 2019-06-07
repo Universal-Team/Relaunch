@@ -207,10 +207,10 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 				fileMenu = false;
 				screenMode = 2;
 				break;
-			}
 		}
 	}
 }
+
 
 // file browse stuff below!
 // file browse stuff below! (yes this is on 2 lines)
