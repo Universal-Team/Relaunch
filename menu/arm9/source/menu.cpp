@@ -725,7 +725,7 @@ bool flashcardMount(void) {
 		}
 		return false;
 	}
-}// edit this boi?
+}
 
 off_t getFileSize(const char *fileName)
 {
