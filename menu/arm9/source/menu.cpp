@@ -282,9 +282,6 @@ string browseForFile (void) {
 	int pressed = 0;
 	int screenOffset = 0;
 	int fileOffset = 0;
-	vector<DirEntry> dirContents;
-
-	getDirectoryContents (dirContents);
 
 	std::vector<DirEntry> ndsFiles;
 	findNdsFiles(ndsFiles);
