@@ -19,7 +19,7 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-*/
+
 
 #pragma once
 #ifndef _SINGLETON_H_
@@ -64,3 +64,4 @@ template<typename T,  typename...Args>
 T * singleton<T, Args...>::_instance = NULL;
 
 #endif //_SINGLETON_H_
+*/
