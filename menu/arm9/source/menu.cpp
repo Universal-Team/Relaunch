@@ -797,6 +797,7 @@ while (true) {
 			} else if (eqAssignedOp[eqCursorPosition] == 15) {
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 16) {
+				eqTextPrinted = false;
 				//ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 				screenMode = 0;
 				break;
