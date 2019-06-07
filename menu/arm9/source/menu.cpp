@@ -369,9 +369,9 @@ while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(p
 			getDirectoryContents (dirContents);
 			screenOffset = 0;
 			fileOffset = 0;
-		}
 	}
 }
+
 
 // OPTIONS MENU THINGS BELOW
 // OPTIONS MENU THINGS BELOW
