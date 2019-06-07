@@ -726,13 +726,14 @@ while (true) {
 		
 			if (eqAssignedOp[eqCursorPosition] != 15 && eqAssignedOp[eqCursorPosition] != 16) {
 				eqTextPrinted = false;
-				if (flashcardMounted) {
+			if (flashcardMounted) {
 				secondaryDrive = true;
 				chdir("fat:/");
-				} else {
+			} else {
 				secondaryDrive = false;
 				chdir("sd:/");
-				}
+			}
+		}
 			if (eqAssignedOp[eqCursorPosition] == 0) {
 				noLock = true;
 				screenMode = 1;
