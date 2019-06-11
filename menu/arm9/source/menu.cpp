@@ -17,7 +17,6 @@ static char path[PATH_MAX];
 
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0;
-static int dmAssignedOp[3] = {-1};
 static bool eqTextPrinted = false;
 static int eqCursorPosition = 0;
 static int eqAssignedOp[3] = {-1};
@@ -38,19 +37,17 @@ static bool leftLock = false;
 static bool rightLock = false;
 static bool touchLock = false;
 static bool errorLock = false;
-static sNDSHeader nds;
 u8 stored_SCFG_MC = 0;
-static bool slot1Enabled = true;
 bool sdMounted = false;
 bool sdMountedDone = false;				// true if SD mount is successful once
 bool flashcardMounted = false;
-bool secondaryDrive = false;				// false == SD card, true == Flashcard
+bool secondaryDrive = false;			// false == SD card, true == Flashcard
 char sdLabel[12];
 char fatLabel[12];
 int sdSize = 0;
 int fatSize = 0;
 
-void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
+void dm_drawTopScreen(std::vector<DirEntry> ndsFiles, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("\nRelaunch.nds v0.3");
@@ -58,20 +55,21 @@ void dm_drawTopScreen(std::vector<DirEntry> ndsFiles) {
 	// Move to 4th row
 	printf ("\x1b[3;0H");
 
-	for (int i = dmCursorPosition+0; i <= dmCursorPosition+18; i++) {
+
+	for (int i = 0; i < ((int)ndsFiles.size() - startRow) && i < ENTRIES_PER_SCREEN; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
-		if (dmCursorPosition == i) {
+		if (dmCursorPosition == i + startRow) {
 			//printf ("\x1b[46m# ");		// Print foreground cyan color
 			printf("# ");
 		} else {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
-		printf((ndsFiles[i].name + "\n").c_str());
+		printf((ndsFiles[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
 			    
-void dm_drawBottomScreen(void) {
+void dm_drawBottomScreen(std::vector<DirEntry> ndsFiles) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
@@ -79,19 +77,19 @@ void dm_drawBottomScreen(void) {
 	printf ("\x1b[0;0H");
 	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
-	if (dmAssignedOp[dmCursorPosition] == 0) {
+	if (ndsFiles[dmCursorPosition].name == "DS GAME") {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\ncart:");
-	} else if (dmAssignedOp[dmCursorPosition] == 1) {
+	} else if (ndsFiles[dmCursorPosition].name == "GBA GAME") {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\nslot2:");
-	} else if (dmAssignedOp[dmCursorPosition] == 2) {
+	} else if (ndsFiles[dmCursorPosition].name == "WIFIBOOT") {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\nwifi:");
-	} else if (dmAssignedOp[dmCursorPosition] == 3) {
+	} else if (ndsFiles[dmCursorPosition].name == "OPTIONS") {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\nsett:");
@@ -101,15 +99,15 @@ void dm_drawBottomScreen(void) {
 void driveMenu (void) {
 	fileMenu = true;
 	int pressed = 0;
-	int held = 0;
 	
-if (flashcardMounted) {
-	secondaryDrive = true;
-	chdir("fat:/");
-} else {
-	secondaryDrive = false;
-	chdir("sd:/");
-}
+	if (flashcardMounted) {
+		secondaryDrive = true;
+		chdir("fat:/");
+	} else {
+		secondaryDrive = false;
+		chdir("sd:/");
+	}
+
 	std::vector<DirEntry> ndsFiles;
 	findNdsFiles(ndsFiles);
 
@@ -123,6 +121,7 @@ if (flashcardMounted) {
 	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		DirEntry wifiboot;
 		wifiboot.name = "WIFIBOOT";
+		// ndsFiles.insert(ndsFiles.begin(), wifiboot);
 		ndsFiles.insert(ndsFiles.begin(), wifiboot);
 	}
 	if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0 && isRegularDS) {
@@ -137,12 +136,22 @@ if (flashcardMounted) {
 		ndsFiles.insert(ndsFiles.begin(), dsGame);
 	}
 
+	int dmScreenPosition = 0;
+
 	while (true) {
 		if (!dmTextPrinted) {
-		setFontSub();
-			dm_drawBottomScreen();
-		setFontTop();
-			dm_drawTopScreen(ndsFiles);
+			// Scroll screen if needed
+			if (dmCursorPosition < dmScreenPosition) 	{
+				dmScreenPosition = dmCursorPosition;
+			}
+			if (dmCursorPosition > dmScreenPosition + ENTRIES_PER_SCREEN - 1) {
+				dmScreenPosition = dmCursorPosition - ENTRIES_PER_SCREEN + 1;
+			}
+
+			setFontSub();
+			dm_drawBottomScreen(ndsFiles);
+			setFontTop();
+			dm_drawTopScreen(ndsFiles, dmScreenPosition);
 
 			dmTextPrinted = true;
 		}
@@ -150,10 +159,8 @@ if (flashcardMounted) {
 		stored_SCFG_MC = REG_SCFG_MC;
 
 		do {
-
 			scanKeys();
 			pressed = keysDownRepeat();
-			held = keysHeld();
 			swiWaitForVBlank();
 
 			if (isDSiMode()) {
@@ -165,24 +172,23 @@ if (flashcardMounted) {
 		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
 
 		if ((pressed & KEY_UP) && dmCursorPosition > 0) {
-			dmCursorPosition -= 1;
+			dmCursorPosition--;
 			dmTextPrinted = false;
-		}
-		if ((pressed & KEY_DOWN) && dmCursorPosition < ndsFiles.size()) {
-			dmCursorPosition += 1;
+		} else if ((pressed & KEY_DOWN) && dmCursorPosition < (int)ndsFiles.size()-1) {
+			dmCursorPosition++;
 			dmTextPrinted = false;
 		}
 
 		if (pressed & KEY_A) {
-			if (dmAssignedOp[dmCursorPosition] == 0) {
+			if (ndsFiles[dmCursorPosition].name == "DS GAME") {
 				dmTextPrinted = false;
 				if (flashcardMounted) {
-				runNdsFile("fat:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+					runNdsFile("fat:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
 				} else {
-				runNdsFile("sd:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
+					runNdsFile("sd:/_nds/TWiLightMenu/slot1launch.srldr", 0, NULL, false);
 				}
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 1 && isRegularDS) {
+			} else if (ndsFiles[dmCursorPosition].name == "GBA GAME" && isRegularDS) {
 				dmTextPrinted = false;
 				irqDisable(IRQ_VBLANK);
 				vramSetBankA(VRAM_A_MAIN_BG);
@@ -195,7 +201,7 @@ if (flashcardMounted) {
 				// Switch to GBA mode
 				runNdsFile("fat:/_nds/TWiLightMenu/gbaswitch.srldr", 0, NULL, false);
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 2) {
+			} else if (ndsFiles[dmCursorPosition].name == "WIFIBOOT") {
 				dmTextPrinted = false;
 				if (flashcardMounted) {
 				runNdsFile("fat:/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
@@ -203,10 +209,13 @@ if (flashcardMounted) {
 				runNdsFile("sd:/_nds/Relaunch/WIFIBOOT.NDS", 0, NULL, false);
 				}
 				break;
-			} else if (dmAssignedOp[dmCursorPosition] == 3) {
+			} else if (ndsFiles[dmCursorPosition].name == "OPTIONS") {
 				dmTextPrinted = false;
 				fileMenu = false;
 				screenMode = 2;
+				break;
+			} else {
+				runNdsFile(ndsFiles[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
 				break;
 			}
 		}
@@ -297,6 +306,8 @@ void findNdsFiles(vector<DirEntry>& dirContents) {
 		for(int i=0;i<120;i++)
 			swiWaitForVBlank();
 	} else {
+		char path[PATH_MAX];
+		getcwd(path, PATH_MAX);
 		while (true) {
 			DirEntry dirEntry;
 
@@ -305,6 +316,7 @@ void findNdsFiles(vector<DirEntry>& dirContents) {
 
 			stat(pent->d_name, &st);
 			dirEntry.name = pent->d_name;
+			dirEntry.fullPath = path + dirEntry.name;
 			dirEntry.isDirectory = (st.st_mode & S_IFDIR) ? true : false;
 			if(!(dirEntry.isDirectory) && dirEntry.name.length() >= 3) {
 				if (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0) {
@@ -372,7 +384,7 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 }
 
 void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
-	char fullPath[256];
+	char fullPath[PATH_MAX];
 	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
 
 	printf ("\x1b[0;0H");
@@ -385,7 +397,6 @@ void fileBrowse_drawBottomScreen(DirEntry* entry, int fileOffset) {
 
 string browseForFile (void) {
 	int pressed = 0;
-	int held = 0;
 	int screenOffset = 0;
 	int fileOffset = 0;
 	vector<DirEntry> dirContents;
@@ -407,7 +418,6 @@ string browseForFile (void) {
 
 			scanKeys();
 			pressed = keysDownRepeat();
-			held = keysHeld();
 			swiWaitForVBlank();
 
 			if (REG_SCFG_MC != stored_SCFG_MC) {
@@ -444,45 +454,44 @@ string browseForFile (void) {
 				screenOffset = 0;
 				fileOffset = 0;
 			} else if (entry->isApp) {
-	setFontSub();
-	printf ("\x1b[0;27H");
-	char fullPath[256];
-	snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
+				setFontSub();
+				printf ("\x1b[0;27H");
+				char fullPath[PATH_MAX];
+				snprintf(fullPath, sizeof(fullPath), "%s%s", path, entry->name.c_str());
 
-		if (fileMenu == true) {
-				applaunch = true;
-		} else {
+				if (fileMenu == true) {
+					applaunch = true;
+				} else {
 
-	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
+					CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
-	if (noLock == true) { ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", fullPath); } else {}
-	if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); } else {}
-	if (bLock == true) { ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath); } else {}
-	if (xLock == true) { ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath); } else {}
-	if (yLock == true) { ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath); } else {}
-	if (lLock == true) { ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath); } else {}
-	if (rLock == true) { ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath); } else {}
-	if (startLock == true) { ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath); } else {}
-	if (selectLock == true) { ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath); } else {}
-	if (touchLock == true) { ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath); } else {}
-	if (upLock == true) { ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath); } else {}
-	if (downLock == true) { ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath); } else {}
-	if (leftLock == true) { ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath); } else {}
-	if (rightLock == true) { ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath); } else {}
-	if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); } else {}
+					if (noLock == true) { ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", fullPath); }
+					if (aLock == true) { ini.SetString("RELAUNCH", "BOOT_A_PATH", fullPath); }
+					if (bLock == true) { ini.SetString("RELAUNCH", "BOOT_B_PATH", fullPath); }
+					if (xLock == true) { ini.SetString("RELAUNCH", "BOOT_X_PATH", fullPath); }
+					if (yLock == true) { ini.SetString("RELAUNCH", "BOOT_Y_PATH", fullPath); }
+					if (lLock == true) { ini.SetString("RELAUNCH", "BOOT_L_PATH", fullPath); }
+					if (rLock == true) { ini.SetString("RELAUNCH", "BOOT_R_PATH", fullPath); }
+					if (startLock == true) { ini.SetString("RELAUNCH", "BOOT_START_PATH", fullPath); }
+					if (selectLock == true) { ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", fullPath); }
+					if (touchLock == true) { ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", fullPath); }
+					if (upLock == true) { ini.SetString("RELAUNCH", "BOOT_UP_PATH", fullPath); }
+					if (downLock == true) { ini.SetString("RELAUNCH", "BOOT_DOWN_PATH", fullPath); }
+					if (leftLock == true) { ini.SetString("RELAUNCH", "BOOT_LEFT_PATH", fullPath); }
+					if (rightLock == true) { ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", fullPath); }
+					if (errorLock == true) { ini.SetString("RELAUNCH", "LOAD_ERROR", fullPath); }
 
-	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+					ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 
-		screenMode = 2;
-		return "null";
-}
+					screenMode = 2;
+					return "null";
+				}
 				if (fileMenu == true) {
 					// Return the chosen file
-					entry->name;
+					return entry->name;
 				}
 			}
-		}
-		if (pressed & KEY_B) {
+		} else if (pressed & KEY_B) {
 			if ((strcmp (path, "sd:/") == 0) || (strcmp (path, "fat:/") == 0)) {
 				screenMode = 2;
 				return "null";
@@ -565,14 +574,13 @@ void eq_drawBottomScreen(void) {
 	printf ("\x1b[0;0H");
 	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
-		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
-		printf ("\nPRV SIZE: 00000000\n");
-		printf ("sett:");
+	printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+	printf ("\nPRV SIZE: 00000000\n");
+	printf ("sett:");
 }
 
 void eqMenu (void) {
 	int pressed = 0;
-	int held = 0;
 	noLock = false;
 	aLock = false;
 	bLock = false;
@@ -590,7 +598,7 @@ void eqMenu (void) {
 	errorLock = false;
 	eqTextPrinted = false;
 
-while (true) {
+	while (true) {
 		for (int i = 0; i < 3; i++) {
 			eqAssignedOp[i] = -1;
 		}
@@ -697,7 +705,6 @@ while (true) {
 	
 			scanKeys();
 			pressed = keysDownRepeat();
-			held = keysHeld();
 			swiWaitForVBlank();
 
 			if (isDSiMode()) {
@@ -859,15 +866,13 @@ TWL_CODE bool sdMount(void) {
 }
 
 bool flashcardMount(void) {
-	if ((!isDSiMode()) || (arm7SCFGLocked && !sdMountedDone)) {
-		fatInitDefault();
-		if (flashcardFound()) {
-			fatGetVolumeLabel("fat", fatLabel);
-			fixLabel(true);
-			return true;
-		}
-		return false;
+	fatInitDefault();
+	if (flashcardFound()) {
+		fatGetVolumeLabel("fat", fatLabel);
+		fixLabel(true);
+		return true;
 	}
+	return false;
 }
 
 off_t getFileSize(const char *fileName)

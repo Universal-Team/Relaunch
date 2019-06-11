@@ -8,6 +8,7 @@ using namespace std;
 
 struct DirEntry {
 	string name;
+	string fullPath;
 	off_t size;
 	bool isDirectory;
 	bool isApp;
