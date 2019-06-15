@@ -93,6 +93,10 @@ void dm_drawBottomScreen(std::vector<DirEntry> ndsFiles) {
 		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
 		printf ("\nPRV SIZE: 00000000");
 		printf ("\nsett:");
+	} else {
+		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+		printf ("\nPRV SIZE: 00000000");
+		printf ("\n%s", ndsFiles[dmCursorPosition].fullPath.c_str());
 	}
 }
 
@@ -121,7 +125,6 @@ void driveMenu (void) {
 	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		DirEntry wifiboot;
 		wifiboot.name = "WIFIBOOT";
-		// ndsFiles.insert(ndsFiles.begin(), wifiboot);
 		ndsFiles.insert(ndsFiles.begin(), wifiboot);
 	}
 	if (access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0 && isRegularDS) {
