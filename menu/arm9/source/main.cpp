@@ -150,12 +150,9 @@ int main(int argc, char **argv) {
 			x++;
 		}
 	}
-		//print bottom screen before top screen appears to (try and) prevent issues about it freezing on launch :p
+		//print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
 		printf ("\x1b[0;0H"); //this is line 1 (sometimes first is equal to 0)
 		printf("\n\n No one\n   is\n illegal");
-		printf("\x1b[0;1H"); //this moves to line 2
-		printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
-		printf ("\nPRV SIZE: 00000000");
 		setFontTop();
 		printf ("\nRelaunch v0.3"); // this must change each version
 	}
