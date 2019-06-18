@@ -15,9 +15,10 @@
 
 # Basic Setup
 1) Get some .nds homebrew. (You can get some [here](https://www.gamebrew.org/wiki/List_of_DS_homebrew_applications))
-2) Name your .nds files `boot#.nds` with # being one of these buttons; `A`, `B`, `X`, `Y`, `Start`, `Select`, `R`, `L` `Left`, `Right`, `Down`, `Up`, or `Touch`.
-3) Put all of your files into `/_nds/Relaunch/extras/`, if you set custom paths in the .ini file you don't need to do this.
-4) Boot Relaunch and hold the button corresponding to the file you want to launch.
+2) Start Relaunch and hold A and B.
+3) Head to Options and choose your hotkey apps.
+4) Start Relaunch again and hold the button corresponding to the app you want to launch.
+
 
 ## Advanced Usage
 
