@@ -71,21 +71,21 @@ steps:
     echo '##vso[task.setvariable variable=TWLBOT_COMMIT]'$(git log -1 --format="%H")
   displayName: "Commit to Universal-Team/extras"
 
-- task: GitHubRelease@0
-  displayName: "Release to Universal-Team/extras"
-  inputs:
-    gitHubConnection: TWLBot
-    repositoryName: Universal-Team/extras
-    action: create
-    target: $(EXTRAS_COMMIT)
-    tagSource: 'manual'
-    tag: v$(CURRENT_DATE)
-    title: Relaunch | $(COMMIT_TAG)
-    releaseNotesSource: input
-    releaseNotes: $(COMMIT_MESSAGE)
-    assets: '$(Build.ArtifactStagingDirectory)/**/*'
-    isPreRelease: true
-    addChangeLog: false
+#- task: GitHubRelease@0
+#  displayName: "Release to Universal-Team/extras"
+#  inputs:
+#    gitHubConnection: TWLBot
+#    repositoryName: Universal-Team/extras
+#    action: create
+#    target: $(EXTRAS_COMMIT)
+#    tagSource: 'manual'
+#    tag: v$(CURRENT_DATE)
+#    title: Relaunch | $(COMMIT_TAG)
+#    releaseNotesSource: input
+#    releaseNotes: $(COMMIT_MESSAGE)
+#    assets: '$(Build.ArtifactStagingDirectory)/**/*'
+#    isPreRelease: true
+#    addChangeLog: false
 
 - script: |
     curl -o send.sh https://raw.githubusercontent.com/DS-Homebrew/discord-webhooks/master/send-azure.sh
