@@ -68,7 +68,7 @@ void dm_drawTopScreen(std::vector<DirEntry> ndsFiles, int startRow) {
 		printf((ndsFiles[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
-			    
+
 void dm_drawBottomScreen(std::vector<DirEntry> ndsFiles) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
@@ -103,7 +103,7 @@ void dm_drawBottomScreen(std::vector<DirEntry> ndsFiles) {
 void driveMenu (void) {
 	fileMenu = true;
 	int pressed = 0;
-	
+
 	if (flashcardMounted) {
 		secondaryDrive = true;
 		chdir("fat:/");
@@ -359,21 +359,21 @@ void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset,
 	iprintf ("\x1b[2J");
 
 	printf ("\x1b[1;0H");
-	if (noLock == true) { printf("Select title for NO BUTTON"); } else {}
-	if (aLock == true) { printf("Select title for BUTTON A"); } else {}
-	if (bLock == true) { printf("Select title for BUTTON B"); } else {}
-	if (xLock == true) { printf("Select title for BUTTON X"); } else {}
-	if (yLock == true) { printf("Select title for BUTTON Y"); } else {}
-	if (lLock == true) { printf("Select title for BUTTON L"); } else {}
-	if (rLock == true) { printf("Select title for BUTTON R"); } else {}
-	if (startLock == true) { printf("Select title for BUTTON START"); } else {}
-	if (selectLock == true) { printf("Select title for BUTTON SELECT"); } else {}
-	if (touchLock == true) { printf("Select title for TOUCH SCREEN"); } else {}
-	if (upLock == true) { printf("Select title for DPAD UP"); } else {}
-	if (downLock == true) { printf("Select title for DPAD DOWN"); } else {}
-	if (leftLock == true) { printf("Select title for DPAD LEFT"); } else {}
-	if (rightLock == true) { printf("Select title for DPAD RIGHT"); } else {}
-	if (errorLock == true) { printf("Select title for LOAD ERROR"); } else {}
+	if (noLock == true) { printf("Select title for NO BUTTON"); }
+	if (aLock == true) { printf("Select title for BUTTON A"); }
+	if (bLock == true) { printf("Select title for BUTTON B"); }
+	if (xLock == true) { printf("Select title for BUTTON X"); }
+	if (yLock == true) { printf("Select title for BUTTON Y"); }
+	if (lLock == true) { printf("Select title for BUTTON L"); }
+	if (rLock == true) { printf("Select title for BUTTON R"); }
+	if (startLock == true) { printf("Select title for BUTTON START"); }
+	if (selectLock == true) { printf("Select title for BUTTON SELECT"); }
+	if (touchLock == true) { printf("Select title for TOUCH SCREEN"); }
+	if (upLock == true) { printf("Select title for DPAD UP"); }
+	if (downLock == true) { printf("Select title for DPAD DOWN"); }
+	if (leftLock == true) { printf("Select title for DPAD LEFT"); }
+	if (rightLock == true) { printf("Select title for DPAD RIGHT"); }
+	if (errorLock == true) { printf("Select title for LOAD ERROR"); }
 
 	// Move to 2nd row
 	iprintf ("\x1b[1;0H");
@@ -585,7 +585,7 @@ void eq_drawTopScreen(void) {
 		}
 	}
 }
-			    
+
 void eq_drawBottomScreen(void) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
@@ -745,6 +745,7 @@ void eqMenu (void) {
 		}
 		if (pressed & KEY_B) {
 		screenMode = 0;
+		fileMenu = true;
 		eqTextPrinted = false;
 		break;
 		}
@@ -825,6 +826,7 @@ void eqMenu (void) {
 				break;
 			} else if (eqAssignedOp[eqCursorPosition] == 16) {
 				eqTextPrinted = false;
+				fileMenu = true;
 				//ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 				screenMode = 0;
 				break;
@@ -856,6 +858,20 @@ void fixLabel(bool fat) {
 			}
 		}
 	}
+}
+
+off_t getFileSize(const char *fileName)
+{
+    FILE* fp = fopen(fileName, "rb");
+    off_t fsize = 0;
+    if (fp) {
+        fseek(fp, 0, SEEK_END);
+        fsize = ftell(fp);			// Get source file's size
+		fseek(fp, 0, SEEK_SET);
+	}
+	fclose(fp);
+
+	return fsize;
 }
 
 bool sdFound(void) {
@@ -893,18 +909,4 @@ bool flashcardMount(void) {
 		return true;
 	}
 	return false;
-}
-
-off_t getFileSize(const char *fileName)
-{
-    FILE* fp = fopen(fileName, "rb");
-    off_t fsize = 0;
-    if (fp) {
-        fseek(fp, 0, SEEK_END);
-        fsize = ftell(fp);			// Get source file's size
-		fseek(fp, 0, SEEK_SET);
-	}
-	fclose(fp);
-
-	return fsize;
 }
