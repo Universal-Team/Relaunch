@@ -16,7 +16,9 @@ struct DirEntry {
 
 std::string browseForFile (void);
 void findNdsFiles(vector<DirEntry>& dirContents);
+void findFiles(vector<DirEntry>& dirContents, vector<string> extensionList);
 void getDirectoryContents (vector<DirEntry>& dirContents);
+void getDirectoryContents (vector<DirEntry>& dirContents, vector<string> extensionList);
 extern void showDirectoryContents (const vector<DirEntry>& dirContents, int fileOffset, int startRow);
 extern bool flashcardMountSkipped;
 
