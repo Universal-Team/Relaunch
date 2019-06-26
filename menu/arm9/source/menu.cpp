@@ -239,14 +239,26 @@ bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
 	return strcasecmp(lhs.name.c_str(), rhs.name.c_str()) < 0;
 }
 
-bool nameEndsWith (const string& name) {
+bool nameEndsWith(const std::string& name, const std::vector<std::string> extensionList) {
+	if(name.substr(0, 2) == "._") return false;
 
-	if (name.size() == 0) return false;
+	if(name.size() == 0) return false;
 
-	return true;
+	if(extensionList.size() == 0) return true;
+
+	for(int i = 0; i <(int)extensionList.size(); i++) {
+		const std::string ext = extensionList.at(i);
+		if(strcasecmp(name.c_str() + name.size() - ext.size(), ext.c_str()) == 0) return true;
+	}
+	return false;
 }
 
 void getDirectoryContents (vector<DirEntry>& dirContents) {
+	vector<string> extensionList;
+	getDirectoryContents(dirContents, extensionList);
+}
+
+void getDirectoryContents (vector<DirEntry>& dirContents, vector<string> extensionList) {
 	struct stat st;
 	dirContents.clear();
 
@@ -283,7 +295,7 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 					dirEntry.isApp = false;
 				}
 
-				if (dirEntry.name.compare(".") != 0 && (dirEntry.isDirectory || nameEndsWith(dirEntry.name))) {
+				if (dirEntry.name.compare(".") != 0 && (dirEntry.isDirectory || nameEndsWith(dirEntry.name, extensionList))) {
 					dirContents.push_back (dirEntry);
 				}
 			}
@@ -301,6 +313,11 @@ void getDirectoryContents (vector<DirEntry>& dirContents) {
 }
 
 void findNdsFiles(vector<DirEntry>& dirContents) {
+	vector<string> extensionList = {"nds", "dsi", "app"};
+	findFiles(dirContents, extensionList);
+}
+
+void findFiles(vector<DirEntry>& dirContents, vector<string> extensionList) {
 	struct stat st;
 	DIR *pdir = opendir(".");
 
@@ -322,7 +339,7 @@ void findNdsFiles(vector<DirEntry>& dirContents) {
 			dirEntry.fullPath = path + dirEntry.name;
 			dirEntry.isDirectory = (st.st_mode & S_IFDIR) ? true : false;
 			if(!(dirEntry.isDirectory) && dirEntry.name.length() >= 3) {
-				if (strcasecmp(dirEntry.name.substr(dirEntry.name.length()-3, 3).c_str(), "nds") == 0) {
+				if (nameEndsWith(dirEntry.name, extensionList)) {
 					dirContents.push_back(dirEntry);
 				}
 			} else if (dirEntry.isDirectory && dirEntry.name.compare(".") != 0 && dirEntry.name.compare("..") != 0) {
