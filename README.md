@@ -24,7 +24,7 @@
 
 - You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files, you can also do this in the Relaunch menu.
 - Hold `A` + `B` on boot in order to open the menu.
-- There are prebuilt nightlies of Relaunch avaliable on [TWLBot](https://github.com/TWLBot/overflow-builds)
+- There are prebuilt nightlies of Relaunch avaliable on [Universal-Team/extras](https://github.com/Universal-Team/extras/tree/master/builds)
 
 # Credits
 
