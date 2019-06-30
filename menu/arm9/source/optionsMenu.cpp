@@ -3,17 +3,34 @@
 #include <unistd.h>
 
 #include "driveMenu.h"
+#include "common/inifile.h"
 #include "main.h"
 
 static bool eqTextPrinted = false;
 static int eqCursorPosition = 0, eqScreenPosition = 0;
 
-static bool noLock = false, aLock = false, bLock = false,
-			xLock = false, yLock = false, lLock = false, rLock = false,
-			startLock = false, selectLock = false, upLock = false, downLock = false,
-			leftLock = false, rightLock = false, touchLock = false, errorLock = false;
+std::string iniSection (int selection) {
+	switch (selection) {
+		default:
+		case 0: return "BOOT_DEFAULT_PATH";
+		case 1: return "BOOT_A_PATH";
+		case 2: return "BOOT_B_PATH";
+		case 3: return "BOOT_X_PATH";
+		case 4: return "BOOT_Y_PATH";
+		case 5: return "BOOT_L_PATH";
+		case 6: return "BOOT_R_PATH";
+		case 7: return "BOOT_START_PATH";
+		case 8: return "BOOT_SELECT_PATH";
+		case 9: return "BOOT_TOUCH_PATH";
+		case 10: return "BOOT_UP_PATH";
+		case 11: return "BOOT_DOWN_PATH";
+		case 12: return "BOOT_LEFT_PATH";
+		case 13: return "BOOT_RIGHT_PATH";
+		case 14: return "LOAD_ERROR";
+	}
+}
 
-void eq_drawTopScreen(std::vector<std::string> eqItems, int startRow) {
+void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("\nRelaunch.nds v0.3");
@@ -34,7 +51,7 @@ void eq_drawTopScreen(std::vector<std::string> eqItems, int startRow) {
 	}
 }
 
-void eq_drawTopScreenDirEntry(std::vector<DirEntry> eqItems, int startRow) {
+void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
 	printf ("\nRelaunch.nds v0.3");
@@ -55,7 +72,7 @@ void eq_drawTopScreenDirEntry(std::vector<DirEntry> eqItems, int startRow) {
 	}
 }
 
-void eq_drawBottomScreen(void) {
+void eq_drawBottomScreen (void) {
 	printf ("\x1b[23;0H");
 	printf (titleName);
 
@@ -70,10 +87,7 @@ void eq_drawBottomScreen(void) {
 
 void eqMenu (std::vector<DirEntry> ndsFiles) {
 	int pressed = 0;
-	noLock = false, aLock = false, bLock = false, xLock = false,
-	yLock = false, lLock = false, rLock = false, upLock = false,
-	downLock = false, leftLock = false, rightLock = false, startLock = false,
-	selectLock = false, touchLock = false, errorLock = false, eqTextPrinted = false;
+	eqTextPrinted = false;
 
 	std::vector<std::string> eqItems;
 	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0
@@ -96,6 +110,8 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 		eqItems.push_back("BUTTON A+B (FILEMENU - FIXED)");
 		eqItems.push_back("SAVE & EXIT");
 	}
+
+	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 
 	eqCursorPosition = 0, eqScreenPosition = 0;
 
@@ -174,6 +190,7 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 						eqCursorPosition++;
 						eqTextPrinted = false;
 					} else if (pressed & KEY_A) {
+						ini.SetString("RELAUNCH", iniSection(curPos), ndsFiles[eqCursorPosition].fullPath);
 						eqCursorPosition = curPos;
 						break;
 					} else if (pressed & KEY_B) {
@@ -181,77 +198,14 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 						break;
 					}
 				}
+			} else {
+				if(eqCursorPosition == 16) {
+					ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+					screenMode = 0;
+					eqTextPrinted = false;
+					break;
+				}
 			}
 		}
-			// if (eqAssignedOp[eqCursorPosition] == 0) {
-			// 	noLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 1) {
-			// 	aLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 2) {
-			// 	bLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 3) {
-			// 	xLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 4) {
-			// 	yLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 5) {
-			// 	lLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 6) {
-			// 	rLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 7) {
-			// 	startLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 8) {
-			// 	selectLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 9) {
-			// 	touchLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 10) {
-			// 	upLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 11) {
-			// 	downLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 12) {
-			// 	leftLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 13) {
-			// 	rightLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 14) {
-			// 	errorLock = true;
-			// 	screenMode = 1;
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 15) {
-			// 	break;
-			// } else if (eqAssignedOp[eqCursorPosition] == 16) {
-			// 	eqTextPrinted = false;
-			// 	fileMenu = true;
-			// 	//ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
-			// 	screenMode = 0;
-			// 	break;
-			// }
-		// }
 	}
 }
