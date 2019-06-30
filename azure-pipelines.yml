@@ -99,7 +99,7 @@ steps:
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
 
 - script: |
-    curl -o send.sh https://raw.githubusercontent.com/DS-Homebrew/Universal-Team/master/send-azure.sh
+    curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
     chmod +x send.sh
     ./send.sh success $WEBHOOK_URL
   condition: succeeded()
