@@ -68,7 +68,7 @@ steps:
     git commit -m "Relaunch | $(COMMIT_TAG)"
     git push origin master
     git tag v$CURRENT_DATE
-    echo '##vso[task.setvariable variable=TWLBOT_COMMIT]'$(git log -1 --format="%H")
+    echo '##vso[task.setvariable variable=EXTRAS_COMMIT]'$(git log -1 --format="%H")
   displayName: "Commit to Universal-Team/extras"
 
 - task: GitHubRelease@0
