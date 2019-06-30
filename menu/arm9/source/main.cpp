@@ -20,6 +20,8 @@ bool applaunch = false;
 
 static u16 bmpImageBuffer[256*192]; //for background
 
+std::vector<DirEntry> ndsFiles;
+
 using namespace std;
 
 void setFontTop() {
@@ -157,17 +159,26 @@ int main(int argc, char **argv) {
 		printf ("\nRelaunch v0.3"); // this must change each version
 	}
 
+	if (flashcardMounted) {
+		secondaryDrive = true;
+		chdir("fat:/");
+	} else {
+		secondaryDrive = false;
+		chdir("sd:/");
+	}
+
+	findNdsFiles(ndsFiles);
 
 	while(1) {
 
 		if (screenMode == 0) {
-			driveMenu();
+			driveMenu(ndsFiles);
 		} 
 		if (screenMode == 1) {
-			filename = browseForFile();
+			// filename = browseForFile();
 		}
 		if (screenMode == 2) {
-			eqMenu();
+			eqMenu(ndsFiles);
 		}
 
 		if (applaunch) {
