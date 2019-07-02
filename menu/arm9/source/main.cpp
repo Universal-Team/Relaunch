@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
 		printf ("\x1b[0;0H"); //this is line 1 (sometimes first is equal to 0)
 		printf("\n\n No one\n   is\n illegal");
 		setFontTop();
-		printf ("\nRelaunch v0.3"); // this must change each version
+		printf (appVersion);
 	}
 
 	if (flashcardMounted) {

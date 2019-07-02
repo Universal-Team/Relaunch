@@ -33,7 +33,7 @@ std::string iniSection (int selection) {
 void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.3");
+	printf (appVersion);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -54,7 +54,7 @@ void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.3");
+	printf (appVersion);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -169,7 +169,7 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 				eqCursorPosition = 0;
 				while(1) {
 					consoleClear();
-					printf ("\nRelaunch.nds v0.3");
+					printf (appVersion);
 
 					// Scroll screen if needed
 					if (eqCursorPosition < selectionScreenOffset) {
