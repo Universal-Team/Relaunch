@@ -163,12 +163,14 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 		}
 
 		if (pressed & KEY_A) {
-			consoleClear();
 			eqTextPrinted = false;
 			if (eqCursorPosition < 15) {
 				int curPos = eqCursorPosition, selectionScreenOffset = 0;
 				eqCursorPosition = 0;
 				while(1) {
+					consoleClear();
+					printf ("\nRelaunch.nds v0.3");
+
 					// Scroll screen if needed
 					if (eqCursorPosition < selectionScreenOffset) {
 						selectionScreenOffset = eqCursorPosition;
