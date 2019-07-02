@@ -19,7 +19,7 @@ bool secondaryDrive = false;	// false == SD card, true == Flashcard
 void dm_drawTopScreen(std::vector<DirEntry> dmItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nRelaunch.nds v0.3");
+	printf (appVersion);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
