@@ -48,7 +48,7 @@ std::string buttonNames[] {
 void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf (appVersion);
+	printf ("\nCHANGE BOOT DEFAULT/HOTKEYS:");
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -69,7 +69,7 @@ void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char* msg) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nCHANGE BOOT DEFAULT/HOTKEYS:");
+	printf (msg);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
