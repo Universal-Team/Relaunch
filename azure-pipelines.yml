@@ -2,6 +2,8 @@ trigger:
   branches:
     include:
     - master
+  tags:
+    include: ['*']
 
 name:  $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)]
 
