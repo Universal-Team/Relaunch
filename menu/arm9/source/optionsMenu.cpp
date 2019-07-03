@@ -9,26 +9,41 @@
 static bool eqTextPrinted = false;
 static int eqCursorPosition = 0, eqScreenPosition = 0;
 
-std::string iniSection (int selection) {
-	switch (selection) {
-		default:
-		case 0: return "BOOT_DEFAULT_PATH";
-		case 1: return "BOOT_A_PATH";
-		case 2: return "BOOT_B_PATH";
-		case 3: return "BOOT_X_PATH";
-		case 4: return "BOOT_Y_PATH";
-		case 5: return "BOOT_L_PATH";
-		case 6: return "BOOT_R_PATH";
-		case 7: return "BOOT_START_PATH";
-		case 8: return "BOOT_SELECT_PATH";
-		case 9: return "BOOT_TOUCH_PATH";
-		case 10: return "BOOT_UP_PATH";
-		case 11: return "BOOT_DOWN_PATH";
-		case 12: return "BOOT_LEFT_PATH";
-		case 13: return "BOOT_RIGHT_PATH";
-		case 14: return "LOAD_ERROR";
-	}
-}
+std::string iniSection[] {
+	"BOOT_DEFAULT_PATH",
+	"BOOT_A_PATH",
+	"BOOT_B_PATH",
+	"BOOT_X_PATH",
+	"BOOT_Y_PATH",
+	"BOOT_L_PATH",
+	"BOOT_R_PATH",
+	"BOOT_START_PATH",
+	"BOOT_SELECT_PATH",
+	"BOOT_TOUCH_PATH",
+	"BOOT_UP_PATH",
+	"BOOT_DOWN_PATH",
+	"BOOT_LEFT_PATH",
+	"BOOT_RIGHT_PATH",
+	"LOAD_ERROR",
+};
+
+std::string buttonNames[] {
+	"NO BUTTON",
+	"BUTTON A",
+	"BUTTON B",
+	"BUTTON X",
+	"BUTTON Y",
+	"BUTTON L",
+	"BUTTON R",
+	"BUTTON START",
+	"BUTTON SELECT",
+	"TOUCH SCREEN",
+	"D-PAD UP",
+	"D-PAD DOWN",
+	"D-PAD LEFT",
+	"D-PAD RIGHT",
+	"LOAD ERROR",
+};
 
 void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
@@ -51,10 +66,10 @@ void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	}
 }
 
-void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow) {
+void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char* msg) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf (appVersion);
+	printf (msg);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -169,8 +184,6 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 				eqCursorPosition = 0;
 				while(1) {
 					consoleClear();
-					printf (appVersion);
-
 					// Scroll screen if needed
 					if (eqCursorPosition < selectionScreenOffset) {
 						selectionScreenOffset = eqCursorPosition;
@@ -178,7 +191,10 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 						selectionScreenOffset = eqCursorPosition - ENTRIES_PER_SCREEN + 1;
 					}
 
-					eq_drawTopScreenDirEntry(ndsFiles, selectionScreenOffset);
+					char msg[64];
+					snprintf (msg, sizeof(msg), "\nSelect title for %s", buttonNames[curPos].c_str());
+					eq_drawTopScreenDirEntry(ndsFiles, selectionScreenOffset, msg);
+
 					do {
 						swiWaitForVBlank();
 						scanKeys();
@@ -192,7 +208,7 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 						eqCursorPosition++;
 						eqTextPrinted = false;
 					} else if (pressed & KEY_A) {
-						ini.SetString("RELAUNCH", iniSection(curPos), ndsFiles[eqCursorPosition].fullPath);
+						ini.SetString("RELAUNCH", iniSection[curPos], ndsFiles[eqCursorPosition].fullPath);
 						eqCursorPosition = curPos;
 						break;
 					} else if (pressed & KEY_B) {
