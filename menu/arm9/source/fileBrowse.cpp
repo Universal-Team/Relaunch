@@ -102,7 +102,7 @@ void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::
 }
 
 void findNdsFiles(std::vector<DirEntry>& dirContents) {
-	std::vector<std::string> extensionList = {"nds", "dsi", "app"};
+	std::vector<std::string> extensionList = {"nds", "dsi", "srl"};
 	findFiles(dirContents, extensionList);
 }
 
@@ -111,7 +111,7 @@ void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> exte
 	DIR *pdir = opendir(".");
 
 	if (pdir == NULL) {
-		iprintf("Unable to open the directory.");
+		iprintf("Internal error, unable to open the directory.");
 		for(int i=0;i<120;i++)
 			swiWaitForVBlank();
 	} else {
