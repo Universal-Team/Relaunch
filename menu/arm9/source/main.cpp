@@ -216,8 +216,8 @@ int main(int argc, char **argv) {
 			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".DSI") == 0)
 			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".nds") == 0)
 			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".NDS") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".app") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".APP") == 0)) {
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".srl") == 0)
+			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".SRL") == 0)) {
 
 				char *name = argarray.at(0);
 				strcpy (filePath + pathLen, name);
