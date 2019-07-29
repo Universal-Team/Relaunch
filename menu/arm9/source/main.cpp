@@ -16,7 +16,6 @@ int screenMode = 0;
 bool appInited = false;
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
-bool applaunch = false;
 
 static u16 bmpImageBuffer[256*192]; //for background
 
@@ -67,7 +66,6 @@ int main(int argc, char **argv) {
 	*fake_heap_end = 0;
 	defaultExceptionHandler();
 
-	int pathLen;
 	std::string filename;
 
 
@@ -181,67 +179,11 @@ int main(int argc, char **argv) {
 			eqMenu(ndsFiles);
 		}
 
-		if (applaunch) {
-			// Construct a command line
-			getcwd (filePath, PATH_MAX);
-			pathLen = strlen (filePath);
-			vector<char*> argarray;
-
-			if ((strcasecmp (filename.c_str() + filename.size() - 5, ".argv") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 5, ".ARGV") == 0)) {
-
-				FILE *argfile = fopen(filename.c_str(),"rb");
-				char str[PATH_MAX], *pstr;
-				const char seps[]= "\n\r\t ";
-
-				while( fgets(str, PATH_MAX, argfile) ) {
-					// Find comment and end string there
-					if( (pstr = strchr(str, '#')) )
-						*pstr= '\0';
-
-					// Tokenize arguments
-					pstr= strtok(str, seps);
-
-					while( pstr != NULL ) {
-						argarray.push_back(strdup(pstr));
-						pstr= strtok(NULL, seps);
-					}
-				}
-				fclose(argfile);
-				filename = argarray.at(0);
-			} else {
-				argarray.push_back(strdup(filename.c_str()));
-			}
-			if ((strcasecmp (filename.c_str() + filename.size() - 4, ".dsi") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".DSI") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".nds") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".NDS") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".srl") == 0)
-			|| (strcasecmp (filename.c_str() + filename.size() - 4, ".SRL") == 0)) {
-
-				char *name = argarray.at(0);
-				strcpy (filePath + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = filePath;
-				consoleClear();
-				iprintf ("Running %s with %d parameters\n", argarray[0], argarray.size());
-				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0], false);
-				iprintf ("\x1b[31mStart failed. Error %i\n", err);
-			}
-
-			while(argarray.size() !=0 ) {
-				free(argarray.at(0));
-				argarray.erase(argarray.begin());
-			}
-
-			while (1) {
-				swiWaitForVBlank();
-				scanKeys();
-				if (!(keysHeld() & KEY_A)) break;
-			}
+		while (1) {
+			swiWaitForVBlank();
+			scanKeys();
+			if (!(keysHeld() & KEY_A)) break;
 		}
-
 	}
-
 	return 0;
 }

@@ -17,8 +17,6 @@ extern bool appInited;
 extern bool arm7SCFGLocked;
 extern bool isRegularDS;
 
-extern bool applaunch;
-
 extern void setFontTop();
 extern void setFontSub();
 
