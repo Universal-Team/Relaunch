@@ -8,7 +8,6 @@
 #include "includes.h"
 
 using namespace std;
-static char path[PATH_MAX];
 
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0, dmScreenPosition = 0;
