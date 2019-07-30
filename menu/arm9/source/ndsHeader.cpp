@@ -36,7 +36,7 @@ void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl
 }
 
 void getIconTitle(std::string name, std::vector<u16> &imageBuffer, std::string &title) {
-	if(nameEndsWith(name, {"nds", "dsi", "ids", "app"})) {
+	if(nameEndsWith(name, {"nds", "dsi", "srl"})) {
 		NDSHeader ndsHeader;
 		NDSBanner ndsBanner;
 
