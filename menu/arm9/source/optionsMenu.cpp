@@ -83,6 +83,10 @@ void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
+		//for(int i=0;i<dmItems.size();i++) {
+		//getIconTitle(dmItems[i].fullPath.c_str(), buffer, title);
+//}
+		//printf(title); //print the ds rom's title
 		printf((eqItems[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
