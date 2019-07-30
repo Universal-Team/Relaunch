@@ -32,6 +32,9 @@ void dm_drawTopScreen(std::vector<DirEntry> dmItems, int startRow) {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
+		/*for(int i=0;i<dmItems.size();i++) {
+    getIconTitle(dmItems[i].fullPath.c_str(), buffer, title);
+}*/
 		printf((dmItems[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
