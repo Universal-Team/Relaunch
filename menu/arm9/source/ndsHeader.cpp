@@ -1,9 +1,9 @@
 #include "ndsHeader.h"
 #include "fileBrowse.h"
-#include "graphics.h"
+//#include "graphics.h"
 #include <fstream>
-#include "colors.h"
-#include "utils.hpp"
+//#include "colors.h"
+//#include "utils.hpp"
 
 void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl) {
 	// Load pixels
