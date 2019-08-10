@@ -4,7 +4,7 @@
 #include <fstream>
 //#include "colors.h"
 
-void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl) {
+/*void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl) {
 	// Load pixels
 	int PY = 32;
 	if(twl)	PY *= 8;
@@ -32,7 +32,7 @@ void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl
 			}
 		}
 	}
-}
+}*/
 
 void getIconTitle(std::string name, std::vector<u16> &imageBuffer, std::string &title) {
 	if(nameEndsWith(name, {"nds", "dsi", "srl"})) {
@@ -47,12 +47,12 @@ void getIconTitle(std::string name, std::vector<u16> &imageBuffer, std::string &
 		fseek(rom, ndsHeader.bannerOffset, SEEK_SET); // Seek to the banner
 		fread(&ndsBanner, sizeof(ndsBanner), 1, rom); // Read the banner
 
-		// Icon
+		/*// Icon
 		if (ndsBanner.version == NDS_BANNER_VER_DSi) {
 			loadIcon(ndsBanner.dsi_icon[0], ndsBanner.dsi_palette[0], imageBuffer, true);
 		} else {
 			loadIcon(ndsBanner.icon, ndsBanner.palette, imageBuffer, false);
-		}
+		}*/
 
 		// Title
 		title = StringUtils::UTF16toUTF8((char16_t*)ndsBanner.titles[0]);
