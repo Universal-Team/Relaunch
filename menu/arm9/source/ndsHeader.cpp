@@ -1,7 +1,9 @@
 #include "ndsHeader.h"
 #include "fileBrowse.h"
-#include "utils.hpp"
+#include "common/utils.hpp"
 #include <fstream>
+
+extern bool nameEndsWith(const std::string& name, const std::vector<std::string> extensionList);
 
 void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl) {
 	// Load pixels
@@ -31,7 +33,7 @@ void loadIcon(u8 *tilesSrc, u16 *palSrc, std::vector<u16> &imageBuffer, bool twl
 			}
 		}
 	}
-}*/
+}
 
 void getIconTitle(std::string name, std::vector<u16> &imageBuffer, std::string &title) {
 	if(nameEndsWith(name, {"nds", "dsi", "srl"})) {
