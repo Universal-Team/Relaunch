@@ -52,8 +52,8 @@
 
 #include <string.h>
 #include <errno.h>
-#include "nds.h"
-#include "common/nitrofs.h"
+#include <nds.h>
+#include "nitrofs.h"
 
 //This seems to be a typo! memory.h has REG_EXEMEMCNT
 #ifndef REG_EXMEMCNT
@@ -160,29 +160,6 @@ nitroFSInit(const char *ndsfile)
                 hasLoader = false;
             }
             setvbuf(ndsFile, NULL, _IONBF, 0); //we dont need double buffs u_u
-            AddDevice(&nitroFSdevoptab);
-            return (1);
-        }
-    }
-    REG_EXMEMCNT &= ~ARM7_OWNS_CARD; //give us gba slot ownership
-    if (strncmp(((const char *)GBAROM) + LOADERSTROFFSET, LOADERSTR, strlen(LOADERSTR)) == 0)
-    { // We has gba rahm
-        printf("yes i think this is GBA?!\n");
-        if (strncmp(((const char *)GBAROM) + LOADERSTROFFSET + LOADEROFFSET, LOADERSTR, strlen(LOADERSTR)) == 0)
-        { //Look for second magic string, if found its a sc.nds or nds.gba
-            printf("sc/gba\n");
-            fntOffset = ((u32) * (u32 *)(((const char *)GBAROM) + FNTOFFSET + LOADEROFFSET)) + LOADEROFFSET;
-            fatOffset = ((u32) * (u32 *)(((const char *)GBAROM) + FATOFFSET + LOADEROFFSET)) + LOADEROFFSET;
-            hasLoader = true;
-            AddDevice(&nitroFSdevoptab);
-            return (1);
-        }
-        else
-        { //Ok, its not a .gba build, so must be emulator
-            printf("gba, must be emu\n");
-            fntOffset = ((u32) * (u32 *)(((const char *)GBAROM) + FNTOFFSET));
-            fatOffset = ((u32) * (u32 *)(((const char *)GBAROM) + FATOFFSET));
-            hasLoader = false;
             AddDevice(&nitroFSdevoptab);
             return (1);
         }
