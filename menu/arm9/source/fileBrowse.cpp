@@ -1,8 +1,4 @@
-#include "fileBrowse.h"
-#include <algorithm>
-#include <dirent.h>
-#include <nds.h>
-#include <unistd.h>
+#include "includes.h"
 
 off_t getFileSize(const char *fileName) {
 	FILE* fp = fopen(fileName, "rb");
