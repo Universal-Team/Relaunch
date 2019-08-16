@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "driveMenu.h"
-#include "common/inifile.h"
+#include "functions.h"
 #include "main.h"
 
 static bool eqTextPrinted = false;
