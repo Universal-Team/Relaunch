@@ -21,5 +21,6 @@
 #include "functions.h"
 #include "main.h"
 #include "optionsMenu.h"
+#include "ndsHeader.h"
 
 #endif // _INCLUDES_H_
