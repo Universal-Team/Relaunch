@@ -6,7 +6,7 @@
 #define ENTRIES_START_ROW 3
 #define ENTRIES_START_ROW_EQ 3
 #define ENTRY_PAGE_LENGTH 10
-#define appVersion "\nRelaunch.nds v0.4b"
+#define appVersion "\nRelaunch.nds v0.4"
 
 extern char titleName[32];
 
