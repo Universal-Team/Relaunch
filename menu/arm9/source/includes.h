@@ -18,9 +18,11 @@
 #include "fileBrowse.h"
 #include "fileOperations.h"
 #include "font.h"
-#include "functions.h"
+#include "common/nds_loader_arm9.h"
+#include "common/inifile.h"
+#include "common/nitrofs.h"
+#include "common/ndsHeader.h"
 #include "main.h"
 #include "optionsMenu.h"
-#include "ndsHeader.h"
 
 #endif // _INCLUDES_H_
