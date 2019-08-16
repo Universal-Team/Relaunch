@@ -1,6 +1,4 @@
-#include "fileOperations.h"
-#include <fat.h>
-#include <unistd.h>
+#include "includes.h"
 
 char sdLabel[12], fatLabel[12];
 int sdSize = 0, fatSize = 0;
