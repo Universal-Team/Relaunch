@@ -2,21 +2,17 @@
  Copyright (C) 2005 - 2010
 	Michael "Chishm" Chisholm
 	Dave "WinterMute" Murphy
-
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
-
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
-
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 ------------------------------------------------------------------*/
 #include <string.h>
 #include <nds.h>
@@ -39,29 +35,6 @@
 #define INIT_DISC (*(((u32*)LCDC_BANK_C) + 2))
 #define WANT_TO_PATCH_DLDI (*(((u32*)LCDC_BANK_C) + 3))
 
-
-/*
-	b	startUp
-	
-storedFileCluster:
-	.word	0x0FFFFFFF		@ default BOOT.NDS
-initDisc:
-	.word	0x00000001		@ init the disc by default
-wantToPatchDLDI:
-	.word	0x00000001		@ by default patch the DLDI section of the loaded NDS
-@ Used for passing arguments to the loaded app
-argStart:
-	.word	_end - _start
-argSize:
-	.word	0x00000000
-dldiOffset:
-	.word	_dldi_start - _start
-dsiSD:
-	.word	0
-dsiMode:
-	.word	0
-*/
-
 #define STORED_FILE_CLUSTER_OFFSET 4 
 #define INIT_DISC_OFFSET 8
 #define WANT_TO_PATCH_DLDI_OFFSET 12
@@ -69,6 +42,7 @@ dsiMode:
 #define ARG_SIZE_OFFSET 20
 #define HAVE_DSISD_OFFSET 28
 #define DSIMODE_OFFSET 32
+#define CLEAR_MASTER_BRIGHT_OFFSET 36
 
 
 typedef signed int addr_t;
@@ -151,7 +125,122 @@ static addr_t quickFind (const data_t* data, const data_t* search, size_t dataLe
 	return -1;
 }
 
-int runNds (const void* loader, u32 loaderSize, u32 cluster, bool initDisc, bool dldiPatchNds, int argc, const char** argv)
+// Normal DLDI uses "\xED\xA5\x8D\xBF Chishm"
+// Bootloader string is different to avoid being patched
+static const data_t dldiMagicLoaderString[] = "\xEE\xA5\x8D\xBF Chishm";	// Different to a normal DLDI file
+
+#define DEVICE_TYPE_DLDI 0x49444C44
+
+static bool dldiPatchLoader (data_t *binData, u32 binSize, bool clearBSS)
+{
+	addr_t memOffset;			// Offset of DLDI after the file is loaded into memory
+	addr_t patchOffset;			// Position of patch destination in the file
+	addr_t relocationOffset;	// Value added to all offsets within the patch to fix it properly
+	addr_t ddmemOffset;			// Original offset used in the DLDI file
+	addr_t ddmemStart;			// Start of range that offsets can be in the DLDI file
+	addr_t ddmemEnd;			// End of range that offsets can be in the DLDI file
+	addr_t ddmemSize;			// Size of range that offsets can be in the DLDI file
+
+	addr_t addrIter;
+
+	data_t *pDH;
+	data_t *pAH;
+
+	size_t dldiFileSize = 0;
+	
+	// Find the DLDI reserved space in the file
+	patchOffset = quickFind (binData, dldiMagicLoaderString, binSize, sizeof(dldiMagicLoaderString));
+
+	if (patchOffset < 0) {
+		// does not have a DLDI section
+		return false;
+	}
+
+	pDH = (data_t*)(io_dldi_data);
+	
+	pAH = &(binData[patchOffset]);
+
+	if (*((u32*)(pDH + DO_ioType)) == DEVICE_TYPE_DLDI) {
+		// No DLDI patch
+		return false;
+	}
+
+	if (pDH[DO_driverSize] > pAH[DO_allocatedSpace]) {
+		// Not enough space for patch
+		return false;
+	}
+	
+	dldiFileSize = 1 << pDH[DO_driverSize];
+
+	memOffset = readAddr (pAH, DO_text_start);
+	if (memOffset == 0) {
+			memOffset = readAddr (pAH, DO_startup) - DO_code;
+	}
+	ddmemOffset = readAddr (pDH, DO_text_start);
+	relocationOffset = memOffset - ddmemOffset;
+
+	ddmemStart = readAddr (pDH, DO_text_start);
+	ddmemSize = (1 << pDH[DO_driverSize]);
+	ddmemEnd = ddmemStart + ddmemSize;
+
+	// Remember how much space is actually reserved
+	pDH[DO_allocatedSpace] = pAH[DO_allocatedSpace];
+	// Copy the DLDI patch into the application
+	vramcpy (pAH, pDH, dldiFileSize);
+
+	// Fix the section pointers in the header
+	writeAddr (pAH, DO_text_start, readAddr (pAH, DO_text_start) + relocationOffset);
+	writeAddr (pAH, DO_data_end, readAddr (pAH, DO_data_end) + relocationOffset);
+	writeAddr (pAH, DO_glue_start, readAddr (pAH, DO_glue_start) + relocationOffset);
+	writeAddr (pAH, DO_glue_end, readAddr (pAH, DO_glue_end) + relocationOffset);
+	writeAddr (pAH, DO_got_start, readAddr (pAH, DO_got_start) + relocationOffset);
+	writeAddr (pAH, DO_got_end, readAddr (pAH, DO_got_end) + relocationOffset);
+	writeAddr (pAH, DO_bss_start, readAddr (pAH, DO_bss_start) + relocationOffset);
+	writeAddr (pAH, DO_bss_end, readAddr (pAH, DO_bss_end) + relocationOffset);
+	// Fix the function pointers in the header
+	writeAddr (pAH, DO_startup, readAddr (pAH, DO_startup) + relocationOffset);
+	writeAddr (pAH, DO_isInserted, readAddr (pAH, DO_isInserted) + relocationOffset);
+	writeAddr (pAH, DO_readSectors, readAddr (pAH, DO_readSectors) + relocationOffset);
+	writeAddr (pAH, DO_writeSectors, readAddr (pAH, DO_writeSectors) + relocationOffset);
+	writeAddr (pAH, DO_clearStatus, readAddr (pAH, DO_clearStatus) + relocationOffset);
+	writeAddr (pAH, DO_shutdown, readAddr (pAH, DO_shutdown) + relocationOffset);
+
+	if (pDH[DO_fixSections] & FIX_ALL) { 
+		// Search through and fix pointers within the data section of the file
+		for (addrIter = (readAddr(pDH, DO_text_start) - ddmemStart); addrIter < (readAddr(pDH, DO_data_end) - ddmemStart); addrIter++) {
+			if ((ddmemStart <= readAddr(pAH, addrIter)) && (readAddr(pAH, addrIter) < ddmemEnd)) {
+				writeAddr (pAH, addrIter, readAddr(pAH, addrIter) + relocationOffset);
+			}
+		}
+	}
+
+	if (pDH[DO_fixSections] & FIX_GLUE) { 
+		// Search through and fix pointers within the glue section of the file
+		for (addrIter = (readAddr(pDH, DO_glue_start) - ddmemStart); addrIter < (readAddr(pDH, DO_glue_end) - ddmemStart); addrIter++) {
+			if ((ddmemStart <= readAddr(pAH, addrIter)) && (readAddr(pAH, addrIter) < ddmemEnd)) {
+				writeAddr (pAH, addrIter, readAddr(pAH, addrIter) + relocationOffset);
+			}
+		}
+	}
+
+	if (pDH[DO_fixSections] & FIX_GOT) { 
+		// Search through and fix pointers within the Global Offset Table section of the file
+		for (addrIter = (readAddr(pDH, DO_got_start) - ddmemStart); addrIter < (readAddr(pDH, DO_got_end) - ddmemStart); addrIter++) {
+			if ((ddmemStart <= readAddr(pAH, addrIter)) && (readAddr(pAH, addrIter) < ddmemEnd)) {
+				writeAddr (pAH, addrIter, readAddr(pAH, addrIter) + relocationOffset);
+			}
+		}
+	}
+
+	if (clearBSS && (pDH[DO_fixSections] & FIX_BSS)) { 
+		// Initialise the BSS to 0, only if the disc is being re-inited
+		memset (&pAH[readAddr(pDH, DO_bss_start) - ddmemStart] , 0, readAddr(pDH, DO_bss_end) - readAddr(pDH, DO_bss_start));
+	}
+
+	return true;
+}
+
+int runNds (const void* loader, u32 loaderSize, u32 cluster, bool initDisc, bool dldiPatchNds, int argc, const char** argv, bool clearMasterBright)
 {
 	char* argStart;
 	u16* argData;
@@ -177,6 +266,8 @@ int runNds (const void* loader, u32 loaderSize, u32 cluster, bool initDisc, bool
 		dldiPatchNds = false;
 		writeAddr ((data_t*) LCDC_BANK_C, HAVE_DSISD_OFFSET, 1);
 	}
+
+	writeAddr ((data_t*) LCDC_BANK_C, CLEAR_MASTER_BRIGHT_OFFSET, clearMasterBright);
 
 	// WANT_TO_PATCH_DLDI = dldiPatchNds;
 	writeAddr ((data_t*) LCDC_BANK_C, WANT_TO_PATCH_DLDI_OFFSET, dldiPatchNds);
@@ -214,6 +305,13 @@ int runNds (const void* loader, u32 loaderSize, u32 cluster, bool initDisc, bool
 	writeAddr ((data_t*) LCDC_BANK_C, ARG_START_OFFSET, (addr_t)argStart - (addr_t)LCDC_BANK_C);
 	writeAddr ((data_t*) LCDC_BANK_C, ARG_SIZE_OFFSET, argSize);
 
+		
+	if(dldiPatchNds) {
+		// Patch the loader with a DLDI for the card
+		if (!dldiPatchLoader ((data_t*)LCDC_BANK_C, loaderSize, initDisc)) {
+			return 3;
+		}
+	}
 
 	irqDisable(IRQ_ALL);
 
@@ -231,7 +329,7 @@ int runNds (const void* loader, u32 loaderSize, u32 cluster, bool initDisc, bool
 	return true;
 }
 
-int runNdsFile (const char* filename, int argc, const char** argv)  {
+int runNdsFile (const char* filename, int argc, const char** argv, bool clearMasterBright)  {
 	struct stat st;
 	char filePath[PATH_MAX];
 	int pathLen;
@@ -259,28 +357,8 @@ int runNdsFile (const char* filename, int argc, const char** argv)  {
 	
 	installBootStub(havedsiSD);
 
-	return runNds (load_bin, load_bin_size, st.st_ino, true, true, argc, argv);
+	return runNds (load_bin, load_bin_size, st.st_ino, true, true, argc, argv, clearMasterBright);
 }
-
-/*
-	b	startUp
-	
-storedFileCluster:
-	.word	0x0FFFFFFF		@ default BOOT.NDS
-initDisc:
-	.word	0x00000001		@ init the disc by default
-wantToPatchDLDI:
-	.word	0x00000001		@ by default patch the DLDI section of the loaded NDS
-@ Used for passing arguments to the loaded app
-argStart:
-	.word	_end - _start
-argSize:
-	.word	0x00000000
-dldiOffset:
-	.word	_dldi_start - _start
-dsiSD:
-	.word	0
-*/
 
 bool installBootStub(bool havedsiSD) {
 #ifndef _NO_BOOTSTUB_
@@ -293,15 +371,17 @@ bool installBootStub(bool havedsiSD) {
 	bool ret = false;
 
 	bootloader[8] = isDSiMode();
-
-	ret = true;
-	bootloader[3] = 0; // don't dldi patch
-	bootloader[7] = 1; // use internal dsi SD code
-
+	if( havedsiSD) {
+		ret = true;
+		bootloader[3] = 0; // don't dldi patch
+		bootloader[7] = 1; // use internal dsi SD code
+	} else {
+		ret = dldiPatchLoader((data_t*)bootloader, load_bin_size,false);
+	}
 	bootstub->arm9reboot = (VoidFn)(((u32)bootstub->arm9reboot)+fake_heap_end);
 	bootstub->arm7reboot = (VoidFn)(((u32)bootstub->arm7reboot)+fake_heap_end);
 	bootstub->bootsize = load_bin_size;
-    
+
 	DC_FlushAll();
 
 	return ret;
@@ -310,4 +390,3 @@ bool installBootStub(bool havedsiSD) {
 #endif
 
 }
-
