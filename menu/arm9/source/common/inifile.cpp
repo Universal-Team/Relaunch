@@ -1,19 +1,16 @@
 /*
-    inifile.cpp
+    inifile.cpp + stringtool.cpp
     Copyright (C) 2007 Acekard, www.acekard.com
     Copyright (C) 2007-2009 somebody
     Copyright (C) 2009 yellow wood goblin
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
@@ -21,7 +18,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include "inifile.h"
-#include "stringtool.h"
+#include <cstdarg>
+#include <malloc.h>
 
 static bool freadLine(FILE* f,std::string& str)
 {
@@ -388,4 +386,18 @@ bool CIniFile::ReplaceLine(size_t line,const std::string& str)
 {
   m_FileContainer[line]=str;
   return true;
+}
+
+std::string formatString( const char* fmt, ... )
+{
+    const char * f = fmt;
+    va_list argList;
+    va_start(argList, fmt);
+    char * ptempStr = NULL;
+    size_t max_len = vasiprintf( &ptempStr, f, argList);
+    std::string str( ptempStr );
+    str.resize( max_len );
+    free( ptempStr );
+    va_end(argList);
+    return str;
 }
