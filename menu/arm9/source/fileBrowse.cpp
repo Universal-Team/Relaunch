@@ -72,12 +72,10 @@ void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::
 				}
 				if((dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "nds")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "NDS")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "argv")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "ARGV")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "dsi")
 				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "DSI")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "app")
-				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "APP"))
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "srl")
+				|| (dirEntry.name.substr(dirEntry.name.find_last_of(".") + 1) == "SRL"))
 				{
 					dirEntry.isApp = true;
 				} else {
