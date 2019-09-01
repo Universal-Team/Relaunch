@@ -33,5 +33,5 @@
 
 - [Flame](https://github.com/FlameKat53): The main developer of Relaunch
 - [Epicpkmn11](https://github.com/Epicpkmn11): Implementing tons of minor and some major additions I couldn't get to work .-.
-- [nocash](http://problemkaputt.de): Creating [Unlaunch](http://problemkaputt.de/unlaunch.htm), which this app is inspired by.
-- [RocketRobz](https://github.com/RocketRobz): Creating [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu.
+- [nocash](http://problemkaputt.de): [Unlaunch](http://problemkaputt.de/unlaunch.htm), which this app is inspired by.
+- [RocketRobz](https://github.com/RocketRobz): [GodMode9i](https://github.com/RocketRobz/GodMode9i), the base of the Relaunch Menu.
