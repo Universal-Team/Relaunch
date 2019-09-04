@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------
+ Not Copyright (ɔ) 2019
+	Evan "Flame" Rodgers
+	Ben "Epicpkmn11" Bogie
+	Rojelio "RocketRobz" Reyes
+	Kim "VoltZ" Perkovic
+------------------------------------------------------------------*/
 #ifndef FILE_BROWSE_H
 #define FILE_BROWSE_H
 
