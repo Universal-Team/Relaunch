@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------
+ Not Copyright (ɔ) 2019
+	Flame
+	Epicpkmn11
+	RocketRobz
+	VoltZ
+------------------------------------------------------------------*/
 #include "fileBrowse.h"
 #include <algorithm>
 #include <dirent.h>
