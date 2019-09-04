@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------
+ Not Copyright (ɔ) 2019
+	Flame
+	Epicpkmn11
+	RocketRobz
+	VoltZ
+------------------------------------------------------------------*/
 #ifndef FILE_BROWSE_H
 #define FILE_BROWSE_H
 
