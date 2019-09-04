@@ -3,6 +3,7 @@
 	Evan "Flame" Rodgers
 	Ben "Epicpkmn11" Bogie
 	Rojelio "RocketRobz" Reyes
+	Kim "VoltZ" Perkovic
 ------------------------------------------------------------------*/
 
 #include "includes.h"
