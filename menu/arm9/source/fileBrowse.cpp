@@ -26,6 +26,7 @@ off_t getFileSize(const char *fileName) {
 
 
 bool nameEndsWith(const std::string& name, const std::vector<std::string>& extensionList) {
+	nocashMessage("running nameEndsWith();");
 	if(name.substr(0, 2) == "._") return false;
 
 	if(name.size() == 0) return false;
@@ -40,6 +41,7 @@ bool nameEndsWith(const std::string& name, const std::vector<std::string>& exten
 }
 
 bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
+	nocashMessage("running dirEntryPredicate();");
 	if (!lhs.isDirectory && rhs.isDirectory) {
 		return false;
 	}
@@ -50,11 +52,13 @@ bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
 }
 
 void getDirectoryContents (std::vector<DirEntry>& dirContents) {
+	nocashMessage("running getDirectoryContents();");
 	std::vector<std::string> extensionList;
 	getDirectoryContents(dirContents, extensionList);
 }
 
 void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::string>& extensionList) {
+	nocashMessage("running getDirectoryContents();");
 	struct stat st;
 	dirContents.clear();
 
@@ -62,6 +66,7 @@ void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::
 
 	if (pdir == NULL) {
 		iprintf ("Unable to open the directory.\n");
+		nocashMessage("Couldn't open directory");
 	} else {
 
 		while(true) {
@@ -107,11 +112,13 @@ void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::
 }
 
 void findNdsFiles(std::vector<DirEntry>& dirContents) {
+	nocashMessage("running findNdsFiles();");
 	std::vector<std::string> extensionList = {"nds", "dsi", "srl"};
 	findFiles(dirContents, extensionList);
 }
 
 void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> extensionList) {
+	nocashMessage("running findFiles();");
 	struct stat st;
 	DIR *pdir = opendir(".");
 
