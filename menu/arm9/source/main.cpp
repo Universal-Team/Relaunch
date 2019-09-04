@@ -3,6 +3,7 @@
 	Flame
 	Epicpkmn11
 	RocketRobz
+	VoltZ
 ------------------------------------------------------------------*/
 #include "includes.h"
 
