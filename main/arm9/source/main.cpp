@@ -35,6 +35,8 @@ void stop (void) {
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
+	nocashMessage("arm9 main.cpp main, message from Relaunch main");
+
 	std::string bootA = "/_nds/Relaunch/extras/bootA.nds";
 	std::string bootB = "/_nds/Relaunch/extras/bootB.nds";
 	std::string bootX = "/_nds/Relaunch/extras/bootX.nds";
@@ -50,18 +52,25 @@ int main(int argc, char **argv) {
 	std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
 	std::string bootDefault = "/boot.nds";
 	std::string loadError = "/_nds/Relaunch/menu.bin";
+	nocashMessage("Strings defined");
 
 	videoSetMode(MODE_0_2D);
+	nocashMessage("Top Screen Initiated");
 	videoSetModeSub(MODE_0_2D);
+	nocashMessage("Bottom Screen Initiated");
 	vramSetBankH(VRAM_H_SUB_BG);
+	nocashMessage("VRAM Bank H Initiated");
 	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
+	nocashMessage("Console Initiated (bottom screen)");
 
 	if (!fatInitDefault()) {
-		iprintf ("fatInitDefault failed!\n");
+		iprintf ("Could not initiate filesystem!\n (fatInitDefault(); failed)\n");
+		nocashMessage("fatInitDefault broke, stopping program");
 		stop();
 	}
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-	
+	nocashMessage("CIniFile run");
+
 	bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	bootB = ini.GetString("RELAUNCH", "BOOT_B_PATH", bootB);
 	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
@@ -77,6 +86,7 @@ int main(int argc, char **argv) {
 	bootTouch = ini.GetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
 	bootDefault = ini.GetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 	loadError = ini.GetString("RELAUNCH", "LOAD_ERROR", loadError);
+	nocashMessage("Strings obtained from inifile");
 
 	ini.SetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	ini.SetString("RELAUNCH", "BOOT_B_PATH", bootB);
@@ -92,105 +102,223 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 	ini.SetString("RELAUNCH", "LOAD_ERROR", loadError);
+	nocashMessage("Strings set from inifile as to not overwrite them");
 
 	mkdir("/_nds/",0777);
+	nocashMessage("created sd:/_nds/ or fat:/_nds/");
 	mkdir("/_nds/Relaunch/",0777);
-	mkdir("/_nds/Relaunch/extras",0777);
+	nocashMessage("created sd:/_nds/Relaunch/ or fat:/_nds/Relaunch/");
+	mkdir("/_nds/Relaunch/extras/",0777);
+	nocashMessage("created sd:/_nds/Relaunch/extras/ or fat:/_nds/Relaunch/extras/");
 	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
+	nocashMessage("Inifile saved");
 
   scanKeys();
+	nocashMessage("scanKeys(); has been run");
 	int pressed = keysHeld();
+	nocashMessage("pressed has been defined as keysHeld();");
 
 	if ((pressed & (KEY_A | KEY_B)) == (KEY_A | KEY_B)) { // menu
 		if((access("_nds/Relaunch/menu.bin", F_OK) == 0)) {
 			runNdsFile("_nds/Relaunch/menu.bin", 0, NULL, false);
 		} else {
 			printf("Error:\nmenu.bin wasn't found!");
+			nocashMessage("menu.bin could not be found, stopping program");
 			stop();
 		}
 	} else if (pressed & KEY_A) {
 		if((access(bootA.c_str(), F_OK) == 0)) {
+			nocashMessage("bootA.c_str() has been found, booting file");
 			runNdsFile(bootA.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootA.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_B) {
 		if((access(bootB.c_str(), F_OK) == 0)) {
+			nocashMessage("bootB.c_str() has been found, booting file");
 			runNdsFile(bootB.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootB.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
-		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_X) {
 		if((access(bootX.c_str(), F_OK) == 0)) {
+			nocashMessage("bootX.c_str() has been found, booting file");
 			runNdsFile(bootX.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootX.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_Y) {
 		if((access(bootY.c_str(), F_OK) == 0)) {
+			nocashMessage("bootY.c_str() has been found, booting file");
 			runNdsFile(bootY.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootY.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
-		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_R) {
 		if((access(bootR.c_str(), F_OK) == 0)) {
+			nocashMessage("bootR.c_str() has been found, booting file");
 			runNdsFile(bootR.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootR.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_L) {
 		if((access(bootL.c_str(), F_OK) == 0)) {
+			nocashMessage("bootL.c_str() has been found, booting file");
 			runNdsFile(bootL.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootL.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_RIGHT) {
 		if((access(bootRight.c_str(), F_OK) == 0)) {
+			nocashMessage("bootRight.c_str() has been found, booting file");
 			runNdsFile(bootRight.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootRight.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_LEFT) {
 		if((access(bootLeft.c_str(), F_OK) == 0)) {
+			nocashMessage("bootLeft.c_str() has been found, booting file");
 			runNdsFile(bootLeft.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootLeft.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_DOWN) {
 		if((access(bootDown.c_str(), F_OK) == 0)) {
+			nocashMessage("bootDown.c_str() has been found, booting file");
 			runNdsFile(bootDown.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootDown.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_UP) {
 		if((access(bootUp.c_str(), F_OK) == 0)) {
+			nocashMessage("bootUp.c_str() has been found, booting file");
 			runNdsFile(bootUp.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootUp.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_START) {
 		if((access(bootStart.c_str(), F_OK) == 0)) {
+			nocashMessage("bootStart.c_str() has been found, booting file");
 			runNdsFile(bootStart.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootStart.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_SELECT) {
 		if((access(bootSelect.c_str(), F_OK) == 0)) {
+			nocashMessage("bootSelect.c_str() has been found, booting file");
 			runNdsFile(bootSelect.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootSelect.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else if (pressed & KEY_TOUCH) {
 		if((access(bootTouch.c_str(), F_OK) == 0)) {
+			nocashMessage("bootTouch.c_str() has been found, booting file");
 			runNdsFile(bootTouch.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootTouch.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	} else {
 		if((access(bootDefault.c_str(), F_OK) == 0)) {
+			nocashMessage("bootDefault.c_str() has been found, booting file");
 			runNdsFile(bootDefault.c_str(), 0, NULL, false);
 		} else {
+		if((access(loadError.c_str(), F_OK) == 0)) {
+			nocashMessage("loadError.c_str() has been found, booting file, failed to find bootDefault.c_str()");
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
+		} else {
+		printf("could not find\nthe loadError application!");
+		nocashMessage("loadError.c_str() file was not found, stopping program");
+		stop();
+}
 	}
 }
