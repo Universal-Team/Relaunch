@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------
+ Not Copyright (ɔ) 2019
+	Flame
+	Epicpkmn11
+	RocketRobz
+	VoltZ
+------------------------------------------------------------------*/
 #ifndef OPTIONS_MENU_H
 #define OPTIONS_MENU_H
 
