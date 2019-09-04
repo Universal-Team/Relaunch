@@ -1,3 +1,10 @@
+/*-----------------------------------------------------------------
+ Not Copyright (ɔ) 2019
+	Evan "Flame" Rodgers
+	Ben "Epicpkmn11" Bogie
+	Rojelio "RocketRobz" Reyes
+	Kim "VoltZ" Perkovic
+------------------------------------------------------------------*/
 #include "fileBrowse.h"
 #include <algorithm>
 #include <dirent.h>
