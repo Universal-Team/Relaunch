@@ -53,7 +53,7 @@ steps:
 - script: |    
     git config --global user.email "flamekat54@aol.com"
     git config --global user.name "TWLBot"
-    git clone https://$GITHUB_TOKEN@github.com/Universal-Team/extras.git
+    git clone --depth 1 https://$GITHUB_TOKEN@github.com/Universal-Team/extras.git
     cd extras/builds/Relaunch/
     cp ../../../Relaunch.7z Relaunch.7z
     git stage .
