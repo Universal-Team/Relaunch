@@ -88,13 +88,11 @@ steps:
     action: edit
     target: '$(Build.SourceVersion)'
     tagSource: 'manual'
-    tag: v$(CURRENT_DATE)
+    tag: v$(Build.SourceBranchName)
     title: Relaunch $(Build.SourceVersion)
     #releaseNotesSource: input
     #releaseNotes: $(COMMIT_MESSAGE)
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
-    isPreRelease: true
-    addChangeLog: false
 
 - script: |
     curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
