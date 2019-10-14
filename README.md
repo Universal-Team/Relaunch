@@ -15,7 +15,7 @@
 
 # Basic Setup
 1) Get some .nds homebrew. (You can get some [here](https://www.gamebrew.org/wiki/List_of_DS_homebrew_applications))
-2) Start Relaunch and hold A and B.
+2) Start Relaunch and hold `A` and `B` or `A` and `X`.
 3) Head to Options and choose your hotkey apps.
 4) Start Relaunch again and hold the button corresponding to the app you want to launch.
 
@@ -23,7 +23,7 @@
 ## Advanced Usage
 
 - You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files, you can also do this in the Relaunch menu.
-- Hold `A` + `B` on boot in order to open the menu.
+- Hold `A` + `B` or `A` + `X` on boot in order to open the menu.
 - There are prebuilt nightlies of Relaunch avaliable on [Universal-Team/extras](https://github.com/Universal-Team/extras/tree/master/builds)
 #### Autobooting into Relaunch
 - If you use an `r4isdhc.com` or `r4i-sdhc.com` card, get the special `R4.dat` from [here](https://cdn.discordapp.com/attachments/286686210225864725/558474658274607114/r4.dat), then rename `Relaunch_Flashcart.nds` to `_BOOT_DS.nds` and place it on the root of your microSD card.

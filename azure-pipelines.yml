@@ -64,8 +64,9 @@ steps:
     git config --global user.email "flamekat54@aol.com"
     git config --global user.name "TWLBot"
     git clone https://$GITHUB_TOKEN@github.com/Universal-Team/extras.git
-    cd extras/builds/
-    cp ../../Relaunch.7z Relaunch.7z
+    mkdir extras/builds/Relaunch/
+    cd extras/builds/Relaunch/
+    cp ../../../Relaunch.7z Relaunch.7z
     git stage .
     git commit -m "Relaunch | $(COMMIT_TAG)"
     git push origin master
