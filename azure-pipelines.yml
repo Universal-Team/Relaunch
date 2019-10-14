@@ -78,7 +78,7 @@ steps:
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
     isPreRelease: true
     addChangeLog: false
-
+ 
 - task: GitHubRelease@0
   displayName: "Release to Universal-Team/Relaunch"
   condition: startsWith(variables['Build.SourceBranchName'], 'v')
@@ -87,8 +87,14 @@ steps:
     repositoryName: Universal-Team/Relaunch
     action: edit
     target: '$(Build.SourceVersion)'
-    tag: $(Build.SourceBranchName)
+    tagSource: 'manual'
+    tag: v$(CURRENT_DATE)
+    title: Relaunch $(Build.SourceVersion)
+    #releaseNotesSource: input
+    #releaseNotes: $(COMMIT_MESSAGE)
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
+    isPreRelease: true
+    addChangeLog: false
 
 - script: |
     curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
