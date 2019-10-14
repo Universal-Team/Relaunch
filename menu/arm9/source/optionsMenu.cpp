@@ -134,6 +134,7 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 		eqItems.push_back("D-PAD RIGHT");
 		eqItems.push_back("LOAD ERROR");
 		eqItems.push_back("BUTTON A+B (FILEMENU - FIXED)");
+		eqItems.push_back("BUTTON A+X (FILEMENU - FIXED)");
 		eqItems.push_back("SAVE & EXIT");
 	}
 
@@ -228,7 +229,7 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 					}
 				}
 			} else {
-				if(eqCursorPosition == 16) {
+				if(eqCursorPosition == 17) {
 					ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 					screenMode = 0;
 					eqTextPrinted = false;
