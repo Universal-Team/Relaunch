@@ -78,7 +78,7 @@ steps:
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
     isPreRelease: true
     addChangeLog: false
- 
+
 - task: GitHubRelease@0
   displayName: "Release to Universal-Team/Relaunch"
   condition: startsWith(variables['Build.SourceBranchName'], 'v')
@@ -87,11 +87,7 @@ steps:
     repositoryName: Universal-Team/Relaunch
     action: edit
     target: '$(Build.SourceVersion)'
-    tagSource: 'manual'
-    tag: v$(Build.SourceBranchName)
-    title: Relaunch $(Build.SourceVersion)
-    #releaseNotesSource: input
-    #releaseNotes: $(COMMIT_MESSAGE)
+    tag: $(Build.SourceBranchName)
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
 
 - script: |
