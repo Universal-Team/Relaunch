@@ -45,14 +45,14 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm9.specs -g -Wl,--gc-sections $(ARCH) -Wl,-Map,$(notdir $*.map)
- 
- 
+
+
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
 LIBDIRS	:=	$(LIBNDS)
- 
+
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
 # rules for different file extensions
@@ -71,7 +71,7 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	load.bin bootstub.bin
- 
+
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
@@ -88,11 +88,11 @@ endif
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
- 
+
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD)
- 
+
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
 icons := $(wildcard *.bmp)
@@ -104,23 +104,23 @@ else
 		export GAME_ICON := $(CURDIR)/icon.bmp
 	endif
 endif
- 
+
 export GAME_TITLE := $(TARGET)
 
 .PHONY: bootloader bootstub clean arm7/$(TARGET).elf arm9/$(TARGET).elf
 
 all:	bootloader bootstub $(TARGET).nds
-	
+
 dist:	all
 	@rm	-fr	hbmenu
 	@mkdir hbmenu
 	@cp $(TARGET).nds hbmenu/BOOT.NDS
 	@cp BootStrap/_BOOT_MP.NDS BootStrap/TTMENU.DAT BootStrap/_DS_MENU.DAT BootStrap/ez5sys.bin BootStrap/akmenu4.nds hbmenu
 	@tar -cvjf $(TARGET)-$(VERSION).tar.bz2 hbmenu testfiles README.html COPYING hbmenu -X exclude.lst
-	
+
 $(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
-  # simple nds srl without dsi extended header thx Robz!
-	ndstool	-h 0x200 -c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf -b icon.bmp "Relaunch;Universal-Team"
+	ndstool	-c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
+			-z 80040000 -u 00030004 -a 00000143 -b icon.bmp "Relaunch;Universal-Team"
 
 $(TARGET).arm7: arm7/$(TARGET).elf
 	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
@@ -131,7 +131,7 @@ $(TARGET).arm9: arm9/$(TARGET).elf
 #---------------------------------------------------------------------------------
 arm7/$(TARGET).elf:
 	@$(MAKE) -C arm7
-	
+
 #---------------------------------------------------------------------------------
 arm9/$(TARGET).elf:
 	@$(MAKE) -C arm9
@@ -163,13 +163,13 @@ bootstub: data
 
 #---------------------------------------------------------------------------------
 else
- 
+
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
 #$(OUTPUT).nds	: 	$(OUTPUT).elf
 #$(OUTPUT).elf	:	$(OFILES)
- 
+
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
 #---------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ else
 	grit $< -fts -o$*
 
 -include $(DEPSDIR)/*.d
- 
+
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
