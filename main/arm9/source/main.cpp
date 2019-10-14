@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
 		} else {
 			printf("Error:\nmenu.bin wasn't found!");
 			stop();
+		}
 	} else if ((pressed & (KEY_A | KEY_X)) == (KEY_A | KEY_X)) { // menu alt
 		if((access("_nds/Relaunch/menu.bin", F_OK) == 0)) {
 			runNdsFile("_nds/Relaunch/menu.bin", 0, NULL, false);
