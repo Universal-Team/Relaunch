@@ -24,10 +24,11 @@
 
 - You can edit the `Relaunch.ini` file and set custom paths, names, and file extensions for your files, you can also do this in the Relaunch menu.
 - Hold `A` + `B` or `A` + `X` on boot in order to open the menu.
-- There are prebuilt nightlies of Relaunch avaliable on [Universal-Team/extras](https://github.com/Universal-Team/extras/tree/master/builds)
+- There are prebuilt nightlies of Relaunch avaliable on [Universal-Team/extras/Relaunch](https://github.com/Universal-Team/extras/tree/master/builds/Relaunch)
+
 #### Autobooting into Relaunch
-- If you use an `r4isdhc.com` or `r4i-sdhc.com` card, get the special `R4.dat` from [here](https://cdn.discordapp.com/attachments/286686210225864725/558474658274607114/r4.dat), then rename `Relaunch_Flashcart.nds` to `_BOOT_DS.nds` and place it on the root of your microSD card.
-- If you use DSiWarehax, rename `Relaunch_DSi.nds` to `BOOT.NDS` and place it on the root of the SD card.
+- If you use an `r4isdhc.com` or `r4i-sdhc.com` card, get the zip file from [here](https://github.com/Universal-Team/extras/raw/hidden/builds/Relaunch/relaunchautoboot.zip), extract it to the microSD card root, then rename `Relaunch.nds` to `boot.nds` and place it on the root of your microSD card. Please note that this will make YSMenu become the B button hotkey application.
+- If you use DSiWarehax, rename `Relaunch.nds` to `boot.nds` and place it on the root of the SD card.
 
 # Credits
 
