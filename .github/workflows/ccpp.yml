@@ -16,6 +16,7 @@ jobs:
     - name: configure
       run: |
        cd .github/workflows
+       sudo chmod +x ./configure
        ./configure
     - name: make
       run: |
