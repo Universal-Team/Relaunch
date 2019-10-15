@@ -13,7 +13,7 @@ buildAA:
 	@mkdir "Relaunch/_nds"
 	@mkdir "Relaunch/_nds/Relaunch"
 	@mv "menu.bin" "Relaunch/_nds/Relaunch/menu.bin"
-	@mv "Relaunch.nds" "Relaunch/Relaunch.nds"
+	@mv "main/Relaunch.nds" "Relaunch/Relaunch.nds"
 
 makecia:
 	@./make_cia --srl="Relaunch/Relaunch.nds"
