@@ -1,0 +1,34 @@
+name: Relaunch Nightly Builds
+
+on:
+  push:
+    branches:
+    - master
+    - release/*
+
+jobs:
+  buildApplet:
+    name: Build Relaunch
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: configure
+      run: ./configure
+    - name: make
+      run: |
+        curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
+        sudo apt update
+        sudo apt install p7zip-full haveged
+        sudo dpkg -i pacman.deb
+        sudo dkp-pacman -Sy
+        sudo dkp-pacman -S nds-dev --noconfirm
+        export DEVKITPRO="/opt/devkitpro"
+        export DEVKITARM="/opt/devkitpro/devkitARM"
+        chmod +x make_cia
+        make
+        export COMMIT_TAG="$(git log --format=%h -1)"
+        export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
+        make package
+        7z a Relaunch.7z Relaunch/
+        ls
