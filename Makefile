@@ -10,10 +10,10 @@ buildAA:
 	@$(MAKE) -C main
 	@$(MAKE) -C menu
 	@mkdir "Relaunch/"
-    	@mkdir "Relaunch/_nds/"
-    	@mkdir "Relaunch/_nds/Relaunch/"
-    	@mv "menu/menu.bin" "Relaunch/_nds/Relaunch/menu.bin"
-    	@mv "main/Relaunch.nds" "Relaunch/Relaunch.nds"
+	@mkdir "Relaunch/_nds"
+	@mkdir "Relaunch/_nds/Relaunch"
+	@mv "menu/menu.bin" "Relaunch/_nds/Relaunch/menu.bin"
+	@mv "main/Relaunch.nds" "Relaunch/Relaunch.nds"
 
 makecia:
 	@./make_cia --srl="Relaunch/Relaunch.nds"
