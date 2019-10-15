@@ -17,7 +17,6 @@ buildAA:
 
 makecia:
 	@./make_cia --srl="Relaunch/Relaunch.nds"
-	@mv "Relaunch.cia" "Relaunch/Relaunch.cia"
 
 clean:
 	@echo clean build directories
