@@ -2,9 +2,10 @@
 # Goals for Build
 #----------------------------------------------------------------------------------------
 
-.PHONY: all
+.PHONY: all package
 
-all: buildAA makecia package
+all: buildAA makecia
+package: prepareFor7z
 
 buildAA:
 	@$(MAKE) -C main
@@ -15,7 +16,7 @@ buildAA:
 makecia:
 	@./make_cia --srl="Relaunch.nds"
 
-package:
+prepareFor7z:
 	@mkdir Relaunch/
     	@mkdir Relaunch/_nds/
     	@mkdir Relaunch/_nds/Relaunch/
