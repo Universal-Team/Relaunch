@@ -20,7 +20,6 @@ jobs:
        ./configure
     - name: make
       run: |
-        cd ../../
         chmod +x make_cia
         make
         export COMMIT_TAG="$(git log --format=%h -1)"
