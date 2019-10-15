@@ -4,7 +4,7 @@
 
 .PHONY: all
 
-all: buildAA makecia
+all: buildAA makecia package
 
 buildAA:
 	@$(MAKE) -C main
@@ -14,6 +14,14 @@ buildAA:
 
 makecia:
 	@./make_cia --srl="Relaunch.nds"
+
+package:
+	@mkdir Relaunch/
+    	@mkdir Relaunch/_nds/
+    	@mkdir Relaunch/_nds/Relaunch/
+    	@mv './menu.bin' 'Relaunch/_nds/Relaunch/menu.bin'
+    	@mv './Relaunch.cia' 'Relaunch/Relaunch.cia'
+    	@mv './Relaunch.nds' 'Relaunch/Relaunch.nds'
 
 clean:
 	@echo clean build directories
