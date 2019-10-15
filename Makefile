@@ -5,6 +5,7 @@
 .PHONY: all package
 
 all: buildAA makecia
+
 package: prepareFor7z
 
 buildAA:
