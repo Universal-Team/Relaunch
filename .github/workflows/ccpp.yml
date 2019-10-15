@@ -14,9 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: ./configure
+      run: |
+       cd .github/workflows
+       ./configure
     - name: make
       run: |
+        cd ../../
         chmod +x make_cia
         make
         export COMMIT_TAG="$(git log --format=%h -1)"
