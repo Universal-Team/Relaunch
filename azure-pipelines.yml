@@ -38,8 +38,6 @@ steps:
     make
     export COMMIT_TAG="$(git log --format=%h -1)"
     export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
-    if [ -e "Relaunch.nds" ]; then echo failed(); fi
-    if [ -e "menu.bin" ]; then echo succeeded(); fi
     make package
     7z a Relaunch.7z Relaunch/
     cp Relaunch.7z $(Build.ArtifactStagingDirectory)/Relaunch.7z
