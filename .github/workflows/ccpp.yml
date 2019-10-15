@@ -20,6 +20,11 @@ jobs:
        ./configure
     - name: make
       run: |
+        echo $(TRAVIS_COMMIT)
+        echo $(COMMIT_TAG)
+        echo $(BUILD_SOURCEVERSION)
+        export DEVKITPRO="/opt/devkitpro"
+        export DEVKITARM="/opt/devkitpro/devkitARM"
         chmod +x make_cia
         make
         export COMMIT_TAG="$(git log --format=%h -1)"
