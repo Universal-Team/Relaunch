@@ -5,6 +5,8 @@ on:
     branches:
     - master
     - release/*
+    tags:
+      - v*           # Push events to tags beginning with "v"
 
 jobs:
   buildApplet:
@@ -13,21 +15,38 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: configure
+    - name: install dkP
       run: |
        cd .github/workflows
        sudo chmod +x ./configure
        ./configure
     - name: make
+      env:
+       COMMIT_TAG: $(git log --format=%h -1)
+       BUILD_SOURCEVERSION: ${{ placeholder }}
+       CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)]
       run: |
-        echo $(TRAVIS_COMMIT)
-        echo $(COMMIT_TAG)
-        echo $(BUILD_SOURCEVERSION)
         export DEVKITPRO="/opt/devkitpro"
         export DEVKITARM="/opt/devkitpro/devkitARM"
         chmod +x make_cia
         make
-        export COMMIT_TAG="$(git log --format=%h -1)"
-        export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
+        export INPUT_COMMIT_TAG="$(git log --format=%h -1)"
+        export INPUT_COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
         7z a Relaunch.7z Relaunch/
         ls
+    - name: it failed send the broke webhook
+      env:
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      if: failure()
+      run: |
+         curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
+         chmod +x send.sh
+         ./send.sh failure INPUT_WEBHOOK_URL
+    - name: it did not fail send the not broke webhook
+      env:
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      if: success()
+      run: |
+         curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
+         chmod +x send.sh
+         ./send.sh success INPUT_$WEBHOOK_URL
