@@ -1,4 +1,4 @@
-name: Relaunch Binary Compilation
+name: Relaunch Binary Compilation #Relaunch good
 
 on:
   push:
