@@ -1,4 +1,4 @@
-name: Relaunch Nightly Builds
+name: Relaunch Binary Compilation
 
 on:
   push:
