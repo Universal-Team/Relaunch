@@ -11,20 +11,20 @@ on:
 jobs:
   buildApplet:
     name: Build Relaunch
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-16.04 # Operating System to use, in this case i used ubuntu 16.04
 
     steps:
-    - uses: actions/checkout@v1
-    - name: install dkP
-      run: |
+    - uses: actions/checkout@v1 # idk what this does
+    - name: install dkP # Name of the script, it can be anything
+      run: | # run the lines below
        cd .github/workflows
        sudo chmod +x ./configure
-       ./configure
+       ./configure 
     - name: make
       env:
-       COMMIT_TAG: $(git log --format=%h -1)
+       COMMIT_TAG: $(git log --format=%h -1) # idk what i did here ngl
        BUILD_SOURCEVERSION: ${{ github.sha }}
-       CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)]
+       CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
       run: |
         export DEVKITPRO="/opt/devkitpro"
         export DEVKITARM="/opt/devkitpro/devkitARM"
@@ -35,13 +35,13 @@ jobs:
         7z a Relaunch.7z Relaunch/
         ls
     - name: it failed send the broke webhook
-      if: failure()
+      if: failure() # trash broke
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it did not fail send the not broke webhook
-      if: success()
+      if: success() # it worked yay
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
