@@ -41,7 +41,7 @@ jobs:
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
          chmod +x send.sh
-         ./send.sh failure INPUT_WEBHOOK_URL
+         ./send.sh failure WEBHOOK_URL
     - name: it did not fail send the not broke webhook
       env:
         WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
@@ -49,4 +49,4 @@ jobs:
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
          chmod +x send.sh
-         ./send.sh success INPUT_$WEBHOOK_URL
+         ./send.sh success WEBHOOK_URL
