@@ -23,7 +23,7 @@ jobs:
     - name: make
       env:
        COMMIT_TAG: $(git log --format=%h -1)
-       BUILD_SOURCEVERSION: ${{ placeholder }}
+       BUILD_SOURCEVERSION: ${{ github.sha }}
        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)]
       run: |
         export DEVKITPRO="/opt/devkitpro"
