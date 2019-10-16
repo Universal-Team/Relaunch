@@ -35,16 +35,12 @@ jobs:
         7z a Relaunch.7z Relaunch/
         ls
     - name: it failed send the broke webhook
-      env:
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       if: failure()
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it did not fail send the not broke webhook
-      env:
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       if: success()
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
