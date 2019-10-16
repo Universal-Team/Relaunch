@@ -1,4 +1,4 @@
-name: Relaunch Binary Compilation #Relaunch good m8
+name: Relaunch Binary Compilation
 
 on:
   push:
