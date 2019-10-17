@@ -23,7 +23,6 @@ jobs:
     - name: make
       env:
        COMMIT_TAG: $(git log --format=%h -1) # idk what i did here ngl
-       BUILD_SOURCEVERSION: ${{ github.sha }}
        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
       run: |
         export DEVKITPRO="/opt/devkitpro"
@@ -36,12 +35,16 @@ jobs:
         ls
     - name: it failed send the broke webhook
       if: failure() # trash broke
+      env:
+        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it did not fail send the not broke webhook
       if: success() # it worked yay
+      env:
+        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying:  
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
