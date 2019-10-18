@@ -45,19 +45,19 @@ steps:
     echo '##vso[task.setvariable variable=COMMIT_MESSAGE]'$(git log --pretty=format:"%an - %s" -1)
   displayName: 'Build Relaunch'
 
-- script: |    
-    git config --global user.email "flamekat54@aol.com"
-    git config --global user.name "TWLBot"
-    git clone --depth 1 https://$GITHUB_TOKEN@github.com/Universal-Team/extras.git
-    cd extras/builds/Relaunch/
-    cp ../../../Relaunch.7z Relaunch.7z
-    git stage .
-    git commit -m "Relaunch | $(COMMIT_TAG)"
-    git push origin master
-    git tag v$CURRENT_DATE
-    echo '##vso[task.setvariable variable=EXTRAS_COMMIT]'$(git log -1 --format="%H")
-  condition: succeeded()
-  displayName: "Commit to Universal-Team/extras"
+# - script: |    
+#    git config --global user.email "flamekat54@aol.com"
+#    git config --global user.name "TWLBot"
+#    git clone --depth 1 https://$GITHUB_TOKEN@github.com/Universal-Team/extras.git
+#    cd extras/builds/Relaunch/
+#    cp ../../../Relaunch.7z Relaunch.7z
+#    git stage .
+#    git commit -m "Relaunch | $(COMMIT_TAG)"
+#    git push origin master
+#    git tag v$CURRENT_DATE
+#    echo '##vso[task.setvariable variable=EXTRAS_COMMIT]'$(git log -1 --format="%H")
+#  condition: succeeded()
+#  displayName: "Commit to Universal-Team/extras"
 
 - task: GitHubRelease@0
   displayName: "Release to Universal-Team/extras"
