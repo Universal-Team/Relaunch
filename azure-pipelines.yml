@@ -59,22 +59,22 @@ steps:
 #  condition: succeeded()
 #  displayName: "Commit to Universal-Team/extras"
 
-- task: GitHubRelease@0
-  displayName: "Release to Universal-Team/extras"
-  condition: succeeded()
-  inputs:
-    gitHubConnection: TWLBot
-    repositoryName: Universal-Team/extras
-    action: create
-    target: $(EXTRAS_COMMIT)
-    tagSource: 'manual'
-    tag: v$(CURRENT_DATE)
-    title: Relaunch | $(COMMIT_TAG)
-    releaseNotesSource: input
-    releaseNotes: $(COMMIT_MESSAGE)
-    assets: '$(Build.ArtifactStagingDirectory)/**/*'
-    isPreRelease: true
-    addChangeLog: false
+#- task: GitHubRelease@0
+#  displayName: "Release to Universal-Team/extras"
+#  condition: succeeded()
+#  inputs:
+#    gitHubConnection: TWLBot
+#    repositoryName: Universal-Team/extras
+#    action: create
+#    target: $(EXTRAS_COMMIT)
+#    tagSource: 'manual'
+#    tag: v$(CURRENT_DATE)
+#    title: Relaunch | $(COMMIT_TAG)
+#    releaseNotesSource: input
+#    releaseNotes: $(COMMIT_MESSAGE)
+#    assets: '$(Build.ArtifactStagingDirectory)/**/*'
+#    isPreRelease: true
+#    addChangeLog: false
 
 - task: GitHubRelease@0
   displayName: "Release to Universal-Team/Relaunch"
