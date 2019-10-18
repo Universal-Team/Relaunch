@@ -41,6 +41,9 @@ jobs:
         git stage .
         git commit -m "Relaunch | $COMMIT_TAG"
         git push origin master
+        cd ../../../.github/workflows/
+        cp ../../../Relaunch.7z Relaunch.7z
+        github-release upload --token ${{ secrets.BOT_TOKEN }} --owner Universal-Team --repo Relaunch --tag ${{ github.ref }} --file 'Relaunch.7z' --name 'Relaunch.7z'
     - name: it failed send the broke webhook
       if: failure() # trash broke
       env:
