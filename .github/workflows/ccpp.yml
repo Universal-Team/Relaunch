@@ -59,3 +59,7 @@ jobs:
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh success $WEBHOOK_URL
+    - uses: actions/upload-artifact@master
+      with:
+        name: Relaunch-${{ github.sha }}.7z
+        path: builds/Relaunch-${{ github.sha }}.7z
