@@ -31,6 +31,7 @@ jobs:
         make
         7z a Relaunch.7z Relaunch/
         ls
+        cp Relaunch.7z Relaunch-${{ github.sha }}.7z
         export COMMIT_TAG="$(git log --format=%h -1)"
         export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
         git config --global user.email "flamekat54@aol.com"
