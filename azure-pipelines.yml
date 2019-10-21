@@ -23,11 +23,10 @@ steps:
   displayName: 'Setup environment'
 
 - script: |
-    echo $(TRAVIS_COMMIT)
     echo $(COMMIT_TAG)
     echo $(BUILD_SOURCEVERSION)
   displayName: 'Echo Variables'
-  
+
 - script: |
     export DEVKITPRO="/opt/devkitpro"
     export DEVKITARM="/opt/devkitpro/devkitARM"
@@ -52,16 +51,3 @@ steps:
     target: '$(Build.SourceVersion)'
     tag: $(Build.SourceBranchName)
     assets: '$(Build.ArtifactStagingDirectory)/**/*'
-
-- script: |
-    curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
-    chmod +x send.sh
-    ./send.sh success $WEBHOOK_URL
-  condition: succeeded()
-  displayName: "Send success webhook"
-- script: |
-    curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-azure.sh
-    chmod +x send.sh
-    ./send.sh failure $WEBHOOK_URL
-  condition: failed()
-  displayName: "Send failure webhook"
