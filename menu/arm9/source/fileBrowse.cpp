@@ -5,11 +5,7 @@
 	RocketRobz
 	VoltZ
 ------------------------------------------------------------------*/
-#include "fileBrowse.h"
-#include <algorithm>
-#include <dirent.h>
-#include <nds.h>
-#include <unistd.h>
+#include "includes.h"
 
 bool nameEndsWith(const std::string& name, const std::vector<std::string>& extensionList) {
 	if(name.substr(0, 2) == "._") return false;
