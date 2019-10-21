@@ -7,7 +7,6 @@
 ------------------------------------------------------------------*/
 
 #include "includes.h"
-#include "ndsHeader.h"
 using namespace std;
 
 static bool dmTextPrinted = false;
