@@ -54,11 +54,14 @@ std::string buttonNames[] {
 
 void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
+	//nocashMessage("text color changed to yellow");
 	printf ("\x1b[0;0H");
+	nocashMessage("Line switched to 0");
 	printf ("\nCHANGE BOOT DEFAULT/HOTKEYS:");
+	nocashMessage("Printed title message");
 
-	// Move to 4th row
 	printf ("\x1b[3;0H");
+	nocashMessage("Line switched to 3");
 
 	for (int i = 0; i < ((int)eqItems.size() - startRow) && i < ENTRIES_PER_SCREEN; i++) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
@@ -75,7 +78,9 @@ void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 
 void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char* msg) {
 	//printf ("\x1b[43m"); //yellow
+	//nocashMessage("text color set to yellow");
 	printf ("\x1b[0;0H");
+	nocashMessage("Line switched to 0");
 	printf (msg);
 
 	// Move to 4th row
@@ -90,25 +95,28 @@ void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
-		//for(int i=0;i<dmItems.size();i++) {
-		//getIconTitle(dmItems[i].fullPath.c_str(), buffer, title);
-//}
-		//printf(title); //print the ds rom's title
 		printf((eqItems[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
 
 void eq_drawBottomScreen (void) {
 	printf ("\x1b[23;0H");
+	nocashMessage("Moved to bottom screen?");
 	printf (titleName);
+	nocashMessage("Printed titleName");
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
+	nocashMessage("Line switched to 0");
 	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
+	nocashMessage("Line switched to 1");
 	printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+	nocashMessage("Printed PUB SIZE");
 	printf ("\nPRV SIZE: 00000000\n");
+	nocashMessage("Printed PRV SIZE");
 	printf ("sett:");
+	nocashMessage("Printed path");
 }
 
 void eqMenu (std::vector<DirEntry> ndsFiles) {
