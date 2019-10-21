@@ -25,8 +25,8 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	menu
 BUILD		:=	build
-SOURCES		:=	source dldi-include
-INCLUDES	:=	include dldi-include source
+SOURCES		:=	source
+INCLUDES	:=	include
 DATA		:=	../data
 GRAPHICS	:=  	../gfx
 
