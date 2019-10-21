@@ -19,8 +19,6 @@ struct DirEntry {
 	bool isApp;
 };
 
-void getDirectoryContents (std::vector<DirEntry>& dirContents);
-void getDirectoryContents (std::vector<DirEntry>& dirContents, std::vector<std::string>& extensionList);
 void findNdsFiles(std::vector<DirEntry>& dirContents);
 void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> extensionList);
 
