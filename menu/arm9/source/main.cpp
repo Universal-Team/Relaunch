@@ -25,6 +25,7 @@ std::vector<DirEntry> ndsFiles;
 using namespace std;
 
 void setFontTop() {
+	nocashMessage("setting top screen font (and initiating console)");
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 	ConsoleFont font;
 	font.gfx = (u16*)fontTiles;
@@ -37,6 +38,7 @@ void setFontTop() {
 	consoleSetFont(console, &font);
 }
 void setFontSub() {
+	nocashMessage("setting bottom screen font (and initiating console)");
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	ConsoleFont font;
 	font.gfx = (u16*)fontTiles;
@@ -50,7 +52,7 @@ void setFontSub() {
 }
 //---------------------------------------------------------------------------------
 void stop (void) {
-//---------------------------------------------------------------------------------
+nocashMessage("STOP! YOU VIOLATED THE LAW! PAY THE COURT A FINE OR SERVE YOUR SENTENCE, YOUR STOLEN GOODS ARE NOW FORFEIT.");
 	while (1) {
 		swiWaitForVBlank();
 	}
@@ -61,6 +63,7 @@ char filePath[PATH_MAX];
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
 //---------------------------------------------------------------------------------
+nocashMessage("arm9 main.cpp main();, running from Relaunch Menu");
 
 	// overwrite reboot stub identifier
 	extern u64 *fake_heap_end;
@@ -73,6 +76,7 @@ int main(int argc, char **argv) {
 	// initialize video mode
 	videoSetMode(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
+	nocashMessage("Video modes set");
 
 	// initialize all the VRAM banks
 	vramSetBankA(VRAM_A_TEXTURE);
@@ -84,8 +88,10 @@ int main(int argc, char **argv) {
 	vramSetBankG(VRAM_G_TEX_PALETTE_SLOT5); // 16Kb of palette ram, and font textures take up 8*16 bytes.
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	nocashMessage("VRAM banks initalized");
 
 	//background before loading
+	nocashMessage("setting up things for background");
 	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
 	REG_BG3X = 0;
 	REG_BG3Y = 0;
@@ -101,9 +107,11 @@ int main(int argc, char **argv) {
 	REG_BG3PB_SUB = 0;
 	REG_BG3PC_SUB = 0;
 	REG_BG3PD_SUB = 1<<8;
+	nocashMessage("done setting that stuff up");
 	//done initing things for background
 
 	setFontSub();
+	nocashMessage("main.cpp bottom screen font set");
 	fifoWaitValue32(FIFO_USER_06);
 	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
@@ -111,6 +119,7 @@ int main(int argc, char **argv) {
 	fifoSendValue32(FIFO_USER_07, 0);
 
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
+	nocashMessage("i own your GBA game now >:)");
 
 	if (isDSiMode()) {
 		sdMounted = sdMount();
@@ -124,11 +133,14 @@ int main(int argc, char **argv) {
 
 	if(appInited) {
 		if(sdMounted) {
+		nocashMessage("Relaunch is running from an SD Card, setting NitroFS to sd:/");
 		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
 	} else {
+		nocashMessage("Relaunch is running on a flashcard, setting NitroFS to fat:/");
 		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
 	}
-
+	
+	nocashMessage("opening bottom screen background file");
 	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
 
 	if (fileBottom) {
@@ -151,32 +163,41 @@ int main(int argc, char **argv) {
 			x++;
 		}
 	}
-		//print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
-		printf ("\x1b[0;0H"); //this is line 1 (sometimes first is equal to 0)
+		printf ("\x1b[0;0H");
+		nocashMessage("Line set to 0");
 		printf("\n\n No one\n   is\n illegal");
+		nocashMessage("printed 'No one is illegal' text");
 		setFontTop();
+		nocashMessage("top screen font set and top screen console initialized");
 		printf (APP_VERSION);
+		nocashMessage("APP_VERSION printed");
 	}
 
 	if (flashcardMounted) {
+		nocashMessage("Relaunch is running on a flashcard, setting chdir to fat:/");
 		secondaryDrive = true;
 		chdir("fat:/");
 	} else {
+		nocashMessage("Relaunch is running from an SD Card, setting chdir to sd:/");
 		secondaryDrive = false;
 		chdir("sd:/");
 	}
 
+	nocashMessage("searching for nds files, please wait");
 	findNdsFiles(ndsFiles);
 
 	while(1) {
 
 		if (screenMode == 0) {
+			nocashMessage("screenMode is 0, running driveMenu();");
 			driveMenu(ndsFiles);
 		} 
 		if (screenMode == 1) {
+			nocashMessage("screenMode is 1, running something???");
 			// filename = browseForFile();
 		}
 		if (screenMode == 2) {
+			nocashMessage("screenMode is 2, running eqMenu();");
 			eqMenu(ndsFiles);
 		}
 
