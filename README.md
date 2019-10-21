@@ -1,12 +1,6 @@
 <img src="https://github.com/Universal-Team/Relaunch/blob/master/logo.png?raw=true">
 <h4 align="center">Made by Universal-Team</h4>
 <p align="center">
- <span style="padding-right: 5px;">
-  <a href="https://dev.azure.com/Universal-Team/Builds/_build?definitionId=21">
-   <img src="https://dev.azure.com/Universal-Team/Builds/_apis/build/status/Universal-Team.Relaunch?branchName=master">
-  </a>
-  </span>
-  <span style="padding-left: 5px;">
   <a href="https://discord.gg/KDJCfGF">
    <img src="https://img.shields.io/badge/Discord-Server-blue.svg" height="20">
   </a>
