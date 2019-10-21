@@ -61,5 +61,5 @@ jobs:
          ./send.sh success $WEBHOOK_URL
     - uses: actions/upload-artifact@master
       with:
-        name: Relaunch-${{ github.sha }}.7z
-        path: Relaunch.7z
+        name: Relaunch-${{ github.sha }}
+        path: Relaunch/
