@@ -12,7 +12,6 @@
 #include <unistd.h>
 
 bool nameEndsWith(const std::string& name, const std::vector<std::string>& extensionList) {
-	nocashMessage("running nameEndsWith();");
 	if(name.substr(0, 2) == "._") return false;
 
 	if(name.size() == 0) return false;
@@ -27,7 +26,6 @@ bool nameEndsWith(const std::string& name, const std::vector<std::string>& exten
 }
 
 bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
-	nocashMessage("running dirEntryPredicate();");
 	if (!lhs.isDirectory && rhs.isDirectory) {
 		return false;
 	}
@@ -38,13 +36,11 @@ bool dirEntryPredicate (const DirEntry& lhs, const DirEntry& rhs) {
 }
 
 void findNdsFiles(std::vector<DirEntry>& dirContents) {
-	nocashMessage("running findNdsFiles();");
 	std::vector<std::string> extensionList = {"nds", "dsi", "srl"};
 	findFiles(dirContents, extensionList);
 }
 
 void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> extensionList) {
-	nocashMessage("running findFiles();");
 	struct stat st;
 	DIR *pdir = opendir(".");
 

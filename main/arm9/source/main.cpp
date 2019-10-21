@@ -57,11 +57,11 @@ int main(int argc, char **argv) {
 	consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, 15, 0, false, true);
 
 	if (!fatInitDefault()) {
-		iprintf ("Could not initiate filesystem!\n (fatInitDefault(); failed)\n");
+		iprintf ("fatInitDefault failed!\n");
 		stop();
 	}
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
-
+	
 	bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	bootB = ini.GetString("RELAUNCH", "BOOT_B_PATH", bootB);
 	bootX = ini.GetString("RELAUNCH", "BOOT_X_PATH", bootX);
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 
 	mkdir("/_nds/",0777);
 	mkdir("/_nds/Relaunch/",0777);
-	mkdir("/_nds/Relaunch/extras/",0777);
+	mkdir("/_nds/Relaunch/extras",0777);
 	ini.SaveIniFile("/_nds/Relaunch/Relaunch.ini");
 
   scanKeys();
@@ -115,164 +115,89 @@ int main(int argc, char **argv) {
 			printf("Error:\nmenu.bin wasn't found!");
 			stop();
 		}
-	} else if ((pressed & (KEY_A | KEY_X)) == (KEY_A | KEY_X)) { // menu alt
-		if((access("_nds/Relaunch/menu.bin", F_OK) == 0)) {
-			runNdsFile("_nds/Relaunch/menu.bin", 0, NULL, false);
-		} else {
-			printf("Error:\nmenu.bin wasn't found!");
-			stop();
-		}
 	} else if (pressed & KEY_A) {
 		if((access(bootA.c_str(), F_OK) == 0)) {
 			runNdsFile(bootA.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_B) {
 		if((access(bootB.c_str(), F_OK) == 0)) {
 			runNdsFile(bootB.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
+		}
 	} else if (pressed & KEY_X) {
 		if((access(bootX.c_str(), F_OK) == 0)) {
 			runNdsFile(bootX.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_Y) {
 		if((access(bootY.c_str(), F_OK) == 0)) {
 			runNdsFile(bootY.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
+		}
 	} else if (pressed & KEY_R) {
 		if((access(bootR.c_str(), F_OK) == 0)) {
 			runNdsFile(bootR.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_L) {
 		if((access(bootL.c_str(), F_OK) == 0)) {
 			runNdsFile(bootL.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_RIGHT) {
 		if((access(bootRight.c_str(), F_OK) == 0)) {
 			runNdsFile(bootRight.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_LEFT) {
 		if((access(bootLeft.c_str(), F_OK) == 0)) {
 			runNdsFile(bootLeft.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_DOWN) {
 		if((access(bootDown.c_str(), F_OK) == 0)) {
 			runNdsFile(bootDown.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_UP) {
 		if((access(bootUp.c_str(), F_OK) == 0)) {
 			runNdsFile(bootUp.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_START) {
 		if((access(bootStart.c_str(), F_OK) == 0)) {
 			runNdsFile(bootStart.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_SELECT) {
 		if((access(bootSelect.c_str(), F_OK) == 0)) {
 			runNdsFile(bootSelect.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else if (pressed & KEY_TOUCH) {
 		if((access(bootTouch.c_str(), F_OK) == 0)) {
 			runNdsFile(bootTouch.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
 		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
-}
 	} else {
 		if((access(bootDefault.c_str(), F_OK) == 0)) {
 			runNdsFile(bootDefault.c_str(), 0, NULL, false);
 		} else {
-		if((access(loadError.c_str(), F_OK) == 0)) {
 			runNdsFile(loadError.c_str(), 0, NULL, false);
-		}
-		} else {
-		printf("could not find\nthe loadError application!");
-		stop();
 		}
 	}
 }
