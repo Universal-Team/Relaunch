@@ -21,15 +21,15 @@
 #include <unistd.h>
 #include <vector>
 
-#include "include/driveMenu.h"
-#include "include/fileBrowse.h"
-#include "include/fileOperations.h"
-#include "include/font.h"
-#include "include/main.h"
-#include "include/optionsMenu.h"
-#include "include/common/ndsHeader.h"
-#include "include/common/nitrofs.h"
-#include "include/common/inifile.h"
-#include "include/common/nds_loader_arm9.h"
+#include "driveMenu.h"
+#include "fileBrowse.h"
+#include "fileOperations.h"
+#include "font.h"
+#include "main.h"
+#include "optionsMenu.h"
+#include "ndsHeader.h"
+#include "nitrofs.h"
+#include "inifile.h"
+#include "nds_loader_arm9.h"
 
 #endif // _INCLUDES_H_
