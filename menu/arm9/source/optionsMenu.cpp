@@ -5,13 +5,7 @@
 	RocketRobz
 	VoltZ
 ------------------------------------------------------------------*/
-#include "optionsMenu.h"
-#include <nds.h>
-#include <unistd.h>
-
-#include "driveMenu.h"
-#include "common/inifile.h"
-#include "main.h"
+#include "includes.h"
 
 static bool eqTextPrinted = false;
 static int eqCursorPosition = 0, eqScreenPosition = 0;
