@@ -69,7 +69,6 @@ int main(int argc, char **argv) {
 
 	std::string filename;
 
-
 	// initialize video mode
 	videoSetMode(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
@@ -85,7 +84,7 @@ int main(int argc, char **argv) {
 	vramSetBankH(VRAM_H_SUB_BG_EXT_PALETTE);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	//background before loading
+	// Background stuff
 	REG_BG3CNT = BG_MAP_BASE(1) | BG_BMP16_256x256 | BG_PRIORITY(0);
 	REG_BG3X = 0;
 	REG_BG3Y = 0;
@@ -101,7 +100,7 @@ int main(int argc, char **argv) {
 	REG_BG3PB_SUB = 0;
 	REG_BG3PC_SUB = 0;
 	REG_BG3PD_SUB = 1<<8;
-	//done initing things for background
+	// Done doing things for background
 
 	setFontSub();
 	fifoWaitValue32(FIFO_USER_06);
@@ -151,11 +150,12 @@ int main(int argc, char **argv) {
 			x++;
 		}
 	}
-		//print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
-		printf ("\x1b[0;0H"); //this is line 1 (sometimes first is equal to 0)
+		// Print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
+		printf ("\x1b[0;0H"); // This is line 1 (sometimes first is equal to 0)
 		printf("\n\n No one\n   is\n illegal");
 		setFontTop();
 		printf (APP_VERSION);
+		// printf("\nLoading, please wait");
 	}
 
 	if (flashcardMounted) {
