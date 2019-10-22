@@ -31,27 +31,11 @@ bool sdMounted = false, sdMountedDone = false;	// true if SD mount is successful
 			}
 		}
 	}
-}
-
-bool sdFound(void) {
-	if (access("sd:/", F_OK) == 0) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool flashcardFound(void) {
-	if (access("fat:/", F_OK) == 0) {
-		return true;
-	} else {
-		return false;
-	}
 }*/
 
 TWL_CODE bool sdMount(void) {
 	fatMountSimple("sd", get_io_dsisd());
-	if (sdFound()) {
+	if (access("sd:/", F_OK) == 0) {
 		sdMountedDone = true;
 		// fatGetVolumeLabel("sd", sdLabel);
 		// fixLabel(false);
@@ -62,7 +46,7 @@ TWL_CODE bool sdMount(void) {
 
 bool flashcardMount(void) {
 	fatInitDefault();
-	if (flashcardFound()) {
+	if (access("fat:/", F_OK) == 0) {
 		// fatGetVolumeLabel("fat", fatLabel);
 		// fixLabel(true);
 		return true;
