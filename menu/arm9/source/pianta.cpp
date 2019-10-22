@@ -74,7 +74,7 @@ void initGraphics(void) {
 }
 
 void loadFont(void) {
-	FILE* font = fopen("nitro:/graphics/font.nftr", "rb");
+	FILE* font = fopen("nitro:/font.nftr", "rb");
 
 	// Get file size
 	fseek(font, 0, SEEK_END);
