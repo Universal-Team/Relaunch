@@ -5,15 +5,13 @@
 	Rojelio "RocketRobz" Reyes
 	Kim "VoltZ" Perkovic
 ------------------------------------------------------------------*/
-#include "fileOperations.h"
-#include <fat.h>
-#include <unistd.h>
+#include "includes.h"
 
-char sdLabel[12], fatLabel[12];
-int sdSize = 0, fatSize = 0;
+// char sdLabel[12], fatLabel[12];
+// int sdSize = 0, fatSize = 0;
 bool sdMounted = false, sdMountedDone = false;	// true if SD mount is successful once
 
-void fixLabel(bool fat) {
+/*void fixLabel(bool fat) {
 	if (fat) {
 		for (int i = 0; i < 12; i++) {
 			if (((fatLabel[i] == ' ') && (fatLabel[i+1] == ' ') && (fatLabel[i+2] == ' '))
@@ -49,14 +47,14 @@ bool flashcardFound(void) {
 	} else {
 		return false;
 	}
-}
+}*/
 
 TWL_CODE bool sdMount(void) {
 	fatMountSimple("sd", get_io_dsisd());
 	if (sdFound()) {
 		sdMountedDone = true;
-		fatGetVolumeLabel("sd", sdLabel);
-		fixLabel(false);
+		// fatGetVolumeLabel("sd", sdLabel);
+		// fixLabel(false);
 		return true;
 	}
 	return false;
@@ -65,8 +63,8 @@ TWL_CODE bool sdMount(void) {
 bool flashcardMount(void) {
 	fatInitDefault();
 	if (flashcardFound()) {
-		fatGetVolumeLabel("fat", fatLabel);
-		fixLabel(true);
+		// fatGetVolumeLabel("fat", fatLabel);
+		// fixLabel(true);
 		return true;
 	}
 	return false;
