@@ -6,33 +6,36 @@ on:
     - master
     - release/*
     tags:
-      - v*           # Push events to tags beginning with "v"
+      - v*
 
 jobs:
   buildApplet:
     name: Build Relaunch
-    runs-on: ubuntu-16.04 # Operating System to use, in this case i used ubuntu 16.04
+    runs-on: ubuntu-16.04
 
     steps:
-    - uses: actions/checkout@v1 # idk what this does
-    - name: install dkP # Name of the script, it can be anything
-      run: | # run the lines below
-       cd .github/workflows
-       sudo chmod +x ./configure
-       ./configure 
-    - name: make
-      env:
-       COMMIT_TAG: $(git log --format=%h -1) # idk what i did here ngl
-       CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
+    - uses: actions/checkout@v1
+    - name: Install devkit(Pro/ARM), libnds, and p7zip
       run: |
-        export DEVKITPRO="/opt/devkitpro"
-        export DEVKITARM="/opt/devkitpro/devkitARM"
+       curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
+       sudo apt update
+       sudo apt install p7zip-full haveged
+       sudo dpkg -i pacman.deb
+       sudo dkp-pacman -Sy
+       sudo dkp-pacman -S nds-dev --noconfirm
+       export DEVKITPRO="/opt/devkitpro"
+       export DEVKITARM="/opt/devkitpro/devkitARM"
+    - name: make
+      run: |
         chmod +x make_cia
         make
         7z a Relaunch.7z Relaunch/
         ls
         export COMMIT_TAG="$(git log --format=%h -1)"
         export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
+        export CURRENT_DATE=$(date +"%Y%m%d-%H%M%S")
+    - name: Commit to Universal-Team/extras
+      run: |
         git config --global user.email "flamekat54@aol.com"
         git config --global user.name "TWLBot"
         git clone --depth 1 https://${{ secrets.BOT_TOKEN }}@github.com/Universal-Team/extras.git
@@ -43,22 +46,16 @@ jobs:
         git push origin master
     - name: webhook for broke build lmfao
       if: failure() # trash broke, go fix it
-      env:
-        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
-         ./send.sh failure $WEBHOOK_URL
+         ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it work send webhook for success
       if: success() # it worked yay
-      env:
-        CURRENT_DATE: $[format('{0:yyyyMMdd\-HHmmss}', pipeline.startTime)] # idk if that will work here, no harm in trying
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       run: |
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
-         ./send.sh success $WEBHOOK_URL
+         ./send.sh success ${{ secrets.WEBHOOK_URL }}
     - uses: actions/upload-artifact@master
       with:
         name: Relaunch-${{ github.sha }}
