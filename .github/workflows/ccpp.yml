@@ -52,6 +52,9 @@ jobs:
          COMMIT_TAG=$(<commit.txt)
          COMMIT_MESSAGE=$(<message.txt)
          CURRENT_DATE=$(<date.txt)
+         echo $COMMIT_TAG
+         echo $COMMIT_MESSAGE
+         echo $CURRENT_DATE
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
