@@ -15,11 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set all variables
-      id: variablesSetSet
-      run: |
-        cd .github/workflows/
-        node ./setVariables.js
     - name: Install devkit(Pro/ARM), libnds, and p7zip
       run: |
        curl -L https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb -o pacman.deb
@@ -30,12 +25,19 @@ jobs:
        sudo dkp-pacman -S nds-dev --noconfirm
     - name: make
       run: |
+        export DEVKITPRO="/opt/devkitpro"
+        export DEVKITARM="/opt/devkitpro/devkitARM"
         chmod +x make_cia
         make
         7z a Relaunch.7z Relaunch/
     - name: Commit to Universal-Team/extras
-      id: commit_to_extras
       run: |
+        export COMMIT_TAG="$(git log --format=%h -1)"
+        export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
+        export CURRENT_DATE="$(date +"%Y%m%d-%H%M%S")"
+        echo $COMMIT_TAG > commit.txt
+        echo $COMMIT_MESSAGE > message.txt
+        echo $CURRENT_DATE > date.txt
         git config --global user.email "flamekat54@aol.com"
         git config --global user.name "TWLBot"
         git clone --depth 1 https://${{ secrets.BOT_TOKEN }}@github.com/Universal-Team/extras.git
@@ -45,16 +47,20 @@ jobs:
         git commit -m "Relaunch | $COMMIT_TAG"
         git push origin master
     - name: webhook for broke build lmfao
-      id: failed_Webhook
       if: failure() # trash broke, go fix it
       run: |
+         COMMIT_TAG=$(<commit.txt)
+         COMMIT_MESSAGE=$(<message.txt)
+         CURRENT_DATE=$(<date.txt)
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it work send webhook for success
-      id: success_Webhook
       if: success() # it worked yay
       run: |
+         COMMIT_TAG=$(<commit.txt)
+         COMMIT_MESSAGE=$(<message.txt)
+         CURRENT_DATE=$(<date.txt)
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh success ${{ secrets.WEBHOOK_URL }}
@@ -62,23 +68,3 @@ jobs:
       with:
         name: Relaunch-${{ github.sha }}
         path: Relaunch/
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1.0.0
-      env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      with:
-          tag_name: ${{ github.ref }}
-          release_name: Relaunch | $COMMIT_TAG
-          draft: false
-          prerelease: true
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Relaunch.7z
-          asset_name: Relaunch.7z
-          asset_content_type: application/zip
