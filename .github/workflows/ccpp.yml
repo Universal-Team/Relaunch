@@ -31,7 +31,7 @@ jobs:
         make
         7z a Relaunch.7z Relaunch/
         ls
-    - name: Commit to Universal-Team/extras
+    - name: Commit and Release to Universal-Team/extras
       run: |
         export COMMIT_TAG="$(git log --format=%h -1)"
         export COMMIT_MESSAGE="$(git log --pretty=format:"%an - %s" -1)"
@@ -44,6 +44,8 @@ jobs:
         git stage .
         git commit -m "Relaunch | $COMMIT_TAG"
         git push origin master
+        POST /repos/Universal-Team/extras/releases { "tag_name": "v$CURRENT_DATE", "target_commitish": "master", "name": "Relaunch | $COMMIT_TAG", "body": "$COMMIT_MESSAGE", "draft": false, "prerelease": true}
+        POST https://uploads.github.com/repos/Universal-Team/extras/releases/v$CURRENT_DATE/assets?name=Relaunch.7z
     - name: webhook for broke build lmfao
       if: failure() # trash broke, go fix it
       run: |
