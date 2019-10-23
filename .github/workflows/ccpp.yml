@@ -44,17 +44,18 @@ jobs:
         git stage .
         git commit -m "Relaunch | $COMMIT_TAG"
         git push origin master
-        POST /repos/Universal-Team/extras/releases { "tag_name": "v$CURRENT_DATE", "target_commitish": "master", "name": "Relaunch | $COMMIT_TAG", "body": "$COMMIT_MESSAGE", "draft": false, "prerelease": true}
-        POST https://uploads.github.com/repos/Universal-Team/extras/releases/v$CURRENT_DATE/assets?name=Relaunch.7z
+        ls
     - name: webhook for broke build lmfao
       if: failure() # trash broke, go fix it
       run: |
+         ls
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh failure ${{ secrets.WEBHOOK_URL }}
     - name: it work send webhook for success
       if: success() # it worked yay
       run: |
+         ls
          curl -o send.sh https://raw.githubusercontent.com/Universal-Team/discord-webhooks/master/send-ghactions.sh
          sudo chmod +x send.sh
          ./send.sh success ${{ secrets.WEBHOOK_URL }}
