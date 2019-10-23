@@ -1,6 +1,0 @@
-const core = require('@actions/core')
-core.exportVariable('DEVKITPRO', 'opt/devkitPro/')
-core.exportVariable('DEVKITARM', 'opt/devkitPro/devkitARM')
-core.exportVariable('COMMIT_TAG', 'git log --format=%h -1')
-core.exportVariable('COMMIT_MESSAGE', 'git log --pretty=format:"%an - %s" -1')
-core.exportVariable('CURRENT_DATE', 'date +"%Y%m%d-%H%M%S"')
