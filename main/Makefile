@@ -107,7 +107,7 @@ endif
 
 export GAME_TITLE := $(TARGET)
 
-.PHONY: bootloader bootstub clean arm7/$(TARGET).elf arm9/$(TARGET).elf
+.PHONY: bootloader bootstub clean arm9/$(TARGET).elf
 
 all:	bootloader bootstub $(TARGET).nds
 
@@ -118,19 +118,13 @@ dist:	all
 	@cp BootStrap/_BOOT_MP.NDS BootStrap/TTMENU.DAT BootStrap/_DS_MENU.DAT BootStrap/ez5sys.bin BootStrap/akmenu4.nds hbmenu
 	@tar -cvjf $(TARGET)-$(VERSION).tar.bz2 hbmenu testfiles README.html COPYING hbmenu -X exclude.lst
 
-$(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
-	ndstool	-c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
-			-z 80040000 -u 00030004 -a 00000143 -b icon.bmp "Relaunch;Universal-Team"
-
-$(TARGET).arm7: arm7/$(TARGET).elf
-	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
+$(TARGET).nds: arm9/$(TARGET).elf
+	ndstool	-c $(TARGET).nds -9 arm9/$(TARGET).elf \
+	-b icon.bmp "Relaunch;Universal-Team" $(_ADDFILES) \
+	-z 80040000 -u 00030004 -a 00000138
 
 $(TARGET).arm9: arm9/$(TARGET).elf
 	cp arm9/$(TARGET).elf $(TARGET).arm9.elf
-
-#---------------------------------------------------------------------------------
-arm7/$(TARGET).elf:
-	@$(MAKE) -C arm7
 
 #---------------------------------------------------------------------------------
 arm9/$(TARGET).elf:
@@ -145,12 +139,10 @@ clean:
 	@echo clean ...
 	@rm -fr data
 	@rm -fr $(BUILD) $(TARGET).elf
-	@rm -fr $(TARGET).arm7.elf
 	@rm -fr $(TARGET).arm9.elf
 	@$(MAKE) -C bootloader clean
 	@$(MAKE) -C bootstub clean
 	@$(MAKE) -C arm9 clean
-	@$(MAKE) -C arm7 clean
 
 data:
 	@mkdir -p data
