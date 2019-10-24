@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_RIGHT_PATH", bootRight);
 	ini.SetString("RELAUNCH", "BOOT_START_PATH", bootStart);
 	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
+	ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
 	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 	ini.SetString("RELAUNCH", "LOAD_ERROR", loadError);
 
