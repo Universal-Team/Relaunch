@@ -165,7 +165,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 			} else {
 				dmTextPrinted = false;
 				consoleClear();
-				const char argarray[][] = {dmItems[dmCursorPosition].fullPath.c_str()};
+				const char argarray[][dmItems[dmCursorPosition].fullPath.size()] = {dmItems[dmCursorPosition].fullPath.c_str()};
 				int err = runNdsFile(argarray[0], 1, argarray, false);
 				//int err = runNdsFile(argarray[0], argarray.size(), argarray[0], false);
 				iprintf("Uuhhh.wav (oof): Error %i\n", err);
