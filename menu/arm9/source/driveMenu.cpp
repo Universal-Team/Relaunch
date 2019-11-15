@@ -169,11 +169,6 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				int err = runNdsFile(argarray[0], 1, argarray, false);
 				//int err = runNdsFile(argarray[0], argarray.size(), argarray[0], false);
 				iprintf("Uuhhh.wav (oof): Error %i\n", err);
-
-			while(argarray.size() != 0) {
-				free(argarray.at(0));
-				argarray.erase(argarray.begin());
-			}
 				break;
 			}
 		}
