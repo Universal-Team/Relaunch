@@ -9,7 +9,7 @@
 #include "includes.h"
 using namespace std;
 
-char filePath[PATH_MAX];
+static char path[PATH_MAX];
 
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0, dmScreenPosition = 0;
@@ -167,6 +167,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				screenMode = 2;
 				break;
 			} else {
+				dmTextPrinted = false;
 				applaunch = true;
 				break;
 			}
