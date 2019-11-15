@@ -67,9 +67,6 @@ int main(int argc, char **argv) {
 	*fake_heap_end = 0;
 	defaultExceptionHandler();
 
-	int pathLen;
-	std::string filename;
-
 	// initialize video mode
 	videoSetMode(MODE_3_2D | DISPLAY_BG3_ACTIVE);
 	videoSetModeSub(MODE_3_2D | DISPLAY_BG3_ACTIVE);
@@ -185,32 +182,11 @@ int main(int argc, char **argv) {
 			eqMenu(ndsFiles);
 		}
 
-		if (applaunch) {
-			// Construct a command line
-			getcwd(filePath, PATH_MAX);
-			pathLen = strlen(filePath);
-			vector<char*> argarray;
-			char *name = argarray.at(0);
-			strcpy(filePath + pathLen, name);
-			free(argarray.at(0));
-			argarray.at(0) = filePath;
-			consoleClear();
-			int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
-			iprintf("\x1b[31mStart failed. Error %i\n", err);
-
-			while(argarray.size() !=0 ) {
-				free(argarray.at(0));
-				argarray.erase(argarray.begin());
-			} // this should free the argarray char :P
-
-			while (1) {
-				swiWaitForVBlank();
-				scanKeys();
-				if (!(keysHeld() & KEY_A)) break;
-			}
+		while (1) {
+			swiWaitForVBlank();
+			scanKeys();
+			if (!(keysHeld() & KEY_A)) break;
 		}
-
 	}
-
 	return 0;
 }
