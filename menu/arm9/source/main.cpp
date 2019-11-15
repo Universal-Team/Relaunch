@@ -10,8 +10,6 @@
 #define CONSOLE_SCREEN_WIDTH 32
 #define CONSOLE_SCREEN_HEIGHT 24
 
-char titleName[32] = {" "};
-
 int screenMode = 0;
 
 bool appInited = false;
@@ -116,7 +114,7 @@ int main(int argc, char **argv) {
 	// Line above, If sound frequency setting is found, then the console is not a DS Phat/Lite
 	fifoSendValue32(FIFO_USER_07, 0);
 
-	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
+	sysSetCartOwner(BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
 
 	if (isDSiMode()) {
 		sdMounted = sdMount();
@@ -130,9 +128,9 @@ int main(int argc, char **argv) {
 
 	if(appInited) {
 		if(sdMounted) {
-		nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
-	} else {
-		nitroFSInit("fat:/_nds/Relaunch/menu.bin");
+			nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
+		} else {
+			nitroFSInit("fat:/_nds/Relaunch/menu.bin");
 	}
 
 	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
@@ -158,11 +156,10 @@ int main(int argc, char **argv) {
 		}
 	}
 		// Print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
-		printf ("\x1b[0;0H"); // This is line 1 (sometimes first is equal to 0)
+		printf("\x1b[0;0H"); // This is line 1 (sometimes first is equal to 0)
 		printf("\n\n No one\n   is\n illegal");
 		setFontTop();
-		printf (APP_VERSION);
-		// printf("\nLoading, please wait");
+		printf(APP_VERSION);
 	}
 
 	if (flashcardMounted) {
@@ -193,12 +190,12 @@ int main(int argc, char **argv) {
 			pathLen = strlen(filePath);
 			vector<char*> argarray;
 			char *name = argarray.at(0);
-			strcpy (filePath + pathLen, name);
+			strcpy(filePath + pathLen, name);
 			free(argarray.at(0));
 			argarray.at(0) = filePath;
 			consoleClear();
 			int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
-			iprintf ("\x1b[31mStart failed. Error %i\n", err);
+			iprintf("\x1b[31mStart failed. Error %i\n", err);
 
 			while(argarray.size() !=0 ) {
 				free(argarray.at(0));
