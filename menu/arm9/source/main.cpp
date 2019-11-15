@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- Not Copyright (ɔ) 2019
+ Not Copyright (ɔ) 2019, 2020
 	Flame
 	Epicpkmn11
 	RocketRobz
@@ -17,12 +17,21 @@ int screenMode = 0;
 bool appInited = false;
 bool arm7SCFGLocked = false;
 bool isRegularDS = true;
+bool applaunch = false;
 
-static u16 bmpImageBuffer[256*192]; //for background
+static u16 bmpImageBuffer[256*192]; // For background
 
 std::vector<DirEntry> ndsFiles;
 
 using namespace std;
+
+bool extension(const std::string& filename, const char* ext) {
+	if(strcasecmp(filename.c_str() + filename.size() - strlen(ext), ext)) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
 void setFontTop() {
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
@@ -36,6 +45,7 @@ void setFontTop() {
 	font.convertSingleColor = false;
 	consoleSetFont(console, &font);
 }
+
 void setFontSub() {
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 0, 15, false, true);
 	ConsoleFont font;
@@ -48,9 +58,8 @@ void setFontSub() {
 	font.convertSingleColor = false;
 	consoleSetFont(console, &font);
 }
-//---------------------------------------------------------------------------------
-void stop (void) {
-//---------------------------------------------------------------------------------
+
+void stop(void) {
 	while (1) {
 		swiWaitForVBlank();
 	}
@@ -104,9 +113,14 @@ int main(int argc, char **argv) {
 
 	setFontSub();
 	fifoWaitValue32(FIFO_USER_06);
-	if (fifoGetValue32(FIFO_USER_03) == 0) arm7SCFGLocked = true;
+	if (fifoGetValue32(FIFO_USER_03) == 0) {
+		arm7SCFGLocked = true;
+	}
 	u16 arm7_SNDEXCNT = fifoGetValue32(FIFO_USER_07);
-	if (arm7_SNDEXCNT != 0) isRegularDS = false;	// If sound frequency setting is found, then the console is not a DS Phat/Lite
+	if (arm7_SNDEXCNT != 0) {
+		isRegularDS = false;
+	}
+	// Line above, If sound frequency setting is found, then the console is not a DS Phat/Lite
 	fifoSendValue32(FIFO_USER_07, 0);
 
 	sysSetCartOwner (BUS_OWNER_ARM9);	// Allow arm9 to access GBA ROM
@@ -180,11 +194,35 @@ int main(int argc, char **argv) {
 			eqMenu(ndsFiles);
 		}
 
-		while (1) {
-			swiWaitForVBlank();
-			scanKeys();
-			if (!(keysHeld() & KEY_A)) break;
+		if (applaunch) {
+			// Construct a command line
+			getcwd(filePath, PATH_MAX);
+			pathLen = strlen(filePath);
+			vector<char*> argarray;
+
+			if (extension(filename, ".dsi") || extension(filename, ".nds")) {
+				char *name = argarray.at(0);
+				strcpy (filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = filePath;
+				consoleClear();
+				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0]);
+				iprintf ("\x1b[31mStart failed. Error %i\n", err);
+			}
+
+			while(argarray.size() !=0 ) {
+				free(argarray.at(0));
+				argarray.erase(argarray.begin());
+			} // this should free the argarray char :P
+
+			while (1) {
+				swiWaitForVBlank();
+				scanKeys();
+				if (!(keysHeld() & KEY_A)) break;
+			}
 		}
+
 	}
+
 	return 0;
 }
