@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 	*fake_heap_end = 0;
 	defaultExceptionHandler();
 
+	int pathLen;
 	std::string filename;
 
 	// initialize video mode
@@ -206,7 +207,7 @@ int main(int argc, char **argv) {
 				free(argarray.at(0));
 				argarray.at(0) = filePath;
 				consoleClear();
-				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0]);
+				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
 				iprintf ("\x1b[31mStart failed. Error %i\n", err);
 			}
 
