@@ -56,6 +56,7 @@ void stop(void) {
 }
 
 char filePath[PATH_MAX];
+static char titleName[32];
 
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
