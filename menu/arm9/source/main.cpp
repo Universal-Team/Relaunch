@@ -25,14 +25,6 @@ std::vector<DirEntry> ndsFiles;
 
 using namespace std;
 
-bool extension(const std::string& filename, const char* ext) {
-	if(strcasecmp(filename.c_str() + filename.size() - strlen(ext), ext)) {
-		return false;
-	} else {
-		return true;
-	}
-}
-
 void setFontTop() {
 	PrintConsole *console = consoleInit(NULL, 2, BgType_Text4bpp, BgSize_T_256x256, 2, 0, true, true);
 	ConsoleFont font;
@@ -200,16 +192,13 @@ int main(int argc, char **argv) {
 			getcwd(filePath, PATH_MAX);
 			pathLen = strlen(filePath);
 			vector<char*> argarray;
-
-			if (extension(filename, ".dsi") || extension(filename, ".nds")) {
-				char *name = argarray.at(0);
-				strcpy (filePath + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = filePath;
-				consoleClear();
-				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
-				iprintf ("\x1b[31mStart failed. Error %i\n", err);
-			}
+			char *name = argarray.at(0);
+			strcpy (filePath + pathLen, name);
+			free(argarray.at(0));
+			argarray.at(0) = filePath;
+			consoleClear();
+			int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
+			iprintf ("\x1b[31mStart failed. Error %i\n", err);
 
 			while(argarray.size() !=0 ) {
 				free(argarray.at(0));
