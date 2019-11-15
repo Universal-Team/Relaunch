@@ -57,7 +57,7 @@ void stop(void) {
 	}
 }
 
-//char filePath[PATH_MAX];
+char filePath[PATH_MAX];
 
 //---------------------------------------------------------------------------------
 int main(int argc, char **argv) {
