@@ -167,9 +167,9 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 			} else {
 				//runNdsFile(dmItems[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
 				int pathLen;
-				pathLen = strlen(filePath);
+				pathLen = strlen(dmItems[dmCursorPosition].fullPath.c_str(););
 				char *name = argarray.at(0);
-				strcpy(filePath + pathLen, name);
+				strcpy(dmItems[dmCursorPosition].fullPath.c_str() + pathLen, name);
 				free(argarray.at(0));
 				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
 				consoleClear();
