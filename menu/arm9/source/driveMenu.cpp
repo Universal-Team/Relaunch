@@ -34,10 +34,6 @@ void dm_drawTopScreen(std::vector<DirEntry> dmItems, int startRow) {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
-		//for(int i=0;i<dmItems.size();i++) {
-    //getIconTitle(dmItems[i].fullPath.c_str(), buffer, title);
-//}
-		//printf(title); //print the ds rom's title
 		printf((dmItems[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
@@ -168,7 +164,24 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				break;
 			} else {
 				dmTextPrinted = false;
-				applaunch = true;
+				int pathLen;
+				//std::string filename;
+				// Construct a command line
+				getcwd(filePath, PATH_MAX);
+				pathLen = strlen(dmItems[dmCursorPosition].fullPath.c_str());
+				vector<char*> argarray;
+				char *name = argarray.at(0);
+				strcpy(dmItems[dmCursorPosition].fullPath.c_str() + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
+				consoleClear();
+				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
+				iprintf("Uuhhh.wav (oof): Error %i\n", err);
+
+			while(argarray.size() != 0) {
+				free(argarray.at(0));
+				argarray.erase(argarray.begin());
+			}
 				break;
 			}
 		}
