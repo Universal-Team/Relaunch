@@ -9,6 +9,8 @@
 #include "includes.h"
 using namespace std;
 
+char filePath[PATH_MAX];
+
 static bool dmTextPrinted = false;
 static int dmCursorPosition = 0, dmScreenPosition = 0;
 u8 stored_SCFG_MC = 0;
@@ -167,9 +169,9 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 			} else {
 				//runNdsFile(dmItems[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
 				int pathLen;
-				pathLen = strlen(dmItems[dmCursorPosition].fullPath.c_str(););
+				pathLen = strlen(filePath);
 				char *name = argarray.at(0);
-				strcpy(dmItems[dmCursorPosition].fullPath.c_str() + pathLen, name);
+				strcpy(filePath + pathLen, name);
 				free(argarray.at(0));
 				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
 				consoleClear();
