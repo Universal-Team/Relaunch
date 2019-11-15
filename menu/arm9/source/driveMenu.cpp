@@ -120,7 +120,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 					break;
 				}
 			}
-		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A));
+		} while (!(pressed & KEY_UP) && !(pressed & KEY_DOWN) && !(pressed & KEY_A) && !(pressed & KEY_B) && !(pressed & KEY_RIGHT && !(pressed & KEY_START)));
 
 		if ((pressed & KEY_UP) && dmCursorPosition > 0) {
 			dmCursorPosition--;
@@ -130,7 +130,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 			dmTextPrinted = false;
 		}
 
-		if (pressed & KEY_A) {
+		if ((pressed & KEY_A) || (pressed & KEY_B) || (pressed & KEY_START) || (pressed & KEY_RIGHT)) {
 			if (dmItems[dmCursorPosition].name == "DS GAME") {
 				dmTextPrinted = false;
 				if (flashcardMounted) {
@@ -165,7 +165,16 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				screenMode = 2;
 				break;
 			} else {
-				runNdsFile(dmItems[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
+				//runNdsFile(dmItems[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
+				int pathLen;
+				pathLen = strlen(filePath);
+				char *name = argarray.at(0);
+				strcpy(filePath + pathLen, name);
+				free(argarray.at(0));
+				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
+				consoleClear();
+				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0]);
+				iprintf("Start failed. Error %i\n", err);
 				break;
 			}
 		}
