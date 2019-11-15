@@ -164,18 +164,10 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				break;
 			} else {
 				dmTextPrinted = false;
-				int pathLen;
-				//std::string filename;
-				// Construct a command line
-				getcwd(dmItems[dmCursorPosition].fullPath.c_str(), PATH_MAX);
-				pathLen = strlen(dmItems[dmCursorPosition].fullPath.c_str());
-				vector<const char*> argarray;
-				const char *name = argarray.at(0);
-				strcpy(dmItems[dmCursorPosition].fullPath.c_str() + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
 				consoleClear();
-				int err = runNdsFile(argarray[0], argarray.size(), (const char **)&argarray[0], false);
+				const char argarray[][] = {dmItems[dmCursorPosition].fullPath.c_str()};
+				int err = runNdsFile(argarray[0], 1, argarray, false);
+				//int err = runNdsFile(argarray[0], argarray.size(), argarray[0], false);
 				iprintf("Uuhhh.wav (oof): Error %i\n", err);
 
 			while(argarray.size() != 0) {
