@@ -15,6 +15,7 @@
 #define ENTRY_PAGE_LENGTH 10
 
 extern char filePath[PATH_MAX];
+extern char titleName[32];
 
 extern int screenMode;
 
