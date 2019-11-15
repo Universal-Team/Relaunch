@@ -167,16 +167,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				screenMode = 2;
 				break;
 			} else {
-				//runNdsFile(dmItems[dmCursorPosition].fullPath.c_str(), 0, NULL, false);
-				int pathLen;
-				pathLen = strlen(filePath);
-				char *name = argarray.at(0);
-				strcpy(filePath + pathLen, name);
-				free(argarray.at(0));
-				argarray.at(0) = dmItems[dmCursorPosition].fullPath.c_str();
-				consoleClear();
-				int err = runNdsFile (argarray[0], argarray.size(), (const char **)&argarray[0]);
-				iprintf("Start failed. Error %i\n", err);
+				applaunch = true;
 				break;
 			}
 		}
