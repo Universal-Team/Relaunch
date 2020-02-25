@@ -43,7 +43,7 @@ void bootApp (std::string bruh) {
 	} else {
 		printf("oof: %s not found", bruh.c_str());
 		stop();
-}
+	}
 }
 
 //---------------------------------------------------------------------------------
@@ -63,7 +63,6 @@ int main(int argc, char **argv) {
 	std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
 	std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
 	std::string bootDefault = "/boot.nds";
-	std::string loadError = "/_nds/Relaunch/menu.bin";
 
 	videoSetMode(MODE_0_2D);
 	videoSetModeSub(MODE_0_2D);
@@ -74,6 +73,7 @@ int main(int argc, char **argv) {
 		iprintf ("fatInitDefault failed!\n");
 		stop();
 	}
+
 	CIniFile ini("/_nds/Relaunch/Relaunch.ini");
 	
 	bootA = ini.GetString("RELAUNCH", "BOOT_A_PATH", bootA);
@@ -90,7 +90,6 @@ int main(int argc, char **argv) {
 	bootSelect = ini.GetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	bootTouch = ini.GetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
 	bootDefault = ini.GetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
-	loadError = ini.GetString("RELAUNCH", "LOAD_ERROR", loadError);
 
 	ini.SetString("RELAUNCH", "BOOT_A_PATH", bootA);
 	ini.SetString("RELAUNCH", "BOOT_B_PATH", bootB);
@@ -106,7 +105,6 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
 	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
-	ini.SetString("RELAUNCH", "LOAD_ERROR", loadError);
 
 	mkdir("/_nds/",0777);
 	mkdir("/_nds/Relaunch/",0777);
