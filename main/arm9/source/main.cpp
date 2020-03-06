@@ -14,6 +14,12 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-------------------------------------------------------------------
+ Not Copyright (ɔ) 2019 - 2020
+    Evan "FlameKat53" Rodgers
+    Evie "Epicpkmn11" "Evie11" Bogie
+    Rojelio "RocketRobz" Reyes
+    Kim "StackZ" Perkovic
 ------------------------------------------------------------------*/
 #include <nds.h>
 #include <stdio.h>

@@ -1,9 +1,9 @@
 /*-----------------------------------------------------------------
- Not Copyright (ɔ) 2019
-	Evan "Flame" Rodgers
-	Ben "Epicpkmn11" Bogie
-	Rojelio "RocketRobz" Reyes
-	Kim "VoltZ" Perkovic
+ Not Copyright (ɔ) 2019 - 2020
+    Evan "FlameKat53" Rodgers
+    Evie "Epicpkmn11" "Evie11" Bogie
+    Rojelio "RocketRobz" Reyes
+    Kim "StackZ" Perkovic
 ------------------------------------------------------------------*/
 
 #include "includes.h"
