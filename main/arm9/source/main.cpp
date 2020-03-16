@@ -28,6 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fat.h>
+#include "nds/arm9/guitarGrip.h"
 #include "common/nds_loader_arm9.h"
 #include "common/inifile.h"
 //---------------------------------------------------------------------------------
@@ -68,6 +69,10 @@ int main(int argc, char **argv) {
 	std::string bootStart = "/_nds/Relaunch/extras/bootStart.nds";
 	std::string bootSelect = "/_nds/Relaunch/extras/bootSelect.nds";
 	std::string bootTouch = "/_nds/Relaunch/extras/bootTouch.nds";
+	std::string bootGreen = "/_nds/Relaunch/extras/bootGreen.nds";
+	std::string bootRed = "/_nds/Relaunch/extras/bootRed.nds";
+	std::string bootYellow = "/_nds/Relaunch/extras/bootYellow.nds";
+	std::string bootBlue = "/_nds/Relaunch/extras/bootBlue.nds";
 	std::string bootDefault = "/boot.nds";
 
 	videoSetMode(MODE_0_2D);
@@ -95,6 +100,10 @@ int main(int argc, char **argv) {
 	bootStart = ini.GetString("RELAUNCH", "BOOT_START_PATH", bootStart);
 	bootSelect = ini.GetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	bootTouch = ini.GetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
+	bootGreen = ini.GetString("RELAUNCH", "BOOT_GREEN_PATH", bootGreen);
+	bootRed = ini.GetString("RELAUNCH", "BOOT_RED_PATH", bootRed);
+	bootYellow = ini.GetString("RELAUNCH", "BOOT_YELLOW_PATH", bootYellow);
+	bootBlue = ini.GetString("RELAUNCH", "BOOT_BLUE_PATH", bootBlue;
 	bootDefault = ini.GetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 
 	ini.SetString("RELAUNCH", "BOOT_A_PATH", bootA);
@@ -110,6 +119,10 @@ int main(int argc, char **argv) {
 	ini.SetString("RELAUNCH", "BOOT_START_PATH", bootStart);
 	ini.SetString("RELAUNCH", "BOOT_SELECT_PATH", bootSelect);
 	ini.SetString("RELAUNCH", "BOOT_TOUCH_PATH", bootTouch);
+	ini.SetString("RELAUNCH", "BOOT_GREEN_PATH", bootGreen);
+	ini.SetString("RELAUNCH", "BOOT_RED_PATH", bootRed);
+	ini.SetString("RELAUNCH", "BOOT_YELLOW_PATH", bootYellow);
+	ini.SetString("RELAUNCH", "BOOT_BLUE_PATH", bootBlue);
 	ini.SetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 
 	mkdir("/_nds/",0777);
