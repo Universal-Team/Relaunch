@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 	bootGreen = ini.GetString("RELAUNCH", "BOOT_GREEN_PATH", bootGreen);
 	bootRed = ini.GetString("RELAUNCH", "BOOT_RED_PATH", bootRed);
 	bootYellow = ini.GetString("RELAUNCH", "BOOT_YELLOW_PATH", bootYellow);
-	bootBlue = ini.GetString("RELAUNCH", "BOOT_BLUE_PATH", bootBlue;
+	bootBlue = ini.GetString("RELAUNCH", "BOOT_BLUE_PATH", bootBlue);
 	bootDefault = ini.GetString("RELAUNCH", "BOOT_DEFAULT_PATH", bootDefault);
 
 	ini.SetString("RELAUNCH", "BOOT_A_PATH", bootA);
@@ -173,6 +173,18 @@ int main(int argc, char **argv) {
 		bootApp(bootSelect);
 	} else if (pressed & KEY_TOUCH) {
 		bootApp(bootTouch);
+	} else if (guitarGripIsInserted()) {
+    guitarGripScanKeys();
+    u8 keys = guitarGripKeysHeld();
+	if  (keys&GUITARGRIP_BLUE) {
+		bootApp(bootBlue);
+	} else if (keys&GUITARGRIP_YELLOW) {
+		bootApp(bootYellow);
+	} else if (keys&GUITARGRIP_RED) {
+		bootApp(bootRed);
+	} else if (keys&GUITARGRIP_GREEN) {
+		bootApp(bootGreen);
+	}
 	} else {
 		bootApp(bootDefault);
 	}
