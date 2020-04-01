@@ -29,7 +29,7 @@ SOURCES		:=	source source/common
 INCLUDES	:=	include include/common
 DATA		:=	data
 NITRODATA	:=	nitrofiles
-GRAPHICS	:=  	gfx
+GRAPHICS	:=  gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -136,7 +136,7 @@ dist:	all
 	
 $(TARGET).nds:	$(TARGET).arm7 $(TARGET).arm9
 	ndstool	-c $(TARGET).nds -7 $(TARGET).arm7.elf -9 $(TARGET).arm9.elf \
-			-z 80040000 -u 00030004 -a 00000143 -d $(NITRODATA) -b icon.bmp "Relaunch Menu;Universal-Team"
+			-z 80040000 -u 00030004 -a 00000143 -d $(NITRODATA) -b icon.bmp "Relaunch Bruhu;Bruhniversal-Bruhem"
 		
 $(TARGET).arm7: arm7/$(TARGET).elf
 	cp arm7/$(TARGET).elf $(TARGET).arm7.elf
