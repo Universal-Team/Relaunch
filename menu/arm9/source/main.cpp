@@ -155,9 +155,9 @@ int main(int argc, char **argv) {
 	}
 		// Print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
 		printf("\x1b[0;0H"); // This is line 1 (sometimes first is equal to 0)
-		printf("\n\n No one\n   is\n illegal");
+		printf("\n\n Everyone\n   is\n bruh");
 		setFontTop();
-		printf(APP_VERSION);
+		printf("Relaunch.nds BRUH Edition");
 	}
 
 	if (flashcardMounted) {
