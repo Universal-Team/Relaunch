@@ -41,7 +41,7 @@ void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> exte
 	DIR *pdir = opendir(".");
 
 	if (pdir == NULL) {
-		iprintf("Bruh, unable to open the directory.");
+		iprintf("Internal error, unable to open the directory.");
 		for(int i=0;i<120;i++)
 			swiWaitForVBlank();
 	} else {

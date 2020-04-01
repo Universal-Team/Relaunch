@@ -20,7 +20,7 @@ bool secondaryDrive = false;	// false == SD card, true == Flashcard
 void dm_drawTopScreen(std::vector<DirEntry> dmItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("Relaunch.nds BRUH Edition");
+	printf (APP_VERSION);
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -34,7 +34,7 @@ void dm_drawTopScreen(std::vector<DirEntry> dmItems, int startRow) {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
 		}
-		printf("BRUH");
+		printf((dmItems[i + startRow].name.substr(0, SCREEN_COLS)).c_str());
 	}
 }
 
@@ -44,18 +44,18 @@ void dm_drawBottomScreen(std::vector<DirEntry> dmItems) {
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\n Everyone\n   is\n bruh");
+	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
-	printf ("\n\n\n\n\n\nBRUH SIZE: 00000000");
-	printf ("\nBRUH SIZE: 00000000");
-	if (dmItems[dmCursorPosition].name == "BRUH") {
-		printf ("\nbruh:");
-	} else if (dmItems[dmCursorPosition].name == "BRUH") {
-		printf ("\nbruh:");
-	} else if (dmItems[dmCursorPosition].name == "BRUH") {
-		printf ("\nbruh:");
-	} else if (dmItems[dmCursorPosition].name == "BRUH") {
-		printf ("\nbruh:");
+	printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+	printf ("\nPRV SIZE: 00000000");
+	if (dmItems[dmCursorPosition].name == "DS GAME") {
+		printf ("\ncart:");
+	} else if (dmItems[dmCursorPosition].name == "GBA GAME") {
+		printf ("\nslot2:");
+	} else if (dmItems[dmCursorPosition].name == "WIFIBOOT") {
+		printf ("\nwifi:");
+	} else if (dmItems[dmCursorPosition].name == "OPTIONS") {
+		printf ("\nsett:");
 	} else {
 		printf ("\n%s", dmItems[dmCursorPosition].fullPath.c_str());
 	}
@@ -68,21 +68,21 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0
 	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
 		DirEntry options;
-		options.name = "BRUH";
+		options.name = "OPTIONS";
 		dmItems.insert(dmItems.begin(), options);
 
 		DirEntry wifiboot;
-		wifiboot.name = "BRUH";
+		wifiboot.name = "WIFIBOOT";
 		dmItems.insert(dmItems.begin(), wifiboot);
 
 		if (isRegularDS) {
 			DirEntry gbaGame;
-			gbaGame.name = "BRUH";
+			gbaGame.name = "GBA GAME";
 			dmItems.insert(dmItems.begin(), gbaGame);
 		}
 
 		DirEntry dsGame;
-		dsGame.name = "BRUH";
+		dsGame.name = "DS GAME";
 		dmItems.insert(dmItems.begin(), dsGame);
 	}
 
@@ -168,7 +168,7 @@ void driveMenu (std::vector<DirEntry> ndsFiles) {
 				const char *argarray[] = {dmItems[dmCursorPosition].fullPath.c_str()};
 				int err = runNdsFile(argarray[0], 1, argarray, false);
 				//int err = runNdsFile(argarray[0], argarray.size(), argarray[0], false);
-				iprintf("Bruh: Bruh %i\n", err);
+				iprintf("Uuhhh.wav (oof): Error %i\n", err);
 				break;
 			}
 		}
