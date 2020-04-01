@@ -29,15 +29,15 @@ std::string iniSection[] {
 };
 
 std::string buttonNames[] {
-	"NO BRUHTON",
-	"BRUHTON A",
-	"BRUHTON B",
-	"BRUHTON X",
-	"BRUHTON Y",
-	"BRUHTON L",
-	"BRUHTON R",
-	"BRUHTON START",
-	"BRUHTON SELECT",
+	"NO BUTTON",
+	"BUTTON A",
+	"BUTTON B",
+	"BUTTON X",
+	"BUTTON Y",
+	"BUTTON L",
+	"BUTTON R",
+	"BUTTON START",
+	"BUTTON SELECT",
 	"TOUCH SCREEN",
 	"D-PAD UP",
 	"D-PAD DOWN",
@@ -49,7 +49,7 @@ std::string buttonNames[] {
 void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 	//printf ("\x1b[43m"); //yellow
 	printf ("\x1b[0;0H");
-	printf ("\nBRUH:");
+	printf ("\nCHANGE BOOT DEFAULT/HOTKEYS:");
 
 	// Move to 4th row
 	printf ("\x1b[3;0H");
@@ -58,7 +58,7 @@ void eq_drawTopScreen (std::vector<std::string> eqItems, int startRow) {
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (eqCursorPosition == i + startRow) {
 			//printf ("\x1b[46m# ");		// Print foreground cyan color
-			printf("BRUH ");
+			printf("# ");
 		} else {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
@@ -79,7 +79,7 @@ void eq_drawTopScreenDirEntry (std::vector<DirEntry> eqItems, int startRow, char
 		iprintf ("\x1b[%d;0H", i + ENTRIES_START_ROW);
 		if (eqCursorPosition == i + startRow) {
 			//printf ("\x1b[46m# ");		// Print foreground cyan color
-			printf("BRUH ");
+			printf("# ");
 		} else {
 			//printf ("\x1b[42m  ");		// Print foreground green color
 			printf("  ");
@@ -98,10 +98,10 @@ void eq_drawBottomScreen (void) {
 
 	//printf ("\x1b[43m");		// Print background yellow color
 	printf ("\x1b[0;0H");
-	printf("\n\n Everyone\n   is\n bruh");
+	printf("\n\n No one\n   is\n illegal");
 	printf("\x1b[0;1H");
-	printf ("\n\n\n\n\n\nBRUH SIZE: 00000000");
-	printf ("\nBRUH SIZE: 00000000\n");
+	printf ("\n\n\n\n\n\nPUB SIZE: 00000000");
+	printf ("\nPRV SIZE: 00000000\n");
 	printf ("sett:");
 }
 
@@ -112,23 +112,23 @@ void eqMenu (std::vector<DirEntry> ndsFiles) {
 	std::vector<std::string> eqItems;
 	if (access("sd:/_nds/Relaunch/menu.bin", F_OK) == 0
 	|| access("fat:/_nds/Relaunch/menu.bin", F_OK) == 0) {
-		eqItems.push_back("NO BRUHTON");
-		eqItems.push_back("BRUHTON A");
-		eqItems.push_back("BRUHTON B");
-		eqItems.push_back("BRUHTON X");
-		eqItems.push_back("BRUHTON Y");
-		eqItems.push_back("BRUHTON L");
-		eqItems.push_back("BRUHTON R");
-		eqItems.push_back("BRUHTON START");
-		eqItems.push_back("BRUHTON SELECT");
-		eqItems.push_back("TOUCH BRUH");
-		eqItems.push_back("D-BRUH UP");
-		eqItems.push_back("D-PAD BRUH");
-		eqItems.push_back("D-BRUH LEFT");
-		eqItems.push_back("D-PAD BRUH");
-		eqItems.push_back("LOAD BRUH");
-		eqItems.push_back("BRUHTON A+B (FILEMENU - FIXED)");
-		eqItems.push_back("BRUHTON A+X (FILEMENU - FIXED)");
+		eqItems.push_back("NO BUTTON");
+		eqItems.push_back("BUTTON A");
+		eqItems.push_back("BUTTON B");
+		eqItems.push_back("BUTTON X");
+		eqItems.push_back("BUTTON Y");
+		eqItems.push_back("BUTTON L");
+		eqItems.push_back("BUTTON R");
+		eqItems.push_back("BUTTON START");
+		eqItems.push_back("BUTTON SELECT");
+		eqItems.push_back("TOUCH SCREEN");
+		eqItems.push_back("D-PAD UP");
+		eqItems.push_back("D-PAD DOWN");
+		eqItems.push_back("D-PAD LEFT");
+		eqItems.push_back("D-PAD RIGHT");
+		eqItems.push_back("LOAD ERROR");
+		eqItems.push_back("BUTTON A+B (FILEMENU - FIXED)");
+		eqItems.push_back("BUTTON A+X (FILEMENU - FIXED)");
 		eqItems.push_back("SAVE & EXIT");
 	}
 
