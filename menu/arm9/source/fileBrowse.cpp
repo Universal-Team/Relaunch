@@ -61,7 +61,30 @@ void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> exte
 				if (nameEndsWith(dirEntry.name, extensionList)) {
 					dirContents.push_back(dirEntry);
 				}
-			} else if (dirEntry.isDirectory && dirEntry.name.compare(".") != 0 && dirEntry.name.compare("..") != 0) {
+			} else if (dirEntry.isDirectory 
+				&& dirEntry.name.compare(".") != 0 
+				&& dirEntry.name.compare("..") != 0
+				&& dirEntry.name.compare(".") != 0
+				&& dirEntry.name.compare("_nds/nds-bootstrap") != 0
+				&& dirEntry.name.compare("_nds/TWiLightMenu") != 0
+				&& dirEntry.name.compare("_gba") != 0
+				&& dirEntry.name.compare("3ds") != 0
+				&& dirEntry.name.compare("DCIM") != 0
+				&& dirEntry.name.compare("gm9") != 0
+				&& dirEntry.name.compare("luma") != 0
+				&& dirEntry.name.compare("Nintendo 3DS") != 0
+				&& dirEntry.name.compare("private") != 0
+				&& dirEntry.name.compare("retroarch") != 0
+				&& dirEntry.name.compare("roms/sms") != 0
+				&& dirEntry.name.compare("roms/sg1000") != 0
+				&& dirEntry.name.compare("roms/gen") != 0
+				&& dirEntry.name.compare("roms/snes") != 0
+				&& dirEntry.name.compare("roms/nes") != 0
+				&& dirEntry.name.compare("roms/gb") != 0
+				&& dirEntry.name.compare("roms/gbc") != 0
+				&& dirEntry.name.compare("roms/gba") != 0
+				&& dirEntry.name.compare("roms/gg") != 0
+				&& dirEntry.name.compare("roms/nds/saves") != 0) {
 				chdir(dirEntry.name.c_str());
 				findNdsFiles(dirContents);
 				chdir("..");
