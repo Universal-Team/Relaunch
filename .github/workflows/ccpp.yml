@@ -80,8 +80,8 @@ jobs:
           git config --global user.email "flamekat54@aol.com"
           git config --global user.name "TWLBot"
           git clone --depth 1 https://${{ secrets.TWLBOT_TOKEN }}@github.com/Universal-Team/extras.git
-          cd Builds/
-          cp ${{ github.workspace }}/build/* .
+          cd extras/builds/Relaunch/
+          cp ../../../Relaunch.7z Relaunch.7z
           git stage .
           git commit -m "Relaunch | $COMMIT_TAG"
           git tag v$CURRENT_DATE
