@@ -61,7 +61,7 @@ jobs:
         with:
           name: "build"
           path: "build"
-      - name: Upload to Universal-Team/Relaunch release
+      - name: Upload to ${{ github.repository }} release
         if: ${{ startsWith(github.ref, 'refs/tags') }}
         run: |
           ID=$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)
@@ -81,7 +81,7 @@ jobs:
           git config --global user.name "TWLBot"
           git clone --depth 1 https://${{ secrets.TWLBOT_TOKEN }}@github.com/Universal-Team/extras.git
           cd extras/builds/Relaunch/
-          cp ../../../builds/Relaunch.7z Relaunch.7z
+          cp ${{ github.workspace }}/builds/* .
           git stage .
           git commit -m "Relaunch | $COMMIT_TAG"
           git tag v$CURRENT_DATE
