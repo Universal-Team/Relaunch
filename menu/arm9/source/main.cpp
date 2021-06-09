@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- Not Copyright (ɔ) 2019 - 2020
+ Not Copyright (ɔ) 2019 - 2021
     FlameKat53
     Pk11
     RocketRobz
@@ -125,34 +125,36 @@ int main(int argc, char **argv) {
 	appInited = true;
 
 	if(appInited) {
-		if(sdMounted) {
-			nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
-		} else {
-			nitroFSInit("fat:/_nds/Relaunch/menu.bin");
-	}
-
-	FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
-
-	if (fileBottom) {
-		// Start loading
-		fseek(fileBottom, 0xe, SEEK_SET);
-		u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
-		fseek(fileBottom, pixelStart, SEEK_SET);
-		fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
-		u16* src = bmpImageBuffer;
-		int x = 0;
-		int y = 191;
-		for (int i=0; i<256*192; i++) {
-			if (x >= 256) {
-				x = 0;
-				y--;
+		if (!nitroFSInit(argv[0])) {
+			if(sdMounted) {
+				nitroFSInit("sd:/_nds/Relaunch/menu.bin");	
+			} else {
+				nitroFSInit("fat:/_nds/Relaunch/menu.bin");
 			}
-			u16 val = *(src++);
-			BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
-			x++;
 		}
-	}
+
+		FILE* fileBottom = fopen("nitro:/bg.bmp", "rb");
+
+		if (fileBottom) {
+			// Start loading
+			fseek(fileBottom, 0xe, SEEK_SET);
+			u8 pixelStart = (u8)fgetc(fileBottom) + 0xe;
+			fseek(fileBottom, pixelStart, SEEK_SET);
+			fread(bmpImageBuffer, 2, 0x1A000, fileBottom);
+			u16* src = bmpImageBuffer;
+			int x = 0;
+			int y = 191;
+			for (int i=0; i<256*192; i++) {
+				if (x >= 256) {
+					x = 0;
+					y--;
+				}
+				u16 val = *(src++);
+				BG_GFX[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+				BG_GFX_SUB[(y+32)*256+x] = ((val>>10)&0x1f) | ((val)&(0x1f<<5)) | (val&0x1f)<<10 | BIT(15);
+				x++;
+			}
+		}
 		// Print bottom screen before top screen appears to (try and) prevent github issues about it freezing on launch :p
 		printf("\x1b[0;0H"); // This is line 1 (sometimes first is equal to 0)
 		printf("\n\n No one\n   is\n illegal");
