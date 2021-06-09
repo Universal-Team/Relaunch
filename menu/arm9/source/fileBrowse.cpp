@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- Not Copyright (ɔ) 2019 - 2020
+ Not Copyright (ɔ) 2019 - 2021
     FlameKat53
     Pk11
     RocketRobz
@@ -64,7 +64,6 @@ void findFiles(std::vector<DirEntry>& dirContents, std::vector<std::string> exte
 			} else if (dirEntry.isDirectory 
 				&& dirEntry.name.compare(".") != 0 
 				&& dirEntry.name.compare("..") != 0
-				&& dirEntry.name.compare(".") != 0
 				&& dirEntry.name.compare("_nds/nds-bootstrap") != 0
 				&& dirEntry.name.compare("_nds/TWiLightMenu") != 0
 				&& dirEntry.name.compare("_gba") != 0
